@@ -1,0 +1,58 @@
+---
+/**
+ * Segundo paso de "Sobre mí" (data-nav="about").
+ * Escritorio: Stack (izquierda) + Trayectoria (derecha) en una sola pantalla.
+ * Móvil: solo el Stack; la Trayectoria es el paso siguiente (Trajectory.astro).
+ */
+import StackList from '../about/StackList.astro';
+import Timeline from '../about/Timeline.astro';
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section
+  id="stack"
+  class="stage-section"
+  data-section
+  data-nav="about"
+  data-rings="background"
+  aria-labelledby="stack-title"
+>
+  <div class="section-body" data-section-body>
+    <!-- Escritorio / tablet -->
+    <div
+      class="mx-auto hidden h-full max-w-[1400px] flex-col justify-center px-12 pt-[4.5rem] pb-14 md:flex lg:px-20"
+    >
+      <h2
+        id="stack-title"
+        data-reveal
+        class="text-[clamp(1.9rem,min(4vw,7vh),3.5rem)] leading-none font-semibold tracking-[-0.035em]"
+      >
+        {t.stack.title}
+      </h2>
+      <div class="mt-[clamp(1.25rem,4.5vh,3rem)] grid grid-cols-12 gap-x-10">
+        <div class="col-span-7">
+          <StackList lang={lang} coreLabel={t.stack.core} />
+        </div>
+        <div class="col-span-5 pt-1 lg:col-span-4 lg:col-start-9">
+          <Timeline lang={lang} experienceLabel={t.stack.experience} educationLabel={t.stack.education} />
+        </div>
+      </div>
+    </div>
+
+    <!-- Móvil: solo stack -->
+    <div class="flex h-full flex-col justify-center px-6 pt-16 pb-12 md:hidden">
+      <h2 data-reveal class="text-center text-[clamp(1.8rem,7.5vw,2.4rem)] leading-none font-semibold tracking-[-0.035em]">
+        {t.stack.stackTitle}
+      </h2>
+      <div class="mt-[clamp(1rem,3vh,1.75rem)]">
+        <StackList lang={lang} coreLabel={t.stack.core} compact />
+      </div>
+    </div>
+  </div>
+</section>

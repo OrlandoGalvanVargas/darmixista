@@ -1,0 +1,42 @@
+---
+/**
+ * Segundo paso de Contacto, solo en teléfono: formulario + footer.
+ * Si la pantalla crece a tablet/escritorio estando aquí, el controlador regresa a #contact.
+ */
+import ContactForm from '../contact/ContactForm.astro';
+import SiteFooter from '../contact/SiteFooter.astro';
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang).contact;
+---
+
+<section
+  id="contact-form"
+  class="stage-section"
+  data-section
+  data-nav="contact"
+  data-rings="background"
+  data-only="mobile"
+  data-fallback="contact"
+  aria-labelledby="contact-form-title"
+>
+  <div class="section-body" data-section-body>
+    <div class="mx-auto flex h-full max-w-md flex-col px-6 pt-[4.75rem] pb-5">
+      <div class="flex min-h-0 flex-1 flex-col [justify-content:safe_center]">
+        <h2 id="contact-form-title" data-reveal class="[@media(max-height:700px)]:sr-only text-center text-[clamp(1.6rem,7vw,2.1rem)] leading-none font-semibold tracking-[-0.035em]">
+          {t.formTitle}
+        </h2>
+        <div data-reveal class="mt-[clamp(0.9rem,3vh,1.5rem)]">
+          <ContactForm lang={lang} idPrefix="cf-m" />
+        </div>
+      </div>
+      <div class="mt-4">
+        <SiteFooter lang={lang} />
+      </div>
+    </div>
+  </div>
+</section>

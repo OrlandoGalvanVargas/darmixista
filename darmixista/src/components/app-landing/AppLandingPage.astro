@@ -1,0 +1,674 @@
+---
+/**
+ * Landing completa de una app móvil. Todo el contenido sale de src/data/apps/<app>.ts.
+ * Secciones: encabezado, inicio, cómo funciona, funciones, en acción, compañeros (opcional),
+ * instalación, permisos, privacidad, preguntas, llamada final y pie.
+ */
+import QRCode from 'qrcode';
+import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
+import LandingLayout from '../../layouts/LandingLayout.astro';
+import DownloadButton from './DownloadButton.astro';
+import LandingIcon from './LandingIcon.astro';
+import type { AppLanding } from '../../data/apps/types';
+import { landingUi } from '../../i18n/landing';
+import { languages, type Lang } from '../../i18n/ui';
+import { SITE } from '../../config/site';
+
+interface Props {
+  app: AppLanding;
+  lang: Lang;
+}
+const { app, lang } = Astro.props;
+const c = app.content[lang];
+const ui = landingUi[lang];
+const pageUrl = getAbsoluteLocaleUrl(lang, `${app.slug}/`);
+const repoUrl = `https://github.com/${app.repo.owner}/${app.repo.name}`;
+const apkUrl = `${repoUrl}/releases/download/v${app.release.version}/${app.release.apk}`;
+const fullName = `${SITE.person.firstName} ${SITE.person.lastName}`;
+const year = new Date().getFullYear();
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// QR para abrir la página en el teléfono (se genera al compilar, sin JavaScript en el navegador)
+const qrSvg = await QRCode.toString(pageUrl, {
+  type: 'svg',
+  margin: 0,
+  errorCorrectionLevel: 'M',
+  color: { dark: app.palette.light.ink, light: '#0000' },
+});
+
+const nav = [
+  { href: '#how', label: c.nav.how },
+  { href: '#features', label: c.nav.features },
+  { href: '#gallery', label: c.nav.gallery },
+  ...(c.companions && c.nav.companions ? [{ href: '#companions', label: c.nav.companions }] : []),
+  { href: '#install', label: c.nav.install },
+  { href: '#faq', label: c.nav.faq },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${getAbsoluteLocaleUrl('es', `${app.slug}/`)}#app`,
+      name: app.name,
+      description: c.metaDescription,
+      url: pageUrl,
+      operatingSystem: `Android ${app.minAndroid}+`,
+      applicationCategory: 'LifestyleApplication',
+      applicationSubCategory: c.category,
+      softwareVersion: app.release.version,
+      datePublished: app.release.date,
+      fileSize: `${app.release.sizeMb}MB`,
+      downloadUrl: apkUrl,
+      installUrl: pageUrl,
+      image: new URL(app.assets.icon192, Astro.site).href,
+      screenshot: new URL(app.assets.heroShot, Astro.site).href,
+      inLanguage: 'es',
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      author: { '@id': `${getAbsoluteLocaleUrl('es', '')}#person` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${getAbsoluteLocaleUrl('es', '')}#person`,
+      name: fullName,
+      alternateName: SITE.brand,
+      url: getAbsoluteLocaleUrl('es', ''),
+      sameAs: SITE.socials.map((s) => s.href),
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${pageUrl}#page`,
+      url: pageUrl,
+      name: c.metaTitle,
+      inLanguage: lang === 'es' ? 'es-MX' : 'en-US',
+      about: { '@id': `${getAbsoluteLocaleUrl('es', `${app.slug}/`)}#app` },
+      isPartOf: { '@type': 'WebSite', name: SITE.brand, url: getAbsoluteLocaleUrl('es', '') },
+    },
+  ],
+};
+---
+
+<LandingLayout app={app} lang={lang} jsonLd={jsonLd}>
+  <a
+    href="#main"
+    class="lp-btn lp-btn-ghost lp-btn-sm fixed top-3 left-3 z-[60] -translate-y-24 focus:translate-y-0"
+    >{ui.skip}</a
+  >
+
+  <!-- ═════════ Encabezado ═════════ -->
+  <header
+    class="sticky top-0 z-50 border-b-2 border-transparent bg-lp-bg/85 backdrop-blur-md transition-[border-color] duration-300 data-[scrolled]:border-lp-outline"
+    data-lp-header
+  >
+    <div class="lp-container flex h-[4.25rem] items-center justify-between gap-4">
+      <a href="#top" class="flex items-center gap-2.5 font-display text-xl font-bold tracking-tight">
+        <img src={app.assets.icon} alt="" width="40" height="40" class="h-10 w-10 rounded-xl border-2 border-lp-ink" />
+        {app.name}
+      </a>
+
+      <nav class="hidden items-center gap-0.5 xl:flex" aria-label={app.name}>
+        {
+          nav.map((n) => (
+            <a
+              href={n.href}
+              class="rounded-full px-3 py-2 font-display text-[0.95rem] font-medium whitespace-nowrap text-lp-muted transition-colors hover:bg-lp-surface-variant hover:text-lp-text"
+            >
+              {n.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <div
+          class="flex items-center rounded-full border-2 border-lp-ink bg-lp-surface p-0.5 font-display text-sm font-semibold"
+          role="group"
+          aria-label={ui.language}
+        >
+          {
+            (Object.keys(languages) as Lang[]).map((code) => (
+              <a
+                href={getRelativeLocaleUrl(code, `${app.slug}/`)}
+                hreflang={code}
+                lang={code}
+                data-lp-lang={code}
+                aria-current={code === lang ? 'true' : undefined}
+                class:list={[
+                  'rounded-full px-2.5 py-1 uppercase transition-colors',
+                  code === lang ? 'bg-lp-primary text-lp-on-primary' : 'text-lp-muted hover:text-lp-text',
+                ]}
+              >
+                {code}
+              </a>
+            ))
+          }
+        </div>
+        <button type="button" class="lp-icon-btn" data-lp-theme aria-label={ui.theme} title={ui.theme}>
+          <LandingIcon name="sun" class="theme-icon-light" />
+          <LandingIcon name="moon" class="theme-icon-dark" />
+        </button>
+        <DownloadButton app={app} lang={lang} size="sm" class="hidden md:flex" />
+        <button
+          type="button"
+          class="lp-icon-btn xl:hidden"
+          data-lp-menu-toggle
+          aria-expanded="false"
+          aria-controls="lp-menu"
+          aria-label={ui.menu}
+        >
+          <LandingIcon name="menu" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Menú móvil -->
+    <nav id="lp-menu" class="lp-container hidden pb-4 xl:hidden" data-lp-menu aria-label={app.name}>
+      <ul class="lp-sticker grid gap-1 p-2">
+        {
+          nav.map((n) => (
+            <li>
+              <a href={n.href} class="block rounded-2xl px-4 py-3 font-display text-lg font-medium hover:bg-lp-surface-variant">
+                {n.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" data-apk-repo={`${app.repo.owner}/${app.repo.name}`} data-apk-known={app.release.version}>
+    <!-- ═════════ Inicio ═════════ -->
+    <section id="top" class="lp-dots lp-fade-bottom relative overflow-hidden">
+      <div
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_80%_35%,color-mix(in_oklab,var(--lp-accent)_16%,transparent),transparent_70%),radial-gradient(45%_40%_at_10%_65%,color-mix(in_oklab,var(--lp-primary)_14%,transparent),transparent_70%)]"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="lp-container relative z-[1] grid items-center gap-14 pt-10 pb-20 md:pt-16 lg:grid-cols-12 lg:gap-8 lg:pt-20 lg:pb-28">
+        <div class="lg:col-span-7">
+          <img
+            src={app.assets.icon}
+            alt={app.name}
+            width="96"
+            height="96"
+            class="mb-6 h-20 w-20 rounded-[1.6rem] border-[2.5px] border-lp-ink shadow-[4px_4px_0_var(--lp-shadow)] md:h-24 md:w-24"
+          />
+          <p class="lp-eyebrow">
+            <LandingIcon name="sparkle" class="h-4 w-4" />
+            {c.hero.eyebrow}
+          </p>
+          <h1
+            class="mt-5 text-[clamp(2.6rem,7vw,4.6rem)] font-bold [&_em]:text-lp-primary [&_em]:not-italic [&_em]:whitespace-nowrap"
+            set:html={c.hero.title}
+          />
+          <p class="lp-lead mt-5 max-w-xl">{c.hero.lead}</p>
+
+          <div class="mt-9 flex flex-wrap items-start gap-x-5 gap-y-4">
+            <DownloadButton app={app} lang={lang} meta />
+            <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="lp-btn lp-btn-ghost">
+              <LandingIcon name="github" />
+              {ui.viewGithub}
+            </a>
+          </div>
+          <p class="ios-note mt-4 hidden text-sm font-semibold text-lp-error">{ui.androidOnly}</p>
+
+          <!-- QR: solo en computadoras -->
+          <div class="qr-card mt-10 hidden max-w-md items-center gap-4 lp-dashed p-4">
+            <div class="h-24 w-24 flex-none rounded-xl bg-white p-2" set:html={qrSvg} role="img" aria-label={pageUrl} />
+            <div>
+              <p class="font-display text-lg font-semibold">{ui.scanTitle}</p>
+              <p class="text-[0.95rem] text-lp-muted">{ui.scanBody}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Teléfono + personaje -->
+        <div class="relative mx-auto w-full max-w-[22rem] lg:col-span-5 lg:max-w-none">
+          <div class="relative mx-auto w-[min(17.5rem,72vw)] rotate-[2.5deg] lg:w-[18.5rem]">
+            <div class="lp-phone" style="--ratio: 540 / 1027">
+              <div class="lp-phone-screen">
+                <img src={app.assets.heroShot} alt={c.metaTitle} width="540" height="1027" fetchpriority="high" />
+              </div>
+            </div>
+          </div>
+          <div class="absolute -top-12 -left-3 w-[36%] sm:-top-8 sm:-left-10 sm:w-[42%] lg:-left-16 lg:w-[48%]">
+            <img src={app.assets.heroCharacter} alt="" width="640" height="640" class="lp-float drop-shadow-[0_18px_22px_rgba(34,211,238,0.35)]" />
+          </div>
+          <figure
+            class="lp-pop lp-sticker absolute -bottom-6 left-0 max-w-[15rem] rounded-[1.4rem] rounded-bl-md px-4 py-3 sm:-left-6 lg:-left-12"
+          >
+            <blockquote class="font-display text-lg leading-snug font-semibold">“{c.hero.bubble}”</blockquote>
+            <figcaption class="mt-1 text-sm text-lp-muted">— {c.hero.bubbleBy}</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ Cómo funciona ═════════ -->
+    <section id="how" class="py-20 md:py-28">
+      <div class="lp-container">
+        <div class="max-w-2xl" data-lp-reveal>
+          <h2 class="lp-h2">{c.how.title}</h2>
+          <p class="lp-lead mt-4">{c.how.lead}</p>
+        </div>
+        <ol class="mt-12 grid gap-6 md:grid-cols-3">
+          {
+            c.how.steps.map((s, i) => (
+              <li class="lp-sticker relative p-6 md:p-7" data-lp-reveal style={`--d:${i}`}>
+                <span class="font-display text-5xl leading-none font-bold text-lp-primary/35" aria-hidden="true">
+                  {pad(i + 1)}
+                </span>
+                <span class="tone-primary absolute top-6 right-6 grid h-12 w-12 place-items-center rounded-2xl border-2 border-lp-ink">
+                  <LandingIcon name={s.icon} class="h-6 w-6" />
+                </span>
+                <h3 class="mt-5 text-2xl font-semibold">{s.title}</h3>
+                <p class="mt-2 text-lp-muted">{s.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+        {
+          c.how.chips && (
+            <ul class="mt-8 flex flex-wrap gap-3" data-lp-reveal>
+              {c.how.chips.map((chip) => (
+                <li class:list={['lp-sticker-sm inline-flex items-center gap-2 px-4 py-2 font-display font-semibold', `tone-${chip.tone}`]}>
+                  <LandingIcon name={chip.icon} class="h-5 w-5" />
+                  {chip.label}
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </section>
+
+    <!-- ═════════ Funciones ═════════ -->
+    <section id="features" class="bg-lp-surface-variant/60 py-20 md:py-28">
+      <div class="lp-container">
+        <div class="max-w-2xl" data-lp-reveal>
+          <h2 class="lp-h2">{c.features.title}</h2>
+          <p class="lp-lead mt-4">{c.features.lead}</p>
+        </div>
+        <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            c.features.items.map((f, i) => (
+              <li class="lp-sticker p-6 md:p-7" data-lp-reveal style={`--d:${i % 3}`}>
+                <span class:list={['grid h-14 w-14 place-items-center rounded-2xl border-2 border-lp-ink', `tone-${f.tone}`]}>
+                  <LandingIcon name={f.icon} class="h-7 w-7" />
+                </span>
+                <h3 class="mt-5 text-xl font-semibold md:text-[1.4rem]">{f.title}</h3>
+                <p class="mt-2 text-lp-muted">{f.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═════════ En acción ═════════ -->
+    <section id="gallery" class="overflow-hidden py-20 md:py-28">
+      <div class="lp-container">
+        <div class="max-w-2xl" data-lp-reveal>
+          <h2 class="lp-h2">{c.gallery.title}</h2>
+          <p class="lp-lead mt-4">{c.gallery.lead}</p>
+        </div>
+      </div>
+      <ul
+        class="lp-container mt-12 flex snap-x snap-mandatory gap-6 overflow-x-auto pt-2 pb-6 [scrollbar-width:none] md:grid md:grid-cols-4 md:overflow-visible"
+        aria-label={c.gallery.title}
+      >
+        {
+          c.gallery.items.map((g, i) => (
+            <li class="w-[min(15rem,64vw)] flex-none snap-center md:w-auto" data-lp-reveal style={`--d:${i}`}>
+              <div class:list={['lp-phone', i % 2 ? 'md:rotate-[1.5deg]' : 'md:-rotate-[1.5deg]']}>
+                <div class="lp-phone-screen">
+                  {g.video ? (
+                    <video
+                      data-lp-video
+                      src={g.video}
+                      poster={g.poster}
+                      muted
+                      loop
+                      playsinline
+                      preload="none"
+                      aria-label={g.caption}
+                    />
+                  ) : (
+                    <img src={g.poster} alt={g.caption} loading="lazy" />
+                  )}
+                </div>
+              </div>
+              <p class="mt-5 text-center font-display text-lg font-semibold">{g.caption}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- ═════════ Compañeros ═════════ -->
+    {
+      c.companions && (
+        <section id="companions" class="lp-dots bg-lp-surface-variant/60 py-20 md:py-28">
+          <div class="lp-container">
+            <div class="max-w-2xl" data-lp-reveal>
+              <h2 class="lp-h2">{c.companions.title}</h2>
+              <p class="lp-lead mt-4">{c.companions.lead}</p>
+            </div>
+            <ul class="mt-12 grid gap-6 md:grid-cols-3">
+              {c.companions.items.map((p, i) => (
+                <li
+                  class="companion lp-sticker group relative overflow-hidden p-6 pt-4 text-center"
+                  style={`--c:${p.color};--deep:${p.deep};--spark:${p.spark};--d:${i}`}
+                  data-lp-reveal
+                >
+                  <div class="companion-glow pointer-events-none absolute inset-x-0 top-0 h-3/5" aria-hidden="true" />
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    width="640"
+                    height="640"
+                    loading="lazy"
+                    class="relative mx-auto h-56 w-auto object-contain transition-transform duration-500 ease-(--ease-pop) group-hover:-translate-y-2 group-hover:rotate-[-3deg]"
+                  />
+                  <h3 class="relative mt-3 text-2xl font-semibold">{p.name}</h3>
+                  <p class="companion-element relative mt-1 font-display text-sm font-semibold tracking-wide uppercase">
+                    {p.element}
+                  </p>
+                  <blockquote class="relative mt-4 rounded-2xl border-2 border-dashed border-lp-outline px-4 py-3 text-lp-muted italic">
+                    “{p.quote}”
+                  </blockquote>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- ═════════ Instalación ═════════ -->
+    <section id="install" class="py-20 md:py-28">
+      <div class="lp-container grid gap-12 lg:grid-cols-12 lg:gap-10">
+        <div class="lg:col-span-7">
+          <div data-lp-reveal>
+            <h2 class="lp-h2">{c.install.title}</h2>
+            <p class="lp-lead mt-4">{c.install.lead}</p>
+          </div>
+          <ol class="mt-10 grid gap-4">
+            {
+              c.install.steps.map((s, i) => (
+                <li class="flex gap-4" data-lp-reveal style={`--d:${i}`}>
+                  <span class="tone-primary grid h-11 w-11 flex-none place-items-center rounded-full border-2 border-lp-ink font-display text-lg font-bold">
+                    {i + 1}
+                  </span>
+                  <div class="pt-1.5">
+                    <h3 class="text-xl font-semibold">{s.title}</h3>
+                    <p class="text-lp-muted">{s.body}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <div class="mt-10" data-lp-reveal>
+            <DownloadButton app={app} lang={lang} meta />
+          </div>
+        </div>
+
+        <aside class="grid content-start gap-6 lg:col-span-5">
+          <div class="lp-sticker p-6 md:p-7" data-lp-reveal>
+            <h3 class="flex items-center gap-2 text-2xl font-semibold">
+              <LandingIcon name="android" class="h-7 w-7 text-lp-tertiary" />
+              {c.install.requirementsTitle}
+            </h3>
+            <dl class="mt-5 divide-y-2 divide-dashed divide-lp-outline">
+              {
+                c.install.requirements.map((r) => (
+                  <div class="flex items-baseline justify-between gap-4 py-3">
+                    <dt class="text-lp-muted">{r.label}</dt>
+                    <dd class="text-right font-display font-semibold">{r.value}</dd>
+                  </div>
+                ))
+              }
+              <div class="flex items-baseline justify-between gap-4 py-3">
+                <dt class="text-lp-muted">{ui.latest}</dt>
+                <dd class="text-right font-display font-semibold">
+                  v<span data-apk-version>{app.release.version}</span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div class="lp-sticker tone-gold p-6 md:p-7" data-lp-reveal style="--d:1">
+            <h3 class="flex items-center gap-2 text-xl font-semibold">
+              <LandingIcon name="shield" class="h-6 w-6" />
+              {c.install.noteTitle}
+            </h3>
+            <p class="mt-2 opacity-90">{c.install.note}</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ═════════ Permisos ═════════ -->
+    <section id="permissions" class="bg-lp-surface-variant/60 py-20 md:py-28">
+      <div class="lp-container">
+        <div class="max-w-2xl" data-lp-reveal>
+          <h2 class="lp-h2">{c.permissions.title}</h2>
+          <p class="lp-lead mt-4">{c.permissions.lead}</p>
+        </div>
+        <ul class="mt-12 grid items-start gap-4 md:grid-cols-2">
+          {
+            c.permissions.items.map((p, i) => (
+              <li data-lp-reveal style={`--d:${i % 2}`}>
+                <details class="lp-details lp-sticker group overflow-hidden">
+                  <summary class="flex items-start gap-4 p-5 md:p-6">
+                    <span class="tone-primary grid h-12 w-12 flex-none place-items-center rounded-2xl border-2 border-lp-ink">
+                      <LandingIcon name={p.icon} class="h-6 w-6" />
+                    </span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block font-display text-xl font-semibold">{p.title}</span>
+                      <span class="mt-1 block text-[0.98rem] text-lp-muted">{p.why}</span>
+                    </span>
+                    <LandingIcon name="chevron" class="lp-chevron mt-3 h-5 w-5 flex-none" />
+                  </summary>
+                  <div class="border-t-2 border-dashed border-lp-outline px-5 pt-4 pb-5 md:px-6">
+                    <p class="font-display text-sm font-semibold tracking-wide text-lp-muted uppercase">{ui.permissionsSteps}</p>
+                    <ol class="mt-2 list-decimal space-y-1.5 pl-5 marker:font-display marker:font-semibold marker:text-lp-primary">
+                      {p.steps.map((s) => (
+                        <li>{s}</li>
+                      ))}
+                    </ol>
+                    {p.note && <p class="tone-gold mt-4 rounded-2xl px-4 py-3 text-[0.95rem]">{p.note}</p>}
+                  </div>
+                </details>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═════════ Privacidad ═════════ -->
+    <section id="privacy" class="py-20 md:py-28">
+      <div class="lp-container">
+        <div class="lp-sticker tone-tertiary grid gap-10 p-7 md:grid-cols-12 md:p-12" data-lp-reveal>
+          <div class="md:col-span-5">
+            <span class="grid h-16 w-16 place-items-center rounded-2xl border-2 border-lp-ink bg-lp-surface text-lp-tertiary">
+              <LandingIcon name="shield" class="h-8 w-8" />
+            </span>
+            <h2 class="lp-h2 mt-6">{c.privacy.title}</h2>
+            <p class="mt-3 text-lg opacity-85">{c.privacy.lead}</p>
+          </div>
+          <div class="grid gap-8 sm:grid-cols-2 md:col-span-7 md:pt-2">
+            <div>
+              <p class="font-display text-sm font-semibold tracking-wide uppercase opacity-75">{ui.privacyNo}</p>
+              <ul class="mt-3 space-y-3">
+                {
+                  c.privacy.no.map((t) => (
+                    <li class="flex items-start gap-3">
+                      <span class="tone-error grid h-7 w-7 flex-none place-items-center rounded-full border-2 border-lp-ink">
+                        <LandingIcon name="x" class="h-4 w-4" />
+                      </span>
+                      <span class="pt-0.5 font-semibold">{t}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+            <div>
+              <p class="font-display text-sm font-semibold tracking-wide uppercase opacity-75">{ui.privacyYes}</p>
+              <ul class="mt-3 space-y-3">
+                {
+                  c.privacy.yes.map((t) => (
+                    <li class="flex items-start gap-3">
+                      <span class="grid h-7 w-7 flex-none place-items-center rounded-full border-2 border-lp-ink bg-lp-surface text-lp-tertiary">
+                        <LandingIcon name="check" class="h-4 w-4" />
+                      </span>
+                      <span class="pt-0.5 font-semibold">{t}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ Preguntas ═════════ -->
+    <section id="faq" class="pb-20 md:pb-28">
+      <div class="lp-container max-w-3xl">
+        <h2 class="lp-h2 text-center" data-lp-reveal>{c.faq.title}</h2>
+        <div class="mt-10 grid gap-4">
+          {
+            c.faq.items.map((f, i) => (
+              <details class="lp-details lp-sticker" data-lp-reveal style={`--d:${i % 3}`}>
+                <summary class="flex items-center justify-between gap-4 px-5 py-4 font-display text-lg font-semibold md:px-6 md:text-xl">
+                  {f.q}
+                  <LandingIcon name="chevron" class="lp-chevron h-5 w-5 flex-none" />
+                </summary>
+                <p class="px-5 pb-5 text-lp-muted md:px-6">{f.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════ Llamada final ═════════ -->
+    <section class="pb-20 md:pb-28">
+      <div class="lp-container">
+        <div
+          class="lp-sticker relative isolate overflow-hidden bg-[#1b1530] bg-cover bg-center px-6 py-14 text-center text-white md:px-12 md:py-20"
+          style={app.assets.banner ? `background-image:url(${app.assets.banner})` : undefined}
+          data-lp-reveal
+        >
+          <div class="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_50%_60%,rgba(20,15,34,0.82),rgba(20,15,34,0.5))]" aria-hidden="true"></div>
+          <img
+            src={app.assets.heroCharacter}
+            alt=""
+            width="640"
+            height="640"
+            loading="lazy"
+            class="lp-float mx-auto h-36 w-36 drop-shadow-[0_14px_24px_rgba(34,211,238,0.45)] md:h-44 md:w-44"
+          />
+          <h2 class="mx-auto mt-4 max-w-2xl text-[clamp(2.1rem,5vw,3.4rem)] font-bold">{c.cta.title}</h2>
+          <p class="mx-auto mt-3 max-w-xl text-lg text-white/90">{c.cta.lead}</p>
+          <div class="mt-8 flex justify-center">
+            <DownloadButton app={app} lang={lang} />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═════════ Pie ═════════ -->
+  <footer class="border-t-2 border-lp-outline">
+    <div class="lp-container flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
+      <div class="flex items-center gap-3">
+        <img src={app.assets.icon} alt="" width="44" height="44" class="h-11 w-11 rounded-xl border-2 border-lp-ink" />
+        <div>
+          <p class="font-display text-lg font-bold">{app.name}</p>
+          <p class="text-sm text-lp-muted">
+            {ui.footerBy}{' '}
+            <a href={getRelativeLocaleUrl(lang, '')} class="font-semibold text-lp-text underline decoration-lp-primary decoration-2 underline-offset-4 hover:text-lp-primary">
+              {SITE.brand}
+            </a>
+          </p>
+        </div>
+      </div>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 font-display font-medium text-lp-muted">
+        <li><a class="hover:text-lp-text" href={`${repoUrl}/releases`} target="_blank" rel="noopener noreferrer">{ui.footerReleases}</a></li>
+        <li><a class="hover:text-lp-text" href={`${repoUrl}/issues`} target="_blank" rel="noopener noreferrer">{ui.footerIssues}</a></li>
+        <li><a class="hover:text-lp-text" href={repoUrl} target="_blank" rel="noopener noreferrer">{ui.footerRepo}</a></li>
+        <li><a class="hover:text-lp-text" href={getRelativeLocaleUrl(lang, '')}>{ui.footerPortfolio}</a></li>
+      </ul>
+    </div>
+    <p class="lp-container pb-8 text-sm text-lp-muted">© {year} {fullName}. {ui.rights}</p>
+  </footer>
+
+  <!-- Aviso tras descargar -->
+  <div
+    class="lp-sticker fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-md translate-y-[150%] items-center gap-4 p-4 opacity-0 transition-[transform,opacity] duration-500 ease-(--ease-pop) data-[show]:translate-y-0 data-[show]:opacity-100"
+    data-lp-toast
+    role="status"
+    aria-live="polite"
+    inert
+  >
+    <img src={app.assets.heroCharacter} alt="" width="56" height="56" class="h-14 w-14 flex-none" />
+    <div class="min-w-0 flex-1">
+      <p class="font-display text-lg leading-tight font-semibold">{ui.toastTitle}</p>
+      <p class="text-[0.95rem] text-lp-muted">
+        {ui.toastBody}
+        <a href="#install" class="font-semibold text-lp-primary underline underline-offset-4" data-lp-toast-close>{ui.toastLink}</a>
+      </p>
+    </div>
+    <button type="button" class="lp-icon-btn h-9 w-9 flex-none" data-lp-toast-close aria-label={ui.close}>
+      <LandingIcon name="x" />
+    </button>
+  </div>
+</LandingLayout>
+
+<style>
+  /* Íconos del botón de tema según el tema activo */
+  :global(.theme-icon-dark) {
+    display: none;
+  }
+  :global(:root[data-theme='dark'] .theme-icon-light) {
+    display: none;
+  }
+  :global(:root[data-theme='dark'] .theme-icon-dark) {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light']) .theme-icon-light) {
+      display: none;
+    }
+    :global(:root:not([data-theme='light']) .theme-icon-dark) {
+      display: block;
+    }
+  }
+
+  /* QR solo con ratón (computadoras) */
+  @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+    .qr-card {
+      display: flex;
+    }
+  }
+  :global(html[data-ios]) .ios-note {
+    display: block;
+  }
+
+  .companion-glow {
+    background: radial-gradient(70% 80% at 50% 0%, color-mix(in oklab, var(--c) 28%, transparent), transparent 75%);
+  }
+  .companion-element {
+    color: light-dark(var(--deep), var(--c));
+  }
+</style>
+
+<script>
+  import { initLanding } from '../../scripts/landing';
+  initLanding();
+</script>

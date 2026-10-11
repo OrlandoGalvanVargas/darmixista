@@ -1,0 +1,12 @@
+// Despliegue en Cloudflare Workers como sitio estático (sin código de servidor).
+// Build: `npm run build` → sube la carpeta ./dist
+// Docs: https://developers.cloudflare.com/workers/framework-guides/web-apps/astro/
+{
+  "name": "darmixista",
+  "compatibility_date": "2026-10-10",
+  "assets": {
+    "directory": "./dist",
+    // Rutas inexistentes muestran /404.html con estado 404
+    "not_found_handling": "404-page"
+  }
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <mask id="b" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32"><rect width="32" height="32" fill="#fff"/><path d="M9 5H15A8.5 11 0 0 1 15 27H9Z" fill="#000" stroke="#000" stroke-width="2.2" stroke-linejoin="round"/></mask>
+    <mask id="f" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32"><rect width="32" height="32" fill="#fff"/><path d="M1.6 16A14.4 4.3 0 0 0 30.4 16" transform="rotate(-20 16 16)" stroke="#000" stroke-width="3.4"/></mask>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#121212"/>
+  <g transform="translate(16 16) scale(.84) translate(-16 -16)">
+    <g mask="url(#b)"><path d="M1.6 16A14.4 4.3 0 0 1 30.4 16" transform="rotate(-20 16 16)" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".45"/></g>
+    <path d="M9 5H15A8.5 11 0 0 1 15 27H9Z M12.6 8.6H15A5 7.4 0 0 1 15 23.4H12.6Z" fill="#fff" fill-rule="evenodd" mask="url(#f)"/>
+    <g transform="rotate(-20 16 16)"><path d="M1.6 16A14.4 4.3 0 0 0 30.4 16" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="8.8" cy="19.72" r="1.8" fill="#00E5FF"/></g>
+  </g>
+</svg>

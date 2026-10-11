@@ -1,0 +1,187 @@
+---
+/**
+ * Columna de contacto: título, disponibilidad + hora local en vivo, canales directos y CV.
+ */
+import { SITE } from '../../config/site';
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang).contact;
+const github = SITE.socials.find((s) => s.id === 'github');
+const linkedin = SITE.socials.find((s) => s.id === 'linkedin');
+const otherLang = lang === 'es' ? 'en' : 'es';
+---
+
+<div class="max-md:text-center">
+  <h2
+    id="contact-title"
+    data-reveal
+    class="text-[clamp(2.4rem,min(5.4vw,10vh),5rem)] leading-[0.95] font-semibold tracking-[-0.04em]"
+  >
+    {t.title}<span class="text-accent">.</span>
+  </h2>
+  <p data-reveal class="ci-lead mt-[clamp(0.6rem,2vh,1.25rem)] max-w-[28rem] text-[clamp(0.9rem,2.1vh,1.05rem)] leading-relaxed text-muted max-md:mx-auto">
+    {t.lead}
+  </p>
+
+  <!-- Disponibilidad + reloj -->
+  <div data-reveal class="mt-[clamp(0.9rem,2.8vh,1.75rem)] flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] tracking-[0.14em] uppercase max-md:justify-center">
+    {
+      SITE.contact.available && (
+        <span class="inline-flex items-center gap-2.5 text-fg">
+          <span class="ci-pulse" aria-hidden="true" />
+          {t.available}
+        </span>
+      )
+    }
+    <span class="inline-flex items-center gap-2 text-muted">
+      <span>{SITE.contact.city[lang]}</span>
+      <span aria-hidden="true">·</span>
+      <time class="text-fg tabular-nums" data-local-time data-tz={SITE.contact.timeZone} data-locale={lang === 'es' ? 'es-MX' : 'en-US'}>--:--:--</time>
+      <span data-local-offset></span>
+    </span>
+  </div>
+
+  <!-- Canales directos -->
+  <ul data-reveal class="mt-[clamp(1rem,3.2vh,2rem)] border-t border-line/70 text-left" aria-label={t.channels}>
+    <li class="ci-row">
+      <span class="ci-key">{t.email}</span>
+      <a href={`mailto:${SITE.contact.email}`} class="ci-val">{SITE.contact.email}</a>
+      <button type="button" class="ci-act" data-copy={SITE.contact.email} data-copied-label={t.copied} aria-label={`${t.copy}: ${SITE.contact.email}`}>
+        <span data-copy-label class="ci-copy-text">{t.copy}</span>
+        <svg class="ci-copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="11" rx="2" /><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5" /></svg>
+      </button>
+    </li>
+    {
+      github && (
+        <li class="ci-row">
+          <span class="ci-key">{github.label}</span>
+          <a href={github.href} target="_blank" rel="noopener noreferrer" class="ci-val">{github.handle}</a>
+          <a href={github.href} target="_blank" rel="noopener noreferrer" class="ci-act" aria-label={github.label} tabindex="-1">↗</a>
+        </li>
+      )
+    }
+    {
+      linkedin && (
+        <li class="ci-row">
+          <span class="ci-key">{linkedin.label}</span>
+          <a href={linkedin.href} target="_blank" rel="noopener noreferrer" class="ci-val">{linkedin.handle}</a>
+          <a href={linkedin.href} target="_blank" rel="noopener noreferrer" class="ci-act" aria-label={linkedin.label} tabindex="-1">↗</a>
+        </li>
+      )
+    }
+  </ul>
+
+  <!-- CV -->
+  <div data-reveal class="mt-[clamp(1rem,3.2vh,2rem)] flex flex-wrap gap-2.5 max-md:justify-center">
+    <a href={SITE.cv[lang]} download class="btn btn-primary btn-adapt max-md:flex-1">
+      {lang === 'es' ? t.cvEs : t.cvEn}
+      <span class="btn-arrow" aria-hidden="true">↓</span>
+    </a>
+    <a href={SITE.cv[otherLang]} download class="btn btn-ghost btn-adapt max-md:flex-1">
+      {otherLang === 'es' ? t.cvEs : t.cvEn}
+      <span class="btn-arrow" aria-hidden="true">↓</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .ci-pulse {
+    position: relative;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-accent);
+    box-shadow: 0 0 10px rgb(0 229 255 / 0.7);
+  }
+  .ci-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 1px solid rgb(0 229 255 / 0.55);
+    animation: ci-pulse 2.2s var(--ease-zen) infinite;
+  }
+  @keyframes ci-pulse {
+    0% {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.9);
+      opacity: 0;
+    }
+  }
+  .ci-row {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: clamp(0.55rem, 1.7vh, 0.95rem) 0;
+    border-bottom: 1px solid rgb(51 51 51 / 0.7);
+  }
+  .ci-key {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .ci-val {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: clamp(0.88rem, 2vh, 1rem);
+    color: var(--color-fg);
+    transition: color 0.4s var(--ease-zen);
+  }
+  .ci-row:hover .ci-val {
+    color: var(--color-accent);
+  }
+  .ci-act {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    transition: color 0.4s var(--ease-zen);
+  }
+  .ci-act:hover,
+  .ci-act[data-done] {
+    color: var(--color-accent);
+  }
+  .ci-copy-icon {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+  }
+  @media (max-width: 1279px) {
+    .ci-row {
+      grid-template-columns: 4.1rem minmax(0, 1fr) auto;
+      gap: 0.6rem;
+    }
+    .ci-val {
+      font-size: 0.85rem;
+    }
+    /* "Copiar" como ícono para que el correo quepa completo; al copiar se muestra el texto */
+    .ci-act:not([data-done]) .ci-copy-text {
+      display: none;
+    }
+    .ci-act:not([data-done]) .ci-copy-icon {
+      display: block;
+    }
+  }
+  @media (max-width: 767px) and (max-height: 700px) {
+    .ci-lead {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ci-pulse::after {
+      animation: none;
+    }
+  }
+</style>

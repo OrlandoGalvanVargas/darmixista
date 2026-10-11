@@ -1,0 +1,340 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────
+   Landings de apps móviles (darmixista.dev/<app>/)
+   Los colores vienen de la paleta de cada app (src/data/apps/<app>.ts) como variables --lp-*,
+   escritas con light-dark(): el tema se cambia solo con color-scheme.
+   ────────────────────────────────────────────── */
+@theme inline {
+  --color-lp-bg: var(--lp-bg);
+  --color-lp-surface: var(--lp-surface);
+  --color-lp-surface-variant: var(--lp-surfaceVariant);
+  --color-lp-text: var(--lp-text);
+  --color-lp-muted: var(--lp-muted);
+  --color-lp-outline: var(--lp-outline);
+  --color-lp-ink: var(--lp-ink);
+  --color-lp-shadow: var(--lp-shadow);
+  --color-lp-primary: var(--lp-primary);
+  --color-lp-on-primary: var(--lp-onPrimary);
+  --color-lp-primary-container: var(--lp-primaryContainer);
+  --color-lp-on-primary-container: var(--lp-onPrimaryContainer);
+  --color-lp-secondary: var(--lp-secondary);
+  --color-lp-secondary-container: var(--lp-secondaryContainer);
+  --color-lp-on-secondary-container: var(--lp-onSecondaryContainer);
+  --color-lp-tertiary: var(--lp-tertiary);
+  --color-lp-tertiary-container: var(--lp-tertiaryContainer);
+  --color-lp-on-tertiary-container: var(--lp-onTertiaryContainer);
+  --color-lp-error: var(--lp-error);
+  --color-lp-error-container: var(--lp-errorContainer);
+  --color-lp-on-error-container: var(--lp-onErrorContainer);
+  --color-lp-gold: var(--lp-gold);
+  --color-lp-gold-container: var(--lp-goldContainer);
+  --color-lp-on-gold-container: var(--lp-onGoldContainer);
+  --color-lp-accent: var(--lp-accent);
+
+  --font-display: "Fredoka Variable", "Nunito Variable", ui-rounded, system-ui, sans-serif;
+  --font-body: "Nunito Variable", ui-rounded, system-ui, sans-serif;
+
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--lp-bg);
+    color: var(--lp-text);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--lp-primaryContainer);
+    color: var(--lp-onPrimaryContainer);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--lp-accent);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+}
+
+@layer components {
+  .lp-container {
+    width: 100%;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .lp-container {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Tarjeta tipo sticker: contorno grueso + sombra sólida desplazada */
+  .lp-sticker {
+    background: var(--lp-surface);
+    border: 2.5px solid var(--lp-ink);
+    border-radius: 1.5rem;
+    box-shadow: 5px 5px 0 var(--lp-shadow);
+  }
+  .lp-sticker-sm {
+    border: 2px solid var(--lp-ink);
+    border-radius: 999px;
+    box-shadow: 3px 3px 0 var(--lp-shadow);
+  }
+  .lp-dashed {
+    border: 2px dashed var(--lp-outline);
+    border-radius: 1.5rem;
+  }
+
+  /* Botones */
+  .lp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0.7rem 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1;
+    border: 2.5px solid var(--lp-ink);
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 var(--lp-shadow);
+    transition:
+      transform 0.18s var(--ease-soft),
+      box-shadow 0.18s var(--ease-soft),
+      background-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+  .lp-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 var(--lp-shadow);
+  }
+  .lp-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--lp-shadow);
+  }
+  .lp-btn svg {
+    width: 1.3em;
+    height: 1.3em;
+    flex: none;
+  }
+  .lp-btn-primary {
+    background: var(--lp-primary);
+    color: var(--lp-onPrimary);
+  }
+  .lp-btn-ghost {
+    background: var(--lp-surface);
+    color: var(--lp-text);
+  }
+  .lp-btn-sm {
+    min-height: 2.5rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.95rem;
+    box-shadow: 3px 3px 0 var(--lp-shadow);
+  }
+
+  .lp-icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid var(--lp-ink);
+    border-radius: 999px;
+    background: var(--lp-surface);
+    box-shadow: 2px 2px 0 var(--lp-shadow);
+    transition: transform 0.15s var(--ease-soft), box-shadow 0.15s var(--ease-soft);
+  }
+  .lp-icon-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--lp-shadow);
+  }
+  .lp-icon-btn svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  /* Etiqueta de sección */
+  .lp-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    color: var(--lp-onPrimaryContainer);
+    background: var(--lp-primaryContainer);
+    border: 2px solid var(--lp-ink);
+    border-radius: 999px;
+  }
+
+  .lp-h2 {
+    font-size: clamp(2rem, 4.6vw, 3.1rem);
+    font-weight: 700;
+  }
+  .lp-lead {
+    color: var(--lp-muted);
+    font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  }
+
+  /* Fondo de puntos (como el ícono de la app) */
+  .lp-dots {
+    background-image: radial-gradient(color-mix(in oklab, var(--lp-ink) 22%, transparent) 1.2px, transparent 1.3px);
+    background-size: 22px 22px;
+  }
+
+  /* Desvanece el fondo de puntos hacia la siguiente sección */
+  .lp-fade-bottom::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 7rem;
+    background: linear-gradient(to bottom, transparent, var(--lp-bg));
+    pointer-events: none;
+  }
+
+  /* Contenedores de color por tono */
+  .tone-primary {
+    background: var(--lp-primaryContainer);
+    color: var(--lp-onPrimaryContainer);
+  }
+  .tone-secondary {
+    background: var(--lp-secondaryContainer);
+    color: var(--lp-onSecondaryContainer);
+  }
+  .tone-tertiary {
+    background: var(--lp-tertiaryContainer);
+    color: var(--lp-onTertiaryContainer);
+  }
+  .tone-error {
+    background: var(--lp-errorContainer);
+    color: var(--lp-onErrorContainer);
+  }
+  .tone-gold {
+    background: var(--lp-goldContainer);
+    color: var(--lp-onGoldContainer);
+  }
+
+  /* Marco de teléfono */
+  .lp-phone {
+    position: relative;
+    aspect-ratio: var(--ratio, 400 / 867);
+    border: 3px solid var(--lp-ink);
+    border-radius: 2.4rem;
+    background: var(--lp-ink);
+    padding: 0.45rem;
+    box-shadow: 8px 8px 0 var(--lp-shadow);
+  }
+  .lp-phone-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 1.95rem;
+    background: var(--lp-bg);
+  }
+  .lp-phone-screen > img,
+  .lp-phone-screen > video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+
+  /* Acordeones */
+  .lp-details > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .lp-details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .lp-details .lp-chevron {
+    transition: transform 0.3s var(--ease-soft);
+  }
+  .lp-details[open] .lp-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+/* Aparición al desplazar (solo con JS y sin "reducir movimiento") */
+@media (prefers-reduced-motion: no-preference) {
+  html.lp-js [data-lp-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s var(--ease-soft),
+      transform 0.7s var(--ease-soft);
+    transition-delay: calc(var(--d, 0) * 90ms);
+  }
+  html.lp-js [data-lp-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .lp-float {
+    animation: lp-float 5s ease-in-out infinite;
+  }
+  .lp-pop {
+    animation: lp-pop 0.7s var(--ease-pop) 0.9s both;
+  }
+}
+
+@keyframes lp-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+}
+@keyframes lp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(10px);
+  }
+}

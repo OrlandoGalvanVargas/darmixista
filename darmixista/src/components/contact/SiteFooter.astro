@@ -1,0 +1,25 @@
+---
+/**
+ * Footer integrado al final de Contacto (no es una sección aparte: en un sitio de pantallas
+ * fijas, una "despedida" solo para el copyright sería un scroll vacío).
+ * Deja libre la esquina inferior derecha para el contador de secciones.
+ */
+import { SITE } from '../../config/site';
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang).footer;
+const year = new Date().getFullYear();
+---
+
+<footer
+  data-reveal
+  class="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line/60 pt-[clamp(0.6rem,1.6vh,1rem)] pr-28 font-mono text-[10.5px] tracking-[0.14em] text-muted uppercase md:pr-40"
+>
+  <span>© {year} <span class="max-md:hidden">{SITE.person.firstName} {SITE.person.lastName} · </span><span class="text-fg/80">{SITE.brand}</span></span>
+  <span class="max-md:hidden" aria-hidden="true">—</span>
+  <span>{t.rights}</span>
+</footer>

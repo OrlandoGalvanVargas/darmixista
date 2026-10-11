@@ -1,0 +1,35 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '../styles/global.css';
+import Seo from '../components/seo/Seo.astro';
+import type { Lang } from '../i18n/ui';
+import { LANG_REDIRECT } from '../lib/lang-redirect';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  noindex?: boolean;
+  /** Desactiva la redirección automática de idioma (p. ej. en la página 404) */
+  skipLangRedirect?: boolean;
+}
+const { lang, title, noindex = false, skipLangRedirect = false } = Astro.props;
+
+---
+
+<!doctype html>
+<html lang={lang === 'es' ? 'es-MX' : 'en'} data-menu="closed">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#121212" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo lang={lang} title={title} noindex={noindex} />
+
+    {!skipLangRedirect && <script is:inline set:html={LANG_REDIRECT} />}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

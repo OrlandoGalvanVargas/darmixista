@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/navigation/Navbar.astro';
+import Preloader from '../components/brand/Preloader.astro';
+import StageHud from '../components/navigation/StageHud.astro';
+import Hero from '../components/sections/Hero.astro';
+import About from '../components/sections/About.astro';
+import Stack from '../components/sections/Stack.astro';
+import Trajectory from '../components/sections/Trajectory.astro';
+import ProjectsCarousel from '../components/projects/ProjectsCarousel.astro';
+import ProjectDialogs from '../components/projects/ProjectDialogs.astro';
+import Services from '../components/sections/Services.astro';
+import Contact from '../components/sections/Contact.astro';
+import ContactFormStep from '../components/sections/ContactFormStep.astro';
+import { MOBILE_PROJECTS, WEB_PROJECTS } from '../data/projects';
+import { useTranslations } from '../i18n/ui';
+import RingsScene from '../components/scene/RingsScene';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Secciones del menú (el contador las cuenta; el controlador lo corrige en vivo)
+const TOTAL_SECTIONS = 5;
+---
+
+<Layout lang={lang}>
+  <Preloader />
+
+  <!-- Capa 3D: una sola escena persistente para todo el sitio -->
+  <div data-rings-layer class="pointer-events-none fixed inset-0 z-0">
+    <RingsScene client:only="react" />
+  </div>
+
+  <Navbar lang={lang} />
+
+  <!-- Escenario: las secciones se apilan y se intercambian con zoom + fundido -->
+  <main data-stage class="stage z-10">
+    <Hero lang={lang} />
+    <!-- Sobre mí: tres pasos (en escritorio, Stack y Trayectoria comparten pantalla) -->
+    <About lang={lang} />
+    <Stack lang={lang} />
+    <Trajectory lang={lang} />
+    <!-- Proyectos: dos carruseles; cada proyecto es un paso del scroll -->
+    <ProjectsCarousel id="projects" kind="web" title={t.projects.webTitle} projects={WEB_PROJECTS} lang={lang} />
+    <ProjectsCarousel id="apps" kind="mobile" title={t.projects.mobileTitle} projects={MOBILE_PROJECTS} lang={lang} />
+    <Services lang={lang} />
+    <!-- Contacto: en teléfono son dos pasos (canales → formulario + footer) -->
+    <Contact lang={lang} />
+    <ContactFormStep lang={lang} />
+  </main>
+
+  <StageHud lang={lang} total={TOTAL_SECTIONS} />
+
+  <ProjectDialogs
+    lang={lang}
+    projects={[
+      ...WEB_PROJECTS.map((project) => ({ project, kind: 'web' as const })),
+      ...MOBILE_PROJECTS.map((project) => ({ project, kind: 'mobile' as const })),
+    ]}
+  />
+
+  <noscript>
+    <style>
+      .stage-section:first-of-type { opacity: 1; visibility: visible; }
+      [data-preloader] { display: none !important; }
+    </style>
+  </noscript>
+</Layout>
+
+<script>
+  import { initStage } from '../scripts/stage';
+  import { initNavigation } from '../scripts/navigation';
+  import { runPreloader } from '../scripts/preloader';
+  import { initDialogs } from '../scripts/dialogs';
+  import { initContact } from '../scripts/contact';
+
+  initNavigation();
+  initDialogs();
+  initContact();
+  initStage({ ready: runPreloader() });
+</script>

@@ -1,0 +1,40 @@
+---
+/**
+ * Tercer paso de "Sobre mí", solo en móvil (en escritorio la trayectoria va junto al stack).
+ * Si la pantalla crece a escritorio estando aquí, el controlador regresa a #stack (data-fallback).
+ */
+import Timeline from '../about/Timeline.astro';
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section
+  id="trajectory"
+  class="stage-section"
+  data-section
+  data-nav="about"
+  data-rings="background"
+  data-only="mobile"
+  data-fallback="stack"
+  aria-labelledby="trajectory-title"
+>
+  <div class="section-body" data-section-body>
+    <div class="mx-auto flex h-full max-w-md flex-col justify-center px-6 pt-16 pb-12">
+      <h2
+        id="trajectory-title"
+        data-reveal
+        class="text-center text-[clamp(1.8rem,7.5vw,2.4rem)] leading-none font-semibold tracking-[-0.035em]"
+      >
+        {t.stack.trajectoryTitle}
+      </h2>
+      <div class="mt-[clamp(1.25rem,4vh,2.25rem)]">
+        <Timeline lang={lang} experienceLabel={t.stack.experience} educationLabel={t.stack.education} />
+      </div>
+    </div>
+  </div>
+</section>

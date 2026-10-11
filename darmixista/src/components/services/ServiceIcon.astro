@@ -1,0 +1,81 @@
+---
+/**
+ * Íconos de línea propios (24×24, trazo fino). `pathLength="1"` permite "dibujarlos"
+ * con CSS al entrar a la sección.
+ */
+import type { ServiceIconName } from '../../data/services';
+
+interface Props {
+  name: ServiceIconName;
+  class?: string;
+}
+const { name, class: className } = Astro.props;
+---
+
+<svg
+  class:list={['svc-icon', className]}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  {
+    name === 'web' && (
+      <>
+        <rect x="2.5" y="4" width="19" height="16" rx="2" pathLength="1" />
+        <path d="M2.5 8h19" pathLength="1" />
+        <path d="M9.5 12.5 7.5 14.5l2 2M14.5 12.5l2 2-2 2" pathLength="1" class="svc-accent" />
+      </>
+    )
+  }
+  {
+    name === 'backend' && (
+      <>
+        <rect x="3.5" y="3.5" width="17" height="6" rx="1.5" pathLength="1" />
+        <rect x="3.5" y="13.5" width="17" height="6" rx="1.5" pathLength="1" />
+        <path d="M7 6.5h.01M7 16.5h.01" pathLength="1" class="svc-accent" />
+        <path d="M11 6.5h6M11 16.5h6M12 9.5v4" pathLength="1" />
+      </>
+    )
+  }
+  {
+    name === 'mobile' && (
+      <>
+        <rect x="6.5" y="2.5" width="11" height="19" rx="2.2" pathLength="1" />
+        <path d="M10.5 5h3" pathLength="1" />
+        <path d="M9.5 11.5l2 2 3.5-3.5" pathLength="1" class="svc-accent" />
+      </>
+    )
+  }
+  {
+    name === 'desktop' && (
+      <>
+        <rect x="2.5" y="3.5" width="19" height="13" rx="1.6" pathLength="1" />
+        <path d="M9 20.5h6M12 16.5v4" pathLength="1" />
+        <path d="M6.5 8h5M6.5 11h8" pathLength="1" class="svc-accent" />
+      </>
+    )
+  }
+  {
+    name === 'automation' && (
+      <>
+        <path d="M19.5 12a7.5 7.5 0 0 1-13 5.1" pathLength="1" />
+        <path d="M4.5 12a7.5 7.5 0 0 1 13-5.1" pathLength="1" />
+        <path d="M17.5 3.5v3.4h-3.4M6.5 20.5v-3.4h3.4" pathLength="1" />
+        <circle cx="12" cy="12" r="2.2" pathLength="1" class="svc-accent" />
+      </>
+    )
+  }
+  {
+    name === 'consulting' && (
+      <>
+        <circle cx="12" cy="12" r="9" pathLength="1" />
+        <path d="M14.8 9.2 13 13l-3.8 1.8L11 11z" pathLength="1" class="svc-accent" />
+        <path d="M12 3v1.8M12 19.2V21M3 12h1.8M19.2 12H21" pathLength="1" />
+      </>
+    )
+  }
+</svg>

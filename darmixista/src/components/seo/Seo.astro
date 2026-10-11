@@ -1,0 +1,160 @@
+---
+/**
+ * Metadatos para buscadores y redes sociales:
+ * título, descripción, URL canónica, idiomas alternos (hreflang), Open Graph, Twitter/X
+ * y datos estructurados (JSON-LD) que describen a la persona y al sitio.
+ */
+import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import { SITE } from '../../config/site';
+import { STACK } from '../../data/stack';
+import { languages, useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** Título de la pestaña (por defecto el del sitio) */
+  title?: string;
+  /** Página que no debe aparecer en buscadores (p. ej. 404) */
+  noindex?: boolean;
+  /** Ruta de la página sin idioma, con barra final (p. ej. 'darmixpet/'). Vacía = inicio */
+  path?: string;
+  /** Descripción propia (por defecto la del portafolio) */
+  description?: string;
+  /** Imagen para compartir (ruta en /public) y su texto alternativo */
+  image?: string;
+  imageAlt?: string;
+  /** Nombre del sitio para Open Graph (por defecto la marca) */
+  siteName?: string;
+  /** Datos estructurados propios; si se omiten se usan los del portafolio */
+  jsonLd?: Record<string, unknown>;
+  /** Íconos propios de la página */
+  icons?: { svg?: string; png32: string; apple: string; manifest?: string };
+}
+const {
+  lang,
+  title,
+  noindex = false,
+  path = '',
+  description,
+  image,
+  imageAlt,
+  siteName,
+  jsonLd: customJsonLd,
+  icons,
+} = Astro.props;
+const t = useTranslations(lang).meta;
+const locales = Object.keys(languages) as Lang[];
+const ogLocale: Record<Lang, string> = { es: 'es_MX', en: 'en_US' };
+
+const pageTitle = title ?? t.title;
+const pageDescription = description ?? t.description;
+const canonical = getAbsoluteLocaleUrl(lang, path);
+const home = getAbsoluteLocaleUrl('es', '');
+const ogImage = new URL(image ?? `/og/og-${lang}.png`, Astro.site).href;
+const ogAlt = imageAlt ?? t.ogAlt;
+const fullName = `${SITE.person.firstName} ${SITE.person.lastName}`;
+
+// Datos estructurados: Google los usa para entender quién eres y enlazar tus perfiles
+const portfolioJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${home}#person`,
+      name: fullName,
+      alternateName: [SITE.brand, 'Darmix'],
+      url: home,
+      image: new URL('/og/og-es.png', Astro.site).href,
+      jobTitle: t.jobTitle,
+      nationality: { '@type': 'Country', name: 'México' },
+      address: { '@type': 'PostalAddress', addressCountry: 'MX' },
+      sameAs: SITE.socials.map((s) => s.href),
+      knowsAbout: STACK.flatMap((c) => c.items.filter((i) => i.core).map((i) => i.name)),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${home}#website`,
+      url: home,
+      name: SITE.brand,
+      description: t.description,
+      inLanguage: ['es-MX', 'en-US'],
+      publisher: { '@id': `${home}#person` },
+    },
+    {
+      '@type': 'ProfilePage',
+      '@id': `${canonical}#profile`,
+      url: canonical,
+      name: pageTitle,
+      inLanguage: lang === 'es' ? 'es-MX' : 'en-US',
+      isPartOf: { '@id': `${home}#website` },
+      mainEntity: { '@id': `${home}#person` },
+    },
+  ],
+};
+const jsonLd = customJsonLd ?? portfolioJsonLd;
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+<meta name="author" content={fullName} />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+
+{
+  !noindex && (
+    <>
+      <link rel="canonical" href={canonical} />
+      {locales.map((code) => (
+        <link rel="alternate" hreflang={code === 'es' ? 'es' : 'en'} href={getAbsoluteLocaleUrl(code, path)} />
+      ))}
+      <link rel="alternate" hreflang="x-default" href={getAbsoluteLocaleUrl('es', path)} />
+    </>
+  )
+}
+
+<!-- Íconos -->
+{
+  icons ? (
+    <>
+      {icons.svg && <link rel="icon" type="image/svg+xml" href={icons.svg} />}
+      <link rel="icon" type="image/png" sizes="32x32" href={icons.png32} />
+      <link rel="apple-touch-icon" href={icons.apple} />
+      {icons.manifest && <link rel="manifest" href={icons.manifest} />}
+    </>
+  ) : (
+    <>
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+      <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+      <link rel="manifest" href="/site.webmanifest" />
+    </>
+  )
+}
+
+<!-- Open Graph (WhatsApp, LinkedIn, Facebook, Slack, Discord…) -->
+<meta property="og:type" content={customJsonLd ? 'website' : 'profile'} />
+<meta property="og:site_name" content={siteName ?? SITE.brand} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={ogLocale[lang]} />
+{locales.filter((c) => c !== lang).map((c) => <meta property="og:locale:alternate" content={ogLocale[c]} />)}
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogAlt} />
+{
+  !customJsonLd && (
+    <>
+      <meta property="profile:first_name" content={SITE.person.firstName} />
+      <meta property="profile:last_name" content={SITE.person.lastName} />
+    </>
+  )
+}
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={ogAlt} />
+
+{!noindex && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

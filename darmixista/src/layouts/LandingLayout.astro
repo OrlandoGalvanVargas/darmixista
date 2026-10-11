@@ -1,0 +1,58 @@
+---
+/**
+ * Layout de las landings de apps móviles. Independiente del portafolio:
+ * desplazamiento normal, tipografía y paleta de la app, tema claro/oscuro.
+ */
+import '@fontsource-variable/fredoka';
+import '@fontsource-variable/nunito';
+import '../styles/landing.css';
+import Seo from '../components/seo/Seo.astro';
+import type { AppLanding, LandingPalette } from '../data/apps/types';
+import type { Lang } from '../i18n/ui';
+import { LANG_REDIRECT } from '../lib/lang-redirect';
+
+interface Props {
+  app: AppLanding;
+  lang: Lang;
+  jsonLd: Record<string, unknown>;
+}
+const { app, lang, jsonLd } = Astro.props;
+const c = app.content[lang];
+
+// Variables CSS: cada token con su valor claro y oscuro
+const keys = Object.keys(app.palette.light) as (keyof LandingPalette)[];
+const vars = `:root{${keys.map((k) => `--lp-${k}:light-dark(${app.palette.light[k]},${app.palette.dark[k]});`).join('')}}`;
+
+const THEME_KEY = `darmixista:theme:${app.slug}`;
+// Aplica el tema elegido antes de pintar (si no hay elección, sigue al sistema)
+const THEME_INIT = `(function(){try{var t=localStorage.getItem('${THEME_KEY}');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}document.documentElement.classList.add('lp-js');if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))document.documentElement.dataset.ios='';})();`;
+---
+
+<!doctype html>
+<html lang={lang === 'es' ? 'es-MX' : 'en'} data-theme-key={THEME_KEY}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content={app.palette.light.bg} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={app.palette.dark.bg} media="(prefers-color-scheme: dark)" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo
+      lang={lang}
+      title={c.metaTitle}
+      description={c.metaDescription}
+      path={`${app.slug}/`}
+      image={app.assets.og[lang]}
+      imageAlt={c.ogAlt}
+      siteName={app.name}
+      jsonLd={jsonLd}
+      icons={{ png32: app.assets.icon32, apple: app.assets.apple }}
+    />
+    <link rel="preconnect" href="https://api.github.com" crossorigin />
+    <style is:inline set:html={vars}></style>
+    <script is:inline set:html={THEME_INIT}></script>
+    <script is:inline set:html={LANG_REDIRECT}></script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

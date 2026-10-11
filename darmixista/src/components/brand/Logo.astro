@@ -1,0 +1,60 @@
+---
+/**
+ * Marca Darmixista: una «D» atravesada por un anillo inclinado (eco de los anillos 3D del sitio).
+ * El anillo pasa por detrás de la D arriba y por delante abajo; el punto cian marca el cruce.
+ *
+ * La D usa currentColor (hereda el color del texto). Las máscaras llevan un id único por instancia
+ * para poder usar el logo varias veces en la misma página.
+ *
+ * Clases para animar desde fuera: .logo-back (arco trasero), .logo-front (arco delantero), .logo-dot (punto).
+ * Ambos arcos usan pathLength="1" para animar el trazo con stroke-dasharray/stroke-dashoffset.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+const uid = Math.random().toString(36).slice(2, 8);
+
+const D_OUTER = 'M9 5H15A8.5 11 0 0 1 15 27H9Z';
+const D_INNER = 'M12.6 8.6H15A5 7.4 0 0 1 15 23.4H12.6Z';
+const BACK = 'M1.6 16A14.4 4.3 0 0 1 30.4 16';
+const FRONT = 'M1.6 16A14.4 4.3 0 0 0 30.4 16';
+const TILT = 'rotate(-20 16 16)';
+---
+
+<svg class:list={['logo', className]} viewBox="0 0 32 32" fill="none" overflow="visible" aria-hidden="true">
+  <defs>
+    <mask id={`lb-${uid}`} maskUnits="userSpaceOnUse" x="-2" y="-2" width="36" height="36">
+      <rect x="-2" y="-2" width="36" height="36" fill="#fff"></rect>
+      <path d={D_OUTER} fill="#000" stroke="#000" stroke-width="2.2" stroke-linejoin="round"></path>
+    </mask>
+    <mask id={`lf-${uid}`} maskUnits="userSpaceOnUse" x="-2" y="-2" width="36" height="36">
+      <rect x="-2" y="-2" width="36" height="36" fill="#fff"></rect>
+      <path d={FRONT} transform={TILT} stroke="#000" stroke-width="3.4"></path>
+    </mask>
+  </defs>
+
+  <g mask={`url(#lb-${uid})`}>
+    <path
+      class="logo-back"
+      d={BACK}
+      transform={TILT}
+      pathLength="1"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      opacity="0.45"></path>
+  </g>
+  <path d={`${D_OUTER} ${D_INNER}`} fill="currentColor" fill-rule="evenodd" mask={`url(#lf-${uid})`}></path>
+  <g transform={TILT}>
+    <path class="logo-front" d={FRONT} pathLength="1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+    <circle class="logo-dot" cx="8.8" cy="19.72" r="1.7" fill="#00E5FF"></circle>
+  </g>
+</svg>
+
+<style>
+  .logo .logo-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+</style>

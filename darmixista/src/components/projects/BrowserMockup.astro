@@ -1,0 +1,207 @@
+---
+/**
+ * Ventana de navegador oscura y sobria. Con `image`, al pasar el cursor la captura
+ * se desplaza lentamente hacia abajo (ideal para capturas largas de toda la página).
+ * Sin imagen, dibuja un panel de ejemplo con divs (sin peso extra).
+ */
+interface Props {
+  image?: string;
+  domain?: string;
+  title: string;
+}
+const { image, domain = 'localhost', title } = Astro.props;
+---
+
+<div class="browser">
+  <div class="browser-bar" aria-hidden="true">
+    <span class="flex gap-1.5">
+      <i class="browser-dot"></i><i class="browser-dot"></i><i class="browser-dot"></i>
+    </span>
+    <span class="browser-url">
+      <svg viewBox="0 0 16 16" class="h-2.5 w-2.5 opacity-60" fill="currentColor"><path d="M8 1a3 3 0 0 0-3 3v2H4a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1V4a3 3 0 0 0-3-3Zm-2 3a2 2 0 1 1 4 0v2H6V4Z"/></svg>
+      {domain}
+    </span>
+    <span class="w-10"></span>
+  </div>
+
+  <div class="browser-screen">
+    {
+      image ? (
+        <img src={image} alt={title} loading="lazy" decoding="async" class="browser-shot" />
+      ) : (
+        <div class="sk" aria-label={title} role="img">
+          <div class="sk-side">
+            <i class="sk-logo" />
+            <i class="sk-line w-3/4" /><i class="sk-line w-2/3 sk-active" /><i class="sk-line w-4/5" /><i class="sk-line w-1/2" />
+          </div>
+          <div class="sk-main">
+            <div class="sk-head"><i class="sk-line w-24" /><i class="sk-avatar" /></div>
+            <div class="sk-cards">
+              <div class="sk-card"><i class="sk-line w-1/2" /><b>24.8k</b></div>
+              <div class="sk-card"><i class="sk-line w-2/3" /><b>98.2%</b></div>
+              <div class="sk-card"><i class="sk-line w-1/3" /><b>1,204</b></div>
+            </div>
+            <div class="sk-chart">
+              <svg viewBox="0 0 300 90" preserveAspectRatio="none" class="h-full w-full">
+                <defs>
+                  <linearGradient id="skfill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#00e5ff" stop-opacity="0.22" />
+                    <stop offset="1" stop-color="#00e5ff" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path d="M0 70 C40 60 60 30 100 40 S160 75 200 45 S260 15 300 25 L300 90 L0 90Z" fill="url(#skfill)" />
+                <path d="M0 70 C40 60 60 30 100 40 S160 75 200 45 S260 15 300 25" fill="none" stroke="#00e5ff" stroke-width="1.4" vector-effect="non-scaling-stroke" />
+              </svg>
+            </div>
+            <div class="sk-rows"><i class="sk-line" /><i class="sk-line w-5/6" /><i class="sk-line w-2/3" /></div>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .browser {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #2c2c2c;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #161616;
+    box-shadow:
+      0 40px 80px -30px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(255 255 255 / 0.02) inset;
+  }
+  .browser-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 2.1rem;
+    padding: 0 0.85rem;
+    border-bottom: 1px solid #262626;
+    background: #1b1b1b;
+    flex: none;
+  }
+  .browser-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: #3a3a3a;
+  }
+  .browser-url {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 60%;
+    padding: 0.18rem 0.9rem;
+    border-radius: 999px;
+    background: #232323;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .browser-screen {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .browser-shot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: object-position 6s cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  .browser:hover .browser-shot {
+    object-position: bottom;
+  }
+
+  /* Panel de ejemplo (sin imagen) */
+  .sk {
+    display: grid;
+    grid-template-columns: 18% 1fr;
+    height: 100%;
+  }
+  .sk-side {
+    display: flex;
+    flex-direction: column;
+    gap: 9%;
+    padding: 6% 9%;
+    border-right: 1px solid #242424;
+    background: #141414;
+  }
+  .sk-logo {
+    width: 22%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: #2a2a2a;
+    margin-bottom: 10%;
+  }
+  .sk-line {
+    display: block;
+    height: 5px;
+    border-radius: 999px;
+    background: #2a2a2a;
+  }
+  .sk-active {
+    background: rgb(0 229 255 / 0.55);
+  }
+  .sk-main {
+    display: flex;
+    flex-direction: column;
+    gap: 5%;
+    padding: 4.5% 5%;
+  }
+  .sk-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sk-avatar {
+    width: 6%;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: #2c2c2c;
+  }
+  .sk-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4%;
+  }
+  .sk-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 7% 9%;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    background: #191919;
+  }
+  .sk-card b {
+    font: 600 clamp(9px, 1.2vw, 15px) / 1 var(--font-sans);
+    color: #d8d8d8;
+    letter-spacing: -0.02em;
+  }
+  .sk-chart {
+    flex: 1;
+    min-height: 0;
+    padding: 3% 0 0;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    background: #171717;
+    overflow: hidden;
+  }
+  .sk-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+</style>

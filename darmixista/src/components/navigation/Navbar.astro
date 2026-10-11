@@ -1,0 +1,125 @@
+---
+import Logo from '../brand/Logo.astro';
+import LangSwitch from './LangSwitch.astro';
+import { NAV_ITEMS } from '../../config/sections';
+import { SITE } from '../../config/site';
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<header class="fixed inset-x-0 top-0 z-30">
+  <div
+    class="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 md:h-[4.5rem] md:px-12 lg:px-20"
+  >
+    <a href="#home" data-goto="home" class="group flex items-center gap-3" aria-label={SITE.brand}>
+      <Logo class="nav-logo h-8 w-8 text-fg" />
+      <span class="text-[13px] font-semibold tracking-[0.26em] uppercase">{SITE.brand}</span>
+    </a>
+
+    <!-- Escritorio -->
+    <nav aria-label={t.nav.label} class="hidden items-center gap-6 lg:flex xl:gap-9">
+      <ul class="flex items-center gap-5 font-mono text-[11px] tracking-[0.14em] whitespace-nowrap uppercase xl:gap-8 xl:tracking-[0.2em]">
+        {
+          NAV_ITEMS.map((item, i) => (
+            <li>
+              <a href={`#${item.id}`} data-goto={item.id} data-nav-item={item.id} class="nav-link">
+                <span class="mr-1.5 text-accent/70">{pad(i + 1)}</span>
+                {t.nav[item.key]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <span class="h-4 w-px bg-line" aria-hidden="true"></span>
+      <LangSwitch lang={lang} label={t.nav.language} />
+    </nav>
+
+    <!-- Móvil -->
+    <div class="flex items-center gap-5 lg:hidden">
+      <LangSwitch lang={lang} label={t.nav.language} />
+      <button
+        type="button"
+        class="menu-btn flex h-10 w-10 flex-col items-center justify-center gap-[6px] rounded-md border border-line text-fg"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label={t.nav.openMenu}
+        data-label-open={t.nav.openMenu}
+        data-label-close={t.nav.closeMenu}
+      >
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="mobile-menu"
+    data-mobile-menu
+    class="mobile-menu fixed inset-0 top-16 z-[-1] flex flex-col justify-between bg-ink/95 px-6 pt-10 pb-10 backdrop-blur-xl md:top-[4.5rem] md:px-12 lg:hidden"
+  >
+    <nav aria-label={t.nav.label}>
+      <ul class="flex flex-col gap-2">
+        {
+          NAV_ITEMS.map((item, i) => (
+            <li class="border-b border-line/70">
+              <a
+                href={`#${item.id}`}
+                data-goto={item.id}
+                data-nav-item={item.id}
+                class="flex items-baseline gap-4 py-5 text-3xl font-medium tracking-tight text-muted transition-colors aria-[current=true]:text-fg"
+              >
+                <span class="font-mono text-xs text-accent">{pad(i + 1)}</span>
+                {t.nav[item.key]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <a href={SITE.cv[lang]} download class="font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
+      {t.hero.cv} ↓
+    </a>
+  </div>
+</header>
+
+<style>
+  /* Al pasar el cursor: el anillo se vuelve a trazar y el punto cian late */
+  .nav-logo :global(.logo-front),
+  .nav-logo :global(.logo-back) {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+  .group:hover .nav-logo :global(.logo-front),
+  .group:focus-visible .nav-logo :global(.logo-front) {
+    animation: nav-ring-draw 0.9s var(--ease-zen) both;
+  }
+  .group:hover .nav-logo :global(.logo-back),
+  .group:focus-visible .nav-logo :global(.logo-back) {
+    animation: nav-ring-draw 0.9s var(--ease-zen) 0.12s both;
+  }
+  .nav-logo :global(.logo-dot) {
+    transition: scale 0.5s var(--ease-zen);
+  }
+  .group:hover .nav-logo :global(.logo-dot),
+  .group:focus-visible .nav-logo :global(.logo-dot) {
+    scale: 1.35;
+  }
+  @keyframes nav-ring-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .group:hover .nav-logo :global(.logo-front),
+    .group:hover .nav-logo :global(.logo-back) {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+/**
+ * Capa fija inferior: contador de sección (derecha).
+ */
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  total: number;
+}
+const { lang, total } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="pointer-events-none fixed inset-x-0 bottom-0 z-20">
+  <div class="relative mx-auto flex max-w-[1400px] items-end justify-end px-6 pb-5 md:px-12 md:pb-7 lg:px-20">
+    <div
+      class="pointer-events-auto flex items-center gap-3 font-mono text-[11px] tracking-[0.15em] text-muted"
+      aria-label={t.hud.sections}
+    >
+      <span data-stage-counter class="text-fg">01</span>
+      <span class="relative block h-px w-14 overflow-hidden bg-line md:w-20">
+        <span data-stage-progress class="absolute inset-0 origin-left bg-accent" style="transform: scaleX(0)"></span>
+      </span>
+      <span data-stage-total>{String(total).padStart(2, '0')}</span>
+    </div>
+  </div>
+</div>

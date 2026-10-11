@@ -1,0 +1,53 @@
+---
+import { useTranslations, type Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<!--
+  data-rings="background": los anillos pasan al centro, desenfocados y oscurecidos.
+  En móvil se muestra una versión resumida del texto para que quepa en una pantalla.
+-->
+<section id="about" class="stage-section" data-section data-nav="about" data-rings="background" aria-labelledby="about-title">
+  <div class="section-body" data-section-body>
+    <div class="mx-auto flex h-full max-w-[920px] flex-col items-center justify-center px-6 text-center md:px-12">
+      <h2
+        id="about-title"
+        data-reveal
+        class="text-[clamp(2.1rem,min(5.5vw,9vh),4.75rem)] leading-[1] font-semibold tracking-[-0.035em]"
+      >
+        {t.about.title}
+      </h2>
+
+      <!-- Escritorio / tablet -->
+      <div class="hidden md:block">
+        <p data-reveal class="mt-[clamp(1.25rem,4vh,2.5rem)] text-[clamp(1rem,2.4vh,1.25rem)] leading-relaxed text-muted">
+          {t.about.lead}
+        </p>
+        <p
+          data-reveal
+          class="about-body mt-[clamp(0.75rem,2.5vh,1.5rem)] text-[clamp(1rem,2.4vh,1.25rem)] leading-relaxed text-muted"
+          set:html={t.about.body}
+        />
+      </div>
+
+      <!-- Móvil: versión corta -->
+      <div class="md:hidden">
+        <p data-reveal class="mt-6 text-[15px] leading-relaxed text-muted">{t.about.leadShort}</p>
+        <p data-reveal class="about-body mt-4 text-[15px] leading-relaxed text-muted" set:html={t.about.bodyShort} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Las palabras clave del texto (en <strong>) se resaltan en blanco */
+  .about-body :global(strong) {
+    color: var(--color-fg);
+    font-weight: 500;
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+/**
+ * Pantalla de carga: cubre todo hasta que las fuentes, el script 3D y el primer
+ * frame de los anillos están listos. La controla src/scripts/preloader.ts.
+ */
+import Logo from './Logo.astro';
+import { SITE } from '../../config/site';
+---
+
+<div
+  data-preloader
+  class="preloader fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink"
+  role="status"
+  aria-live="polite"
+>
+  <div data-preloader-inner class="flex flex-col items-center">
+    <div class="preloader-mark relative h-14 w-14 text-fg">
+      <Logo class="h-full w-full" />
+    </div>
+
+    <p class="mt-7 text-[12px] font-semibold tracking-[0.42em] text-fg uppercase">{SITE.brand}</p>
+
+    <div class="mt-8 flex w-44 items-center gap-4 font-mono text-[11px] tracking-[0.15em] text-muted">
+      <span class="relative block h-px flex-1 overflow-hidden bg-line">
+        <span data-preloader-bar class="absolute inset-0 origin-left bg-accent" style="transform: scaleX(0)"></span>
+      </span>
+      <span class="w-9 text-right tabular-nums"><span data-preloader-count>0</span>%</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Mientras carga, el anillo se traza y se borra en bucle y el punto cian late (respeta "reducir movimiento") */
+  .preloader-mark :global(.logo-front),
+  .preloader-mark :global(.logo-back) {
+    stroke-dasharray: 1 1;
+    animation: preloader-ring 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  .preloader-mark :global(.logo-back) {
+    animation-delay: 0.15s;
+  }
+  .preloader-mark :global(.logo-dot) {
+    animation: preloader-dot 2.4s ease-in-out infinite;
+  }
+  @keyframes preloader-ring {
+    0% {
+      stroke-dashoffset: 1;
+    }
+    50% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: -1;
+    }
+  }
+  @keyframes preloader-dot {
+    0%,
+    100% {
+      scale: 1;
+      opacity: 1;
+    }
+    50% {
+      scale: 1.4;
+      opacity: 0.75;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .preloader-mark :global(.logo-front),
+    .preloader-mark :global(.logo-back),
+    .preloader-mark :global(.logo-dot) {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+/**
+ * Contacto (última sección).
+ * Tablet/escritorio: canales a la izquierda, formulario a la derecha y footer al pie.
+ * Teléfono: este paso muestra solo los canales; el formulario y el footer van en el
+ * paso siguiente (ContactFormStep.astro).
+ */
+import ContactInfo from '../contact/ContactInfo.astro';
+import ContactForm from '../contact/ContactForm.astro';
+import SiteFooter from '../contact/SiteFooter.astro';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<section id="contact" class="stage-section" data-section data-nav="contact" data-rings="background" aria-labelledby="contact-title">
+  <div class="section-body" data-section-body>
+    <div class="mx-auto flex h-full max-w-[1400px] flex-col px-6 pt-[4.5rem] pb-14 md:px-12 md:pt-[5.25rem] md:pb-7 lg:px-20">
+      <div class="flex min-h-0 flex-1 [align-items:safe_center]">
+        <div class="grid w-full grid-cols-1 items-center gap-10 md:grid-cols-12 md:gap-8 lg:gap-10">
+          <div class="md:col-span-6 lg:col-span-5">
+            <ContactInfo lang={lang} />
+          </div>
+          <div data-reveal class="max-md:hidden md:col-span-6 lg:col-start-7">
+            <ContactForm lang={lang} idPrefix="cf-d" />
+          </div>
+        </div>
+      </div>
+      <div class="mt-[clamp(0.75rem,2.4vh,1.5rem)] max-md:hidden">
+        <SiteFooter lang={lang} />
+      </div>
+    </div>
+  </div>
+</section>

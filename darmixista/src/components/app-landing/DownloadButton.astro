@@ -1,0 +1,56 @@
+---
+/**
+ * Botón de descarga del APK. Apunta a la última versión conocida y, al cargar la página,
+ * src/scripts/landing.ts consulta la última release de GitHub y actualiza el enlace,
+ * la versión y el tamaño. Si GitHub no responde, el enlace de respaldo sigue funcionando.
+ */
+import LandingIcon from './LandingIcon.astro';
+import type { AppLanding } from '../../data/apps/types';
+import { landingUi } from '../../i18n/landing';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  app: AppLanding;
+  lang: Lang;
+  size?: 'lg' | 'sm';
+  /** Muestra versión y tamaño debajo del botón */
+  meta?: boolean;
+  class?: string;
+}
+const { app, lang, size = 'lg', meta = false, class: className } = Astro.props;
+const ui = landingUi[lang];
+const { owner, name } = app.repo;
+const href = `https://github.com/${owner}/${name}/releases/download/v${app.release.version}/${app.release.apk}`;
+const sizeText = `${app.release.sizeMb.toLocaleString(lang === 'es' ? 'es-MX' : 'en-US', { maximumFractionDigits: 1 })} MB`;
+---
+
+<div class:list={['flex flex-col items-start gap-2', className]}>
+  <a
+    href={href}
+    class:list={['lp-btn lp-btn-primary', size === 'sm' && 'lp-btn-sm']}
+    data-apk-link
+    aria-label={ui.downloadFor(app.name)}
+    rel="noopener"
+  >
+    <LandingIcon name="download" />
+    <span>{ui.download}</span>
+  </a>
+  {
+    meta && (
+      <p class="flex flex-wrap items-center gap-x-2 gap-y-1 pl-1 text-sm text-lp-muted">
+        <span class="inline-flex items-center gap-1.5">
+          <LandingIcon name="android" class="h-4 w-4 text-lp-tertiary" />
+          {ui.android(app.minAndroid)}
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>
+          v<span data-apk-version>{app.release.version}</span>
+        </span>
+        <span aria-hidden="true">·</span>
+        <span data-apk-size>{sizeText}</span>
+        <span aria-hidden="true">·</span>
+        <span>{ui.free}</span>
+      </p>
+    )
+  }
+</div>

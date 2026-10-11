@@ -1,0 +1,28 @@
+---
+/**
+ * Página 404 (Cloudflare la sirve para cualquier ruta inexistente). No se indexa.
+ * Bilingüe sin redirecciones: muestra ambos idiomas.
+ */
+import Layout from '../layouts/Layout.astro';
+import Logo from '../components/brand/Logo.astro';
+import { useTranslations } from '../i18n/ui';
+
+const es = useTranslations('es').meta;
+const en = useTranslations('en').meta;
+---
+
+<Layout lang="es" title={`404 — ${es.notFoundTitle} | Darmixista`} noindex skipLangRedirect>
+  <main class="flex min-h-full flex-col items-center justify-center px-6 text-center">
+    <Logo class="h-10 w-10 text-fg" />
+    <p class="mt-10 font-mono text-[11px] tracking-[0.3em] text-accent uppercase">Error 404</p>
+    <h1 class="mt-4 text-[clamp(2.2rem,7vw,4.5rem)] leading-none font-semibold tracking-[-0.04em]">
+      {es.notFoundTitle}<span class="text-accent">.</span>
+    </h1>
+    <p class="mt-5 max-w-md text-muted">{es.notFoundBody}</p>
+    <p class="mt-1 max-w-md text-sm text-muted/70" lang="en">{en.notFoundBody}</p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <a href="/" class="btn btn-primary">{es.notFoundCta} <span class="btn-arrow" aria-hidden="true">→</span></a>
+      <a href="/en/" class="btn btn-ghost" lang="en">{en.notFoundCta}</a>
+    </div>
+  </main>
+</Layout>

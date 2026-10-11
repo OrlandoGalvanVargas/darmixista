@@ -1,0 +1,167 @@
+---
+/**
+ * Teléfono oscuro con marco de titanio (eco de los anillos). Con `image` muestra la captura;
+ * sin imagen dibuja una interfaz de ejemplo con divs.
+ */
+interface Props {
+  image?: string;
+  title: string;
+}
+const { image, title } = Astro.props;
+---
+
+<div class="phone">
+  <div class="phone-screen">
+    <i class="phone-island" aria-hidden="true"></i>
+    {
+      image ? (
+        <img src={image} alt={title} loading="lazy" decoding="async" class="h-full w-full object-cover object-top" />
+      ) : (
+        <div class="ps" aria-label={title} role="img">
+          <div class="ps-status"><i class="ps-line w-8" /><i class="ps-line w-6" /></div>
+          <div class="ps-head">
+            <i class="ps-avatar" />
+            <i class="ps-line mx-auto mt-3 w-1/2" />
+            <i class="ps-line mx-auto mt-2 w-1/3 opacity-60" />
+          </div>
+          <div class="ps-card">
+            <div class="flex items-center justify-between"><i class="ps-line w-1/3" /><i class="ps-chip" /></div>
+            <div class="ps-bars">
+              {[45, 70, 55, 85, 40, 95, 60].map((h, i) => (
+                <span style={`height:${h}%`} class:list={[i === 5 && 'ps-bar-on']} />
+              ))}
+            </div>
+          </div>
+          <div class="ps-row"><i class="ps-dot" /><i class="ps-line w-2/3" /></div>
+          <div class="ps-row"><i class="ps-dot" /><i class="ps-line w-1/2" /></div>
+          <div class="ps-tabbar"><i /><i class="on" /><i /><i /></div>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .phone {
+    position: relative;
+    height: 100%;
+    aspect-ratio: 9 / 19.2;
+    padding: 2.6%;
+    border-radius: 13% / 6.2%;
+    background: linear-gradient(145deg, #5a5d62, #2a2b2e 30%, #1a1b1d 60%, #4a4d52);
+    box-shadow:
+      0 40px 80px -30px rgb(0 0 0 / 0.85),
+      inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  }
+  .phone-screen {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 11% / 5.2%;
+    background: #121212;
+  }
+  .phone-island {
+    position: absolute;
+    z-index: 2;
+    top: 1.6%;
+    left: 50%;
+    width: 30%;
+    height: 3.4%;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #000;
+  }
+
+  /* Interfaz de ejemplo (sin imagen) */
+  .ps {
+    display: flex;
+    flex-direction: column;
+    gap: 4%;
+    height: 100%;
+    padding: 9% 8% 6%;
+  }
+  .ps-status {
+    display: flex;
+    justify-content: space-between;
+  }
+  .ps-line {
+    display: block;
+    height: 5px;
+    border-radius: 999px;
+    background: #2a2a2a;
+  }
+  .ps-head {
+    padding-top: 6%;
+    text-align: center;
+  }
+  .ps-avatar {
+    display: block;
+    width: 34%;
+    aspect-ratio: 1;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: radial-gradient(circle at 35% 30%, #4a4d52, #222 70%);
+    box-shadow: 0 0 0 1px #333;
+  }
+  .ps-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10%;
+    flex: 1;
+    min-height: 0;
+    padding: 7%;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    background: #181818;
+  }
+  .ps-chip {
+    width: 22%;
+    height: 9px;
+    border-radius: 999px;
+    background: #2a2a2a;
+  }
+  .ps-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 7%;
+    flex: 1;
+  }
+  .ps-bars span {
+    flex: 1;
+    border-radius: 999px;
+    background: #2b2b2b;
+  }
+  .ps-bars .ps-bar-on {
+    background: var(--color-accent);
+    box-shadow: 0 0 10px rgb(0 229 255 / 0.5);
+  }
+  .ps-row {
+    display: flex;
+    align-items: center;
+    gap: 6%;
+    padding: 4% 5%;
+    border-radius: 8px;
+    background: #171717;
+  }
+  .ps-dot {
+    width: 9%;
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: #2c2c2c;
+  }
+  .ps-tabbar {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 4%;
+    border-top: 1px solid #222;
+  }
+  .ps-tabbar i {
+    width: 9%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: #2a2a2a;
+  }
+  .ps-tabbar i.on {
+    background: rgb(0 229 255 / 0.7);
+  }
+</style>
