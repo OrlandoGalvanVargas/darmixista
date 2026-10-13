@@ -33,10 +33,10 @@ const es = {
   },
   about: {
     title: '¿Qué es ser un Darmixista?',
-    lead: 'Ser Darmixista nace del intelecto evolutivo y la versatilidad técnica. Concibo el código como un ecosistema vivo: cada proyecto es una versión que siempre se puede optimizar, escalar y perfeccionar.',
-    body: 'Trabajo sobre tres principios: <strong>código limpio</strong>, legible hoy y mantenible dentro de cinco años; <strong>arquitectura sólida</strong>, con cimientos que soportan el crecimiento; y <strong>eficiencia</strong>, con procesos automatizados y experiencias que se sienten rápidas porque lo son.',
-    leadShort: 'Intelecto evolutivo y versatilidad técnica: concibo el código como un ecosistema vivo que siempre se puede mejorar.',
-    bodyShort: '<strong>Código limpio</strong>, <strong>arquitectura sólida</strong> y <strong>eficiencia</strong>: los principios con los que construyo cada proyecto.',
+    lead: 'Ser Darmixista significa construir aplicaciones completas, seguras, eficientes e intuitivas, listas para producción. Es combinar arquitecturas escalables, consultas optimizadas y manejo de concurrencia en el backend con interfaces accesibles y diseños que asombren en el frontend.',
+    body: 'Significa trabajar con <strong>responsabilidad</strong>, <strong>compromiso por la calidad</strong>, <strong>aprendizaje diario</strong> y una búsqueda constante por hacer las cosas bien.',
+    leadShort: 'Construir aplicaciones completas, seguras, eficientes e intuitivas, listas para producción: un backend escalable y optimizado con un frontend accesible que asombra.',
+    bodyShort: '<strong>Responsabilidad</strong>, <strong>calidad</strong> y <strong>aprendizaje diario</strong> para hacer las cosas bien.',
   },
   stack: {
     title: 'Stack & Trayectoria',
@@ -146,10 +146,10 @@ const en: Dictionary = {
   },
   about: {
     title: 'What is a Darmixista?',
-    lead: 'Being a Darmixista comes from an evolving intellect and technical versatility. I see code as a living ecosystem: every project is a version that can always be optimized, scaled and refined.',
-    body: 'I work on three principles: <strong>clean code</strong>, readable today and maintainable five years from now; <strong>solid architecture</strong>, with foundations built for growth; and <strong>efficiency</strong>, with automated processes and experiences that feel fast because they are.',
-    leadShort: 'Evolving intellect and technical versatility: I see code as a living ecosystem that can always be improved.',
-    bodyShort: '<strong>Clean code</strong>, <strong>solid architecture</strong> and <strong>efficiency</strong>: the principles behind every project I build.',
+    lead: 'Being a Darmixista means building complete applications that are secure, efficient, intuitive and production-ready. It means combining scalable architectures, optimized queries and concurrency handling on the backend with accessible interfaces and designs that amaze on the frontend.',
+    body: 'It means working with <strong>responsibility</strong>, a <strong>commitment to quality</strong>, <strong>daily learning</strong> and a constant drive to do things right.',
+    leadShort: 'Building complete, secure, efficient and intuitive applications, ready for production: a scalable, optimized backend with an accessible frontend that amazes.',
+    bodyShort: '<strong>Responsibility</strong>, <strong>quality</strong> and <strong>daily learning</strong> to do things right.',
   },
   stack: {
     title: 'Stack & Journey',
