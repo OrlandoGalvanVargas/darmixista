@@ -98,7 +98,7 @@ function initTheme(): void {
   const key = root.dataset.themeKey ?? 'darmixista:theme';
   const media = matchMedia('(prefers-color-scheme: dark)');
   const metas = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
-  const colors = [...metas].map((m) => m.content); // [claro, oscuro]
+  const colors = [root.dataset.bgLight ?? '', root.dataset.bgDark ?? ''];
 
   const syncMeta = () => {
     const dark = root.dataset.theme ? root.dataset.theme === 'dark' : media.matches;

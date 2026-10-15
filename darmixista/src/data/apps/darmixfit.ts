@@ -1,0 +1,777 @@
+import type { AppLanding } from "./types";
+
+const A = "/apps/darmixfit";
+
+const darmixfit: AppLanding = {
+  slug: "darmixfit",
+  name: "DarmixFit",
+  repo: { owner: "OrlandoGalvanVargas", name: "darmixfit" },
+  release: {
+    version: "1.0",
+    apk: "DarmixFit-v1.0.apk",
+    sizeMb: 18.8,
+    date: "2026-10-14",
+  },
+  minAndroid: "8.0",
+  year: "2026",
+  look: {
+    style: "athletic",
+    fontDisplay: "'Big Shoulders Variable'",
+    fontBody: "'Manrope Variable'",
+    defaultScheme: "dark",
+  },
+  schemaCategory: "HealthApplication",
+  assets: {
+    icon: `${A}/icon.webp`,
+    icon192: `${A}/icon-192.png`,
+    icon32: `${A}/favicon-32.png`,
+    apple: `${A}/apple-touch-icon.png`,
+    og: { es: `${A}/og-es.png`, en: `${A}/og-en.png` },
+    heroShot: `${A}/shots/today.webp`,
+    heroRatio: "540 / 1033",
+    heroShot2: `${A}/shots/timer.webp`,
+    ctaImage: `${A}/glyph.webp`,
+  },
+
+  // Paleta de la app (tinta, volt y tide) — src/main/.../ui/theme/Tokens.kt
+  palette: {
+    light: {
+      bg: "#F3F2EC",
+      surface: "#FFFFFF",
+      surfaceVariant: "#EAE9E1",
+      text: "#151713",
+      muted: "#51554C",
+      outline: "#D5D4CA",
+      ink: "#BEBDB2",
+      shadow: "transparent",
+      primary: "#4E7A00",
+      onPrimary: "#FFFFFF",
+      primaryContainer: "#E6FBB8",
+      onPrimaryContainer: "#223400",
+      secondary: "#0A6A8F",
+      secondaryContainer: "#D6F2FC",
+      onSecondaryContainer: "#001E2B",
+      tertiary: "#137A43",
+      tertiaryContainer: "#D2F5E1",
+      onTertiaryContainer: "#0D2A19",
+      error: "#C0301A",
+      errorContainer: "#FFDDD5",
+      onErrorContainer: "#2B0700",
+      gold: "#8F5A00",
+      goldContainer: "#FFEBC2",
+      onGoldContainer: "#221600",
+      accent: "#C6FF3D",
+      onAccent: "#223400",
+    },
+    dark: {
+      bg: "#0E100D",
+      surface: "#141612",
+      surfaceVariant: "#1A1D17",
+      text: "#F4F6F1",
+      muted: "#9AA095",
+      outline: "#2A2F26",
+      ink: "#3A4035",
+      shadow: "transparent",
+      primary: "#C6FF3D",
+      onPrimary: "#223400",
+      primaryContainer: "#1C2408",
+      onPrimaryContainer: "#C6FF3D",
+      secondary: "#5CD6FF",
+      secondaryContainer: "#0B1F28",
+      onSecondaryContainer: "#5CD6FF",
+      tertiary: "#3DDC84",
+      tertiaryContainer: "#0D2A19",
+      onTertiaryContainer: "#3DDC84",
+      error: "#FF5A3C",
+      errorContainer: "#2E0F0A",
+      onErrorContainer: "#FF5A3C",
+      gold: "#FFB627",
+      goldContainer: "#2B1F06",
+      onGoldContainer: "#FFB627",
+      accent: "#C6FF3D",
+      onAccent: "#223400",
+    },
+  },
+
+  content: {
+    es: {
+      metaTitle:
+        "DarmixFit — Tu rutina de fuerza, serie por serie | App para Android",
+      metaDescription:
+        "App gratuita de entrenamiento de fuerza para Android: ruta del día, descansos automáticos que suenan aunque el teléfono esté bloqueado, 7 programas y 41 ejercicios animados. Sin cuentas ni anuncios.",
+      ogAlt: "DarmixFit: logotipo y lema «Tu rutina, serie por serie»",
+      category: "Salud y fitness",
+      nav: {
+        how: "Cómo funciona",
+        features: "Funciones",
+        gallery: "En acción",
+        programs: "Programas",
+        install: "Instalación",
+        faq: "Preguntas",
+      },
+      hero: {
+        eyebrow: "Android · Entrenamiento de fuerza",
+        title: "Tu rutina, <em>serie por serie</em>.",
+        lead: "Abres la app, ves el ejercicio que toca, completas la serie y el descanso arranca solo. Cuando suena la campana, ya sabes qué sigue.",
+        bubble: "Completa la serie: el descanso arranca solo.",
+      },
+      how: {
+        title: "Entrena sin perder progreso",
+        lead: "Nada de cuentas, anuncios ni pantallas de más: tu plan de la semana, tu progreso de hoy y un temporizador en el que puedes confiar.",
+        steps: [
+          {
+            icon: "calendar",
+            title: "Elige tu programa",
+            body: "Empieza con uno de los 7 programas incluidos o arma el tuyo desde cero.",
+          },
+          {
+            icon: "check",
+            title: "Completa la serie",
+            body: "Desde la app o desde la pantalla de bloqueo, sin desbloquear el teléfono.",
+          },
+          {
+            icon: "timer",
+            title: "Descansa y sigue",
+            body: "El descanso arranca solo y la campana te avisa cuándo volver. La pantalla avanza al siguiente ejercicio.",
+          },
+        ],
+        chips: [
+          { icon: "calendar", label: "7 programas", tone: "primary" },
+          { icon: "film", label: "41 ejercicios animados", tone: "secondary" },
+          {
+            icon: "shield",
+            label: "Sin cuentas ni anuncios",
+            tone: "tertiary",
+          },
+        ],
+      },
+      features: {
+        title: "Hecha para el gimnasio",
+        lead: "Cada detalle pensado para que entrenes, no para que mires el teléfono.",
+        items: [
+          {
+            icon: "route",
+            tone: "primary",
+            title: "Ruta del día",
+            body: "El ejercicio actual al frente, los terminados se compactan y la pantalla avanza sola. Soporta superseries.",
+          },
+          {
+            icon: "timer",
+            tone: "secondary",
+            title: "Descanso que no falla",
+            body: "Temporizador en primer plano con alarma exacta de respaldo. +15 s o saltar con un toque.",
+          },
+          {
+            icon: "lock",
+            tone: "tertiary",
+            title: "Desde la pantalla de bloqueo",
+            body: "La serie actual aparece ahí: toca «Completar serie» y el descanso empieza sin desbloquear.",
+          },
+          {
+            icon: "headphones",
+            tone: "gold",
+            title: "Una campana propia",
+            body: "Sonido sintetizado por código, único de DarmixFit. Con audífonos, suena solo en ellos.",
+          },
+          {
+            icon: "calendar",
+            tone: "primary",
+            title: "Semana e historial",
+            body: "Qué toca cada día y qué completaste. Cada sesión guarda sus ejercicios y series.",
+          },
+          {
+            icon: "checklist",
+            tone: "secondary",
+            title: "Programas editables",
+            body: "Cambia ejercicios, series, repeticiones, notas, orden y superseries, o empieza en blanco.",
+          },
+          {
+            icon: "film",
+            tone: "tertiary",
+            title: "Ejercicios animados",
+            body: "41 ejercicios con GIF incluido, sin descargar nada. También puedes poner tu propia foto o GIF.",
+          },
+          {
+            icon: "theme",
+            tone: "gold",
+            title: "Tema claro y oscuro",
+            body: "Un sistema de diseño propio que cambia de tema con un toque.",
+          },
+          {
+            icon: "refresh",
+            tone: "primary",
+            title: "Se actualiza sola",
+            body: "Cuando hay una versión nueva te avisa, descarga el APK y lo instala con un toque.",
+          },
+        ],
+      },
+      gallery: {
+        title: "Míralo en acción",
+        lead: "Así se ve en un teléfono real.",
+        ratio: "540 / 1036",
+        items: [
+          {
+            video: `${A}/clips/workout.mp4`,
+            poster: `${A}/clips/workout.webp`,
+            caption: "Serie → descanso → siguiente",
+          },
+          { poster: `${A}/shots/week.webp`, caption: "Tu semana" },
+          { poster: `${A}/shots/victory.webp`, caption: "Día conquistado" },
+          { poster: `${A}/shots/routine.webp`, caption: "Edita tu rutina" },
+          { poster: `${A}/shots/history.webp`, caption: "Historial" },
+          { poster: `${A}/shots/light.webp`, caption: "Tema claro" },
+        ],
+      },
+      programs: {
+        title: "Programas incluidos",
+        lead: "Desde 2 hasta 5 días por semana. Elige uno y empieza hoy.",
+        labels: { days: "días", level: "Nivel", rest: "Descanso" },
+        items: [
+          {
+            name: "Hipertrofia",
+            days: "5",
+            level: "Intermedio",
+            rest: "30 s",
+            focus:
+              "Empuje, tirón, pierna, torso y pierna + brazos. Cada músculo dos veces por semana.",
+            tone: "primary",
+          },
+          {
+            name: "Cuerpo completo",
+            days: "3",
+            level: "Principiante a intermedio",
+            rest: "60 s",
+            focus: "Lunes, miércoles y viernes de cuerpo completo.",
+            tone: "secondary",
+          },
+          {
+            name: "Torso / Pierna",
+            days: "4",
+            level: "Intermedio",
+            rest: "90 s",
+            focus: "Dos días de torso y dos de pierna.",
+            tone: "tertiary",
+          },
+          {
+            name: "Fuerza",
+            days: "3",
+            level: "Intermedio",
+            rest: "150 s",
+            focus: "Cargas altas, de 5 a 8 repeticiones y descansos largos.",
+            tone: "gold",
+          },
+          {
+            name: "Circuitos",
+            days: "4",
+            level: "Cualquiera",
+            rest: "60 s",
+            focus:
+              "Circuitos de 5 ejercicios con descanso al final de cada ronda.",
+            tone: "primary",
+          },
+          {
+            name: "Calistenia",
+            days: "4",
+            level: "Cualquiera",
+            rest: "60 s",
+            focus: "Sin mancuernas: peso corporal, una silla y una mesa.",
+            tone: "secondary",
+          },
+          {
+            name: "Express",
+            days: "2",
+            level: "Cualquiera",
+            rest: "45 s",
+            focus: "Dos sesiones cortas para semanas apretadas.",
+            tone: "tertiary",
+          },
+          {
+            name: "En blanco",
+            days: "+",
+            level: "Tú decides",
+            rest: "30 s",
+            focus: "Empieza de cero y arma el tuyo.",
+            tone: "gold",
+          },
+        ],
+        tip: "Todos los programas se pueden editar, y cambiar de programa no borra tu historial.",
+      },
+      install: {
+        title: "Instálala en un minuto",
+        lead: "DarmixFit se descarga directo desde su repositorio oficial en GitHub.",
+        steps: [
+          {
+            title: "Descarga el APK",
+            body: "Toca «Descargar APK» desde tu teléfono Android.",
+          },
+          {
+            title: "Ábrelo",
+            body: "Desde la notificación de descarga o tus descargas.",
+          },
+          {
+            title: "Autoriza la instalación",
+            body: "Si Android lo pide, permite instalar apps de esta fuente.",
+          },
+          {
+            title: "Sigue la configuración guiada",
+            body: "Detecta lo que ya activaste y te dice qué tocar. Toma menos de un minuto.",
+          },
+          { title: "Elige tu programa", body: "Y empieza a entrenar." },
+        ],
+        requirementsTitle: "Requisitos",
+        requirements: [
+          { label: "Android", value: "8.0 Oreo o superior" },
+          { label: "Cuenta", value: "No necesitas" },
+          { label: "Internet", value: "Solo para actualizaciones" },
+          { label: "Precio", value: "Gratis, sin anuncios" },
+        ],
+        noteTitle: "¿Por qué no está en Google Play?",
+        note: "Se distribuye como APK desde su repositorio de GitHub. Las actualizaciones llegan dentro de la app: no tienes que volver a descargarla a mano.",
+      },
+      permissions: {
+        title: "Permisos, para que el descanso suene a tiempo",
+        lead: "La configuración guiada te lleva a cada uno y detecta sola cuáles ya están activos.",
+        items: [
+          {
+            icon: "bell",
+            title: "Notificaciones",
+            why: "Cuenta regresiva, aviso de fin de descanso y la serie en la pantalla de bloqueo.",
+            steps: [
+              "Toca «Permitir» en el diálogo de Android.",
+              "Si lo rechazaste antes, actívalas desde la configuración guiada.",
+            ],
+            badge: { label: "Necesario", tone: "primary" },
+          },
+          {
+            icon: "alarm",
+            title: "Alarmas exactas",
+            why: "Que el aviso llegue justo en 0:00, incluso con el teléfono en reposo.",
+            steps: [
+              "En «Alarmas y recordatorios», activa DarmixFit.",
+              "Regresa a la app: el paso se marca solo.",
+            ],
+            badge: { label: "Necesario", tone: "primary" },
+          },
+          {
+            icon: "battery",
+            title: "Batería sin restricciones",
+            why: "Evita que Android pause el temporizador para ahorrar energía.",
+            steps: ["Elige «Sin restricciones» (o «No optimizar»)."],
+            badge: { label: "Recomendado", tone: "secondary" },
+          },
+          {
+            icon: "refresh",
+            title: "Inicio automático (Xiaomi / HyperOS)",
+            why: "Solo en Xiaomi, Redmi y POCO: evita que el sistema cierre la app.",
+            steps: [
+              "Toca «Abrir inicio automático» en la configuración guiada.",
+              "Busca DarmixFit en la lista y activa su interruptor.",
+              "Regresa a la app: el paso se marca solo.",
+            ],
+            note: "Extra: en Recientes, mantén presionada DarmixFit y toca el candado para que el sistema no la cierre.",
+            badge: { label: "Recomendado", tone: "secondary" },
+          },
+          {
+            icon: "download",
+            title: "Instalar apps",
+            why: "Solo se pide cuando instalas una actualización desde la app.",
+            steps: [
+              "Cuando la app te avise de una versión nueva, permite «Instalar apps desconocidas» para DarmixFit.",
+            ],
+            badge: { label: "Al actualizar", tone: "gold" },
+          },
+        ],
+      },
+      privacy: {
+        title: "Tus entrenamientos se quedan en tu teléfono",
+        lead: "Tu progreso es tuyo. Nadie más lo ve.",
+        no: [
+          "Sin cuentas de usuario",
+          "Sin anuncios",
+          "Sin rastreo ni telemetría",
+          "Sin servidores propios",
+        ],
+        yes: [
+          "Todo se guarda en tu teléfono",
+          "Solo se conecta a GitHub para buscar actualizaciones",
+          "Al desinstalarla se borran todos tus datos",
+        ],
+      },
+      faq: {
+        title: "Preguntas frecuentes",
+        items: [
+          {
+            q: "¿Es gratis?",
+            a: "Sí. Es gratis y no tiene anuncios ni compras dentro de la app.",
+          },
+          {
+            q: "¿El descanso suena con el teléfono bloqueado?",
+            a: "Sí. El temporizador corre en primer plano con una alarma exacta de respaldo, y puedes completar la serie desde la pantalla de bloqueo.",
+          },
+          {
+            q: "¿Puedo armar mi propia rutina?",
+            a: "Sí. Edita cualquier programa (ejercicios, series, repeticiones, notas, orden y superseries) o empieza uno en blanco. También puedes poner tu propia foto o GIF a cada ejercicio.",
+          },
+          {
+            q: "¿Necesito internet?",
+            a: "No para entrenar. Solo se conecta a GitHub para buscar versiones nuevas.",
+          },
+          {
+            q: "¿Cómo se actualiza?",
+            a: "La app te avisa cuando hay una versión nueva, descarga el APK y lo instala con un toque. Conservas tu historial y tus programas.",
+          },
+          {
+            q: "¿No aparece la serie en la pantalla de bloqueo?",
+            a: "Revisa que tu teléfono permita mostrar notificaciones en la pantalla de bloqueo. La serie aparece cuando ya completaste al menos una del día y sales de la app. Algunos teléfonos piden desbloquear para usar los botones de cualquier notificación.",
+          },
+          {
+            q: "¿Funciona en iPhone?",
+            a: "No. DarmixFit es solo para Android 8.0 o superior.",
+          },
+        ],
+      },
+      cta: {
+        title: "Supérate cada día.",
+        lead: "Tu plan de la semana, tu progreso de hoy y un descanso en el que puedes confiar.",
+      },
+    },
+
+    en: {
+      metaTitle: "DarmixFit — Your strength routine, set by set | Android app",
+      metaDescription:
+        "A free strength training app for Android: today’s route, automatic rest timers that ring even when your phone is locked, 7 programs and 41 animated exercises. No accounts, no ads.",
+      ogAlt: "DarmixFit: logo and tagline “Your routine, set by set”",
+      category: "Health & fitness",
+      nav: {
+        how: "How it works",
+        features: "Features",
+        gallery: "In action",
+        programs: "Programs",
+        install: "Install",
+        faq: "FAQ",
+      },
+      hero: {
+        eyebrow: "Android · Strength training",
+        title: "Your routine, <em>set by set</em>.",
+        lead: "Open the app, see the exercise that’s up next, complete the set and the rest timer starts on its own. When the bell rings, you already know what’s next.",
+        bubble: "Complete the set: rest starts on its own.",
+      },
+      how: {
+        title: "Train without losing the thread",
+        lead: "No accounts, no ads, no extra screens: your plan for the week, today’s progress and a timer you can trust.",
+        steps: [
+          {
+            icon: "calendar",
+            title: "Pick your program",
+            body: "Start with one of the 7 built-in programs or build your own from scratch.",
+          },
+          {
+            icon: "check",
+            title: "Complete the set",
+            body: "From the app or from the lock screen, without unlocking your phone.",
+          },
+          {
+            icon: "timer",
+            title: "Rest and move on",
+            body: "Rest starts on its own and the bell tells you when to go. The screen moves to the next exercise.",
+          },
+        ],
+        chips: [
+          { icon: "calendar", label: "7 programs", tone: "primary" },
+          { icon: "film", label: "41 animated exercises", tone: "secondary" },
+          { icon: "shield", label: "No accounts or ads", tone: "tertiary" },
+        ],
+      },
+      features: {
+        title: "Built for the gym",
+        lead: "Every detail is designed so you train, not stare at your phone.",
+        items: [
+          {
+            icon: "route",
+            tone: "primary",
+            title: "Today’s route",
+            body: "The current exercise up front, finished ones collapse and the screen moves on by itself. Supersets supported.",
+          },
+          {
+            icon: "timer",
+            tone: "secondary",
+            title: "Rest that never fails",
+            body: "A foreground timer with an exact backup alarm. +15 s or skip with one tap.",
+          },
+          {
+            icon: "lock",
+            tone: "tertiary",
+            title: "From the lock screen",
+            body: "Your current set shows up there: tap “Complete set” and rest starts without unlocking.",
+          },
+          {
+            icon: "headphones",
+            tone: "gold",
+            title: "A bell of its own",
+            body: "A sound synthesized in code, unique to DarmixFit. With headphones, it only plays in them.",
+          },
+          {
+            icon: "calendar",
+            tone: "primary",
+            title: "Week and history",
+            body: "What’s planned each day and what you completed. Every session keeps its exercises and sets.",
+          },
+          {
+            icon: "checklist",
+            tone: "secondary",
+            title: "Editable programs",
+            body: "Change exercises, sets, reps, notes, order and supersets, or start from a blank one.",
+          },
+          {
+            icon: "film",
+            tone: "tertiary",
+            title: "Animated exercises",
+            body: "41 exercises with a built-in GIF, nothing to download. You can also add your own photo or GIF.",
+          },
+          {
+            icon: "theme",
+            tone: "gold",
+            title: "Light and dark theme",
+            body: "Its own design system that switches theme with one tap.",
+          },
+          {
+            icon: "refresh",
+            tone: "primary",
+            title: "Updates itself",
+            body: "When a new version is out it lets you know, downloads the APK and installs it with one tap.",
+          },
+        ],
+      },
+      gallery: {
+        title: "See it in action",
+        lead: "This is how it looks on a real phone.",
+        ratio: "540 / 1036",
+        items: [
+          {
+            video: `${A}/clips/workout.mp4`,
+            poster: `${A}/clips/workout.webp`,
+            caption: "Set → rest → next",
+          },
+          { poster: `${A}/shots/week.webp`, caption: "Your week" },
+          { poster: `${A}/shots/victory.webp`, caption: "Day conquered" },
+          { poster: `${A}/shots/routine.webp`, caption: "Edit your routine" },
+          { poster: `${A}/shots/history.webp`, caption: "History" },
+          { poster: `${A}/shots/light.webp`, caption: "Light theme" },
+        ],
+      },
+      programs: {
+        title: "Built-in programs",
+        lead: "From 2 to 5 days a week. Pick one and start today.",
+        labels: { days: "days", level: "Level", rest: "Rest" },
+        items: [
+          {
+            name: "Hypertrophy",
+            days: "5",
+            level: "Intermediate",
+            rest: "30 s",
+            focus:
+              "Push, pull, legs, upper and legs + arms. Every muscle twice a week.",
+            tone: "primary",
+          },
+          {
+            name: "Full body",
+            days: "3",
+            level: "Beginner to intermediate",
+            rest: "60 s",
+            focus: "Full body on Monday, Wednesday and Friday.",
+            tone: "secondary",
+          },
+          {
+            name: "Upper / Lower",
+            days: "4",
+            level: "Intermediate",
+            rest: "90 s",
+            focus: "Two upper-body days and two leg days.",
+            tone: "tertiary",
+          },
+          {
+            name: "Strength",
+            days: "3",
+            level: "Intermediate",
+            rest: "150 s",
+            focus: "Heavy loads, 5 to 8 reps and long rests.",
+            tone: "gold",
+          },
+          {
+            name: "Circuits",
+            days: "4",
+            level: "Any",
+            rest: "60 s",
+            focus: "5-exercise circuits with rest at the end of each round.",
+            tone: "primary",
+          },
+          {
+            name: "Calisthenics",
+            days: "4",
+            level: "Any",
+            rest: "60 s",
+            focus: "No dumbbells: bodyweight, a chair and a table.",
+            tone: "secondary",
+          },
+          {
+            name: "Express",
+            days: "2",
+            level: "Any",
+            rest: "45 s",
+            focus: "Two short sessions for busy weeks.",
+            tone: "tertiary",
+          },
+          {
+            name: "Blank",
+            days: "+",
+            level: "Your call",
+            rest: "30 s",
+            focus: "Start from scratch and build your own.",
+            tone: "gold",
+          },
+        ],
+        tip: "Every program is editable, and switching programs doesn’t erase your history.",
+      },
+      install: {
+        title: "Install it in a minute",
+        lead: "DarmixFit downloads straight from its official GitHub repository.",
+        steps: [
+          {
+            title: "Download the APK",
+            body: "Tap “Download APK” on your Android phone.",
+          },
+          {
+            title: "Open it",
+            body: "From the download notification or your downloads.",
+          },
+          {
+            title: "Allow the install",
+            body: "If Android asks, allow installing apps from this source.",
+          },
+          {
+            title: "Follow the guided setup",
+            body: "It detects what’s already on and tells you what to tap. Takes under a minute.",
+          },
+          { title: "Pick your program", body: "And start training." },
+        ],
+        requirementsTitle: "Requirements",
+        requirements: [
+          { label: "Android", value: "8.0 Oreo or later" },
+          { label: "Account", value: "Not needed" },
+          { label: "Internet", value: "Only for updates" },
+          { label: "Price", value: "Free, no ads" },
+        ],
+        noteTitle: "Why isn’t it on Google Play?",
+        note: "It’s distributed as an APK from its GitHub repository. Updates arrive inside the app: you don’t need to download it again by hand.",
+      },
+      permissions: {
+        title: "Permissions, so rest rings on time",
+        lead: "The guided setup takes you to each one and detects which ones are already on.",
+        items: [
+          {
+            icon: "bell",
+            title: "Notifications",
+            why: "Countdown, end-of-rest alert and your set on the lock screen.",
+            steps: [
+              "Tap “Allow” in Android’s dialog.",
+              "If you declined before, turn them on from the guided setup.",
+            ],
+            badge: { label: "Required", tone: "primary" },
+          },
+          {
+            icon: "alarm",
+            title: "Exact alarms",
+            why: "So the alert arrives right at 0:00, even when your phone is idle.",
+            steps: [
+              "In “Alarms & reminders”, turn on DarmixFit.",
+              "Go back to the app: the step checks itself off.",
+            ],
+            badge: { label: "Required", tone: "primary" },
+          },
+          {
+            icon: "battery",
+            title: "Unrestricted battery",
+            why: "Keeps Android from pausing the timer to save power.",
+            steps: ["Choose “Unrestricted” (or “Don’t optimize”)."],
+            badge: { label: "Recommended", tone: "secondary" },
+          },
+          {
+            icon: "refresh",
+            title: "Autostart (Xiaomi / HyperOS)",
+            why: "Only on Xiaomi, Redmi and POCO: keeps the system from closing the app.",
+            steps: [
+              "Tap “Open autostart” in the guided setup.",
+              "Find DarmixFit in the list and turn on its switch.",
+              "Go back to the app: the step checks itself off.",
+            ],
+            note: "Extra: in Recents, long-press DarmixFit and tap the lock so the system doesn’t close it.",
+            badge: { label: "Recommended", tone: "secondary" },
+          },
+          {
+            icon: "download",
+            title: "Install apps",
+            why: "Only requested when you install an update from the app.",
+            steps: [
+              "When the app tells you about a new version, allow “Install unknown apps” for DarmixFit.",
+            ],
+            badge: { label: "On update", tone: "gold" },
+          },
+        ],
+      },
+      privacy: {
+        title: "Your workouts stay on your phone",
+        lead: "Your progress is yours. No one else sees it.",
+        no: [
+          "No user accounts",
+          "No ads",
+          "No tracking or telemetry",
+          "No servers of its own",
+        ],
+        yes: [
+          "Everything is stored on your phone",
+          "It only contacts GitHub to check for updates",
+          "Uninstalling it deletes all your data",
+        ],
+      },
+      faq: {
+        title: "Frequently asked questions",
+        items: [
+          {
+            q: "Is it free?",
+            a: "Yes. It’s free, with no ads or in-app purchases.",
+          },
+          {
+            q: "Does rest ring with the phone locked?",
+            a: "Yes. The timer runs in the foreground with an exact backup alarm, and you can complete the set from the lock screen.",
+          },
+          {
+            q: "Can I build my own routine?",
+            a: "Yes. Edit any program (exercises, sets, reps, notes, order and supersets) or start a blank one. You can also add your own photo or GIF to each exercise.",
+          },
+          {
+            q: "Do I need internet?",
+            a: "Not to train. It only contacts GitHub to check for new versions.",
+          },
+          {
+            q: "How does it update?",
+            a: "The app tells you when a new version is out, downloads the APK and installs it with one tap. You keep your history and programs.",
+          },
+          {
+            q: "My set doesn’t show on the lock screen?",
+            a: "Check that your phone allows notifications on the lock screen. The set appears once you’ve completed at least one set that day and leave the app. Some phones ask you to unlock to use any notification’s buttons.",
+          },
+          {
+            q: "Does it work on iPhone?",
+            a: "No. DarmixFit is Android only (8.0 or later).",
+          },
+        ],
+      },
+      cta: {
+        title: "Push yourself every day.",
+        lead: "Your plan for the week, today’s progress and a rest timer you can trust.",
+      },
+    },
+  },
+};
+
+export default darmixfit;

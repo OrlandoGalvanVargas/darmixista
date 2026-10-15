@@ -25,7 +25,17 @@ export type LandingIconName =
   | 'sparkle'
   | 'timer'
   | 'snow'
-  | 'stack';
+  | 'stack'
+  | 'route'
+  | 'dumbbell'
+  | 'calendar'
+  | 'film'
+  | 'refresh'
+  | 'checklist'
+  | 'alarm'
+  | 'headphones'
+  | 'check'
+  | 'download';
 
 /** Tonos de la paleta de la app (fondo de contenedor + texto) */
 export type LandingTone = 'primary' | 'secondary' | 'tertiary' | 'error' | 'gold';
@@ -58,6 +68,22 @@ export interface LandingPalette {
   onGoldContainer: string;
   /** Color de acento del personaje o la marca (brillos, detalles) */
   accent: string;
+  /** Texto sobre el acento (opcional; lo usa el estilo "athletic" en botones) */
+  onAccent?: string;
+}
+
+/**
+ * Apariencia general de la landing.
+ * - sticker: contornos gruesos, sombras sólidas y esquinas redondas (DarmixPet)
+ * - athletic: oscuro, líneas finas, títulos condensados en mayúsculas y acento neón (DarmixFit)
+ */
+export interface LandingLook {
+  style: 'sticker' | 'athletic';
+  /** Familias tipográficas (deben estar importadas en LandingLayout.astro) */
+  fontDisplay: string;
+  fontBody: string;
+  /** Tema inicial cuando el visitante no ha elegido uno (por defecto, el del sistema) */
+  defaultScheme?: 'light' | 'dark';
 }
 
 export interface LandingContent {
@@ -66,15 +92,23 @@ export interface LandingContent {
   ogAlt: string;
   /** Categoría para buscadores (schema.org) */
   category: string;
-  nav: { how: string; features: string; gallery: string; companions?: string; install: string; faq: string };
+  nav: {
+    how: string;
+    features: string;
+    gallery: string;
+    companions?: string;
+    programs?: string;
+    install: string;
+    faq: string;
+  };
   hero: {
     eyebrow: string;
     /** Admite <em> para resaltar una palabra */
     title: string;
     lead: string;
-    /** Burbuja de diálogo del personaje */
-    bubble: string;
-    bubbleBy: string;
+    /** Burbuja junto al teléfono (opcional) */
+    bubble?: string;
+    bubbleBy?: string;
   };
   how: {
     title: string;
@@ -90,6 +124,8 @@ export interface LandingContent {
   gallery: {
     title: string;
     lead: string;
+    /** Proporción de las pantallas (ancho / alto). Por defecto 400 / 867 */
+    ratio?: string;
     /** video: ruta .mp4 en /public (opcional); poster: imagen de respaldo */
     items: Array<{ video?: string; poster: string; caption: string }>;
   };
@@ -97,6 +133,14 @@ export interface LandingContent {
     title: string;
     lead: string;
     items: Array<{ name: string; element: string; quote: string; image: string; color: string; deep: string; spark: string }>;
+  };
+  /** Catálogo opcional (p. ej. programas de entrenamiento incluidos) */
+  programs?: {
+    title: string;
+    lead: string;
+    labels: { days: string; level: string; rest: string };
+    items: Array<{ name: string; days: string; level: string; rest: string; focus: string; tone: LandingTone }>;
+    tip?: string;
   };
   install: {
     title: string;
@@ -110,7 +154,15 @@ export interface LandingContent {
   permissions: {
     title: string;
     lead: string;
-    items: Array<{ icon: LandingIconName; title: string; why: string; steps: string[]; note?: string }>;
+    items: Array<{
+      icon: LandingIconName;
+      title: string;
+      why: string;
+      steps: string[];
+      note?: string;
+      /** Etiqueta corta (p. ej. "Necesario") y su tono */
+      badge?: { label: string; tone: LandingTone };
+    }>;
   };
   privacy: { title: string; lead: string; no: string[]; yes: string[] };
   faq: { title: string; items: Array<{ q: string; a: string }> };
@@ -130,6 +182,9 @@ export interface AppLanding {
   release: { version: string; apk: string; sizeMb: number; date: string };
   minAndroid: string;
   year: string;
+  look: LandingLook;
+  /** Categoría schema.org (por defecto LifestyleApplication) */
+  schemaCategory?: string;
   assets: {
     icon: string;
     icon192: string;
@@ -138,8 +193,14 @@ export interface AppLanding {
     og: Record<Lang, string>;
     /** Pantalla principal para el teléfono del encabezado */
     heroShot: string;
-    /** Personaje que flota junto al teléfono */
-    heroCharacter: string;
+    /** Proporción de heroShot (ancho / alto) */
+    heroRatio?: string;
+    /** Segunda pantalla, detrás de la primera (opcional) */
+    heroShot2?: string;
+    /** Personaje que flota junto al teléfono (opcional) */
+    heroCharacter?: string;
+    /** Imagen de la franja final (por defecto: el personaje o el ícono) */
+    ctaImage?: string;
     /** Fondo de la franja final (opcional) */
     banner?: string;
   };

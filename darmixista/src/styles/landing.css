@@ -32,8 +32,9 @@
   --color-lp-on-gold-container: var(--lp-onGoldContainer);
   --color-lp-accent: var(--lp-accent);
 
-  --font-display: "Fredoka Variable", "Nunito Variable", ui-rounded, system-ui, sans-serif;
-  --font-body: "Nunito Variable", ui-rounded, system-ui, sans-serif;
+  /* Cada app define sus familias en src/data/apps/<app>.ts (look.fontDisplay / look.fontBody) */
+  --font-display: var(--lp-font-display), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--lp-font-body), ui-rounded, system-ui, sans-serif;
 
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -297,6 +298,127 @@
   }
   .lp-details[open] .lp-chevron {
     transform: rotate(180deg);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Estilo "athletic" (DarmixFit): oscuro, líneas finas, títulos condensados en mayúsculas,
+   esquinas cortadas y acento neón. Reescribe los componentes del estilo sticker.
+   ────────────────────────────────────────────── */
+@layer components {
+  [data-lp-style="athletic"] {
+    h1,
+    h2,
+    h3,
+    .lp-display {
+      text-transform: uppercase;
+      letter-spacing: 0.005em;
+      line-height: 0.95;
+    }
+    h1,
+    h2 {
+      font-weight: 900;
+    }
+    h3 {
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--lp-onAccent);
+      background: var(--lp-accent);
+      padding: 0 0.12em;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .lp-sticker {
+      border: 1px solid var(--lp-outline);
+      border-radius: 1.4rem;
+      box-shadow: none;
+    }
+    .lp-sticker-sm {
+      border: 1px solid var(--lp-outline);
+      border-radius: 0.7rem;
+      box-shadow: none;
+    }
+    .lp-dashed {
+      border: 1px dashed var(--lp-ink);
+    }
+
+    .lp-btn {
+      border: 1px solid var(--lp-ink);
+      border-radius: 0.95rem;
+      box-shadow: none;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .lp-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--lp-accent) 60%, transparent);
+    }
+    .lp-btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+    .lp-btn-primary {
+      background: var(--lp-accent);
+      color: var(--lp-onAccent);
+      border-color: transparent;
+    }
+    .lp-btn-sm {
+      font-size: 1.05rem;
+    }
+
+    .lp-icon-btn {
+      border: 1px solid var(--lp-outline);
+      border-radius: 0.8rem;
+      box-shadow: none;
+    }
+
+    /* Etiqueta con esquinas cortadas (como los tags de la app) */
+    .lp-eyebrow {
+      border: 0;
+      border-radius: 0;
+      padding: 0.4rem 0.9rem;
+      clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+      font-family: var(--font-body);
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .lp-h2 {
+      font-size: clamp(2.6rem, 6.2vw, 4.4rem);
+    }
+
+    /* Cuadrícula fina en lugar de puntos */
+    .lp-dots {
+      background-image:
+        linear-gradient(color-mix(in oklab, var(--lp-text) 6%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in oklab, var(--lp-text) 6%, transparent) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    .lp-phone {
+      border: 1px solid var(--lp-ink);
+      border-radius: 2.2rem;
+      background: #050604;
+      padding: 0.4rem;
+      box-shadow:
+        0 40px 80px -30px rgb(0 0 0 / 0.55),
+        0 0 0 1px rgb(255 255 255 / 0.04) inset;
+    }
+    .lp-phone-screen {
+      border-radius: 1.85rem;
+    }
+
+    :focus-visible {
+      border-radius: 6px;
+    }
   }
 }
 

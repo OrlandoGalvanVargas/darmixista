@@ -37,6 +37,8 @@ Cada app móvil tiene su propia página con botón de descarga, fuera del portaf
 | --- | --- |
 | `darmixista.dev/darmixpet/` | DarmixPet (español) |
 | `darmixista.dev/en/darmixpet/` | DarmixPet (inglés) |
+| `darmixista.dev/darmixfit/` | DarmixFit (español) |
+| `darmixista.dev/en/darmixfit/` | DarmixFit (inglés) |
 
 En el carrusel de apps, el botón **Descargar app** lleva a esa página (`links.page` en
 `src/data/projects/mobile/<app>.ts`). Los APK **no** se guardan en este proyecto: el botón descarga el
@@ -62,7 +64,19 @@ Las releases marcadas como *pre-release* o borrador se ignoran.
 4. En `src/data/projects/mobile/<app>.ts` pon `links: { page: '<app>' }`.
 5. Imagen para compartir: `public/apps/<app>/og-es.png` y `og-en.png` (1200×630).
 
-La sección de compañeros es opcional (`companions`); si una app no la tiene, desaparece del menú.
+Secciones opcionales: `companions` (personajes, DarmixPet) y `programs` (catálogo, DarmixFit); si una app no
+las tiene, desaparecen del menú.
+
+**Apariencia (`look`):** cada app elige un estilo y sus fuentes.
+
+| Estilo | Cómo se ve | Ejemplo |
+| --- | --- | --- |
+| `sticker` | Contornos gruesos, sombras sólidas y esquinas redondas | DarmixPet (Fredoka + Nunito) |
+| `athletic` | Oscuro, líneas finas, títulos condensados en mayúsculas y acento neón | DarmixFit (Big Shoulders + Manrope) |
+
+`defaultScheme: 'dark'` hace que la página abra en oscuro si el visitante no ha elegido tema.
+Para usar otras fuentes, instala su paquete de `@fontsource-variable/…` e impórtalo en
+`src/layouts/LandingLayout.astro` (el navegador solo descarga las fuentes que usa cada página).
 
 ## Formulario de contacto (Web3Forms)
 

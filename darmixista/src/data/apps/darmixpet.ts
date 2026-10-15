@@ -9,6 +9,11 @@ const darmixpet: AppLanding = {
   release: { version: '1.2.2', apk: 'DarmixPet-v1.2.2.apk', sizeMb: 16.3, date: '2026-10-08' },
   minAndroid: '8.0',
   year: '2026',
+  look: {
+    style: 'sticker',
+    fontDisplay: "'Fredoka Variable', 'Nunito Variable'",
+    fontBody: "'Nunito Variable'",
+  },
   assets: {
     icon: `${A}/icon.webp`,
     icon192: `${A}/icon-192.png`,
