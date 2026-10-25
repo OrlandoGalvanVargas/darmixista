@@ -422,6 +422,143 @@
   }
 }
 
+@layer components {
+  .lp-cta {
+    background-color: #1b1530;
+  }
+  [data-lp-style="athletic"] .lp-cta {
+    background-color: #0b0d0a;
+  }
+  [data-lp-style="celestial"] .lp-cta {
+    background-color: #0e1424;
+    background-image: linear-gradient(180deg, #13376c, #0e1424 75%);
+  }
+  .lp-cta-glow {
+    background:
+      radial-gradient(55% 70% at 50% 35%, color-mix(in oklab, var(--lp-accent) 22%, transparent), transparent 70%),
+      linear-gradient(color-mix(in oklab, white 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, white 4%, transparent) 1px, transparent 1px);
+    background-size:
+      auto,
+      44px 44px,
+      44px 44px;
+  }
+  [data-lp-style="celestial"] .lp-cta-glow {
+    background:
+      radial-gradient(45% 60% at 50% 32%, rgb(232 199 150 / 0.22), transparent 70%),
+      var(--lp-stars);
+    background-size:
+      auto,
+      260px 260px;
+  }
+}
+
+@layer components {
+  [data-lp-style="celestial"] {
+    --lp-stars:
+      radial-gradient(1.2px 1.2px at 22px 34px, rgb(255 255 255 / 0.75), transparent 60%),
+      radial-gradient(1px 1px at 120px 80px, rgb(255 255 255 / 0.5), transparent 60%),
+      radial-gradient(1.6px 1.6px at 200px 150px, rgb(244 227 188 / 0.8), transparent 60%),
+      radial-gradient(1px 1px at 60px 190px, rgb(255 255 255 / 0.45), transparent 60%),
+      radial-gradient(1.3px 1.3px at 170px 230px, rgb(255 255 255 / 0.6), transparent 60%),
+      radial-gradient(1px 1px at 240px 40px, rgb(255 255 255 / 0.4), transparent 60%);
+
+    h1,
+    h2 {
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+    }
+    h3 {
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+
+    .lp-sticker {
+      border: 1px solid var(--lp-outline);
+      border-radius: 1.75rem;
+      background: linear-gradient(180deg, color-mix(in oklab, var(--lp-surface) 92%, white 8%), var(--lp-surface) 40%);
+      box-shadow: 0 24px 60px -36px rgb(0 0 0 / 0.55);
+    }
+    .lp-sticker-sm {
+      border: 1px solid var(--lp-outline);
+      border-radius: 999px;
+      box-shadow: none;
+    }
+    .lp-dashed {
+      border: 1px dashed color-mix(in oklab, var(--lp-text) 18%, transparent);
+    }
+
+    .lp-btn {
+      border: 0;
+      border-radius: 999px;
+      box-shadow: none;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .lp-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 36px -14px color-mix(in oklab, var(--lp-primary) 75%, transparent);
+    }
+    .lp-btn:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+    .lp-btn-ghost {
+      border: 1px solid color-mix(in oklab, var(--lp-text) 16%, transparent);
+      background: color-mix(in oklab, var(--lp-surface) 70%, transparent);
+    }
+    .lp-cta .lp-btn-primary {
+      background: #e8c796;
+      color: #171a27;
+    }
+
+    .lp-icon-btn {
+      border: 1px solid var(--lp-outline);
+      box-shadow: none;
+    }
+
+    .lp-eyebrow {
+      border: 0;
+      background: none;
+      padding: 0;
+      color: var(--lp-primary);
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .lp-dots {
+      background-image: var(--lp-stars);
+      background-size: 260px 260px;
+    }
+    #top {
+      background-color: var(--lp-bgTop);
+      background-image:
+        linear-gradient(180deg, transparent, var(--lp-bg) 92%),
+        var(--lp-stars);
+      background-size:
+        auto,
+        260px 260px;
+    }
+
+    .lp-phone {
+      border: 1px solid color-mix(in oklab, var(--lp-text) 14%, transparent);
+      border-radius: 2.3rem;
+      background: #0a0f1c;
+      padding: 0.4rem;
+      box-shadow:
+        0 40px 80px -30px rgb(0 0 0 / 0.6),
+        0 0 70px -25px rgb(232 199 150 / 0.35);
+    }
+    .lp-phone-screen {
+      border-radius: 1.95rem;
+    }
+  }
+}
+
 /* Aparición al desplazar (solo con JS y sin "reducir movimiento") */
 @media (prefers-reduced-motion: no-preference) {
   html.lp-js [data-lp-reveal] {

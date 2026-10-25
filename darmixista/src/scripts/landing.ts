@@ -85,12 +85,14 @@ async function fetchLatest(repo: string): Promise<ReleaseInfo | null> {
 
 async function initDownload(repo: string, knownVersion: string): Promise<void> {
   const info = await fetchLatest(repo);
-  if (!info || !isNewer(info.version, knownVersion)) return;
+  const fallback = document.querySelector('[data-apk-link][data-apk-fallback]') !== null;
+  if (!info || (!fallback && !isNewer(info.version, knownVersion))) return;
   const lang = document.documentElement.lang.startsWith('es') ? 'es-MX' : 'en-US';
   const mb = (info.size / 1_000_000).toLocaleString(lang, { maximumFractionDigits: 1 });
   document.querySelectorAll<HTMLAnchorElement>('[data-apk-link]').forEach((a) => (a.href = info.url));
   document.querySelectorAll('[data-apk-version]').forEach((el) => (el.textContent = info.version));
   document.querySelectorAll('[data-apk-size]').forEach((el) => (el.textContent = `${mb} MB`));
+  document.querySelectorAll<HTMLElement>('[data-apk-size-wrap]').forEach((el) => (el.hidden = false));
 }
 
 function initTheme(): void {

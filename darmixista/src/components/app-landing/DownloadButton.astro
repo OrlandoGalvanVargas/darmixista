@@ -20,8 +20,13 @@ interface Props {
 const { app, lang, size = 'lg', meta = false, class: className } = Astro.props;
 const ui = landingUi[lang];
 const { owner, name } = app.repo;
-const href = `https://github.com/${owner}/${name}/releases/download/v${app.release.version}/${app.release.apk}`;
-const sizeText = `${app.release.sizeMb.toLocaleString(lang === 'es' ? 'es-MX' : 'en-US', { maximumFractionDigits: 1 })} MB`;
+const { apk, sizeMb, version } = app.release;
+const href = apk
+  ? `https://github.com/${owner}/${name}/releases/download/v${version}/${apk}`
+  : `https://github.com/${owner}/${name}/releases/latest`;
+const sizeText = sizeMb
+  ? `${sizeMb.toLocaleString(lang === 'es' ? 'es-MX' : 'en-US', { maximumFractionDigits: 1 })} MB`
+  : '';
 ---
 
 <div class:list={['flex flex-col items-start gap-2', className]}>
@@ -29,6 +34,7 @@ const sizeText = `${app.release.sizeMb.toLocaleString(lang === 'es' ? 'es-MX' : 
     href={href}
     class:list={['lp-btn lp-btn-primary', size === 'sm' && 'lp-btn-sm']}
     data-apk-link
+    data-apk-fallback={apk ? undefined : ''}
     aria-label={ui.downloadFor(app.name)}
     rel="noopener"
   >
@@ -46,8 +52,10 @@ const sizeText = `${app.release.sizeMb.toLocaleString(lang === 'es' ? 'es-MX' : 
         <span>
           v<span data-apk-version>{app.release.version}</span>
         </span>
-        <span aria-hidden="true">·</span>
-        <span data-apk-size>{sizeText}</span>
+        <span class="inline-flex items-center gap-2 [&[hidden]]:hidden" data-apk-size-wrap hidden={!sizeText}>
+          <span aria-hidden="true">·</span>
+          <span data-apk-size>{sizeText}</span>
+        </span>
         <span aria-hidden="true">·</span>
         <span>{ui.free}</span>
       </p>

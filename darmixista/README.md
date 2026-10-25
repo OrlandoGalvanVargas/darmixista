@@ -16,33 +16,35 @@ npm run dev
 
 ## Dónde editar el contenido
 
-| Qué | Archivo |
-| --- | --- |
-| Nombre, correo, redes, CV, disponibilidad | `src/config/site.ts` |
-| Textos en español e inglés | `src/i18n/ui.ts` |
-| Stack | `src/data/stack.ts` |
-| Experiencia y formación | `src/data/trajectory.ts` |
-| Proyectos (un archivo por proyecto) | `src/data/projects/web/` y `src/data/projects/mobile/` |
-| Servicios | `src/data/services.ts` |
-| CV en PDF | `public/cv/` |
-| Capturas de proyectos | `public/projects/` |
-| Landings de apps móviles (textos, paleta, versión) | `src/data/apps/` |
-| Imágenes y videos de cada landing | `public/apps/<app>/` |
+| Qué                                                | Archivo                                                |
+| -------------------------------------------------- | ------------------------------------------------------ |
+| Nombre, correo, redes, CV, disponibilidad          | `src/config/site.ts`                                   |
+| Textos en español e inglés                         | `src/i18n/ui.ts`                                       |
+| Stack                                              | `src/data/stack.ts`                                    |
+| Experiencia y formación                            | `src/data/trajectory.ts`                               |
+| Proyectos (un archivo por proyecto)                | `src/data/projects/web/` y `src/data/projects/mobile/` |
+| Servicios                                          | `src/data/services.ts`                                 |
+| CV en PDF                                          | `public/cv/`                                           |
+| Capturas de proyectos                              | `public/projects/`                                     |
+| Landings de apps móviles (textos, paleta, versión) | `src/data/apps/`                                       |
+| Imágenes y videos de cada landing                  | `public/apps/<app>/`                                   |
 
 ## Landings de apps móviles
 
 Cada app móvil tiene su propia página con botón de descarga, fuera del portafolio:
 
-| Ruta | Página |
-| --- | --- |
-| `darmixista.dev/darmixpet/` | DarmixPet (español) |
-| `darmixista.dev/en/darmixpet/` | DarmixPet (inglés) |
-| `darmixista.dev/darmixfit/` | DarmixFit (español) |
-| `darmixista.dev/en/darmixfit/` | DarmixFit (inglés) |
+| Ruta                             | Página                |
+| -------------------------------- | --------------------- |
+| `darmixista.dev/darmixpet/`      | DarmixPet (español)   |
+| `darmixista.dev/en/darmixpet/`   | DarmixPet (inglés)    |
+| `darmixista.dev/darmixfit/`      | DarmixFit (español)   |
+| `darmixista.dev/en/darmixfit/`   | DarmixFit (inglés)    |
+| `darmixista.dev/darmixnight/`    | DarmixNight (español) |
+| `darmixista.dev/en/darmixnight/` | DarmixNight (inglés)  |
 
 En el carrusel de apps, el botón **Descargar app** lleva a esa página (`links.page` en
 `src/data/projects/mobile/<app>.ts`). Los APK **no** se guardan en este proyecto: el botón descarga el
-archivo directamente de las *GitHub Releases* del repositorio de la app.
+archivo directamente de las _GitHub Releases_ del repositorio de la app.
 
 ### Cómo se elige la versión que se descarga
 
@@ -53,7 +55,7 @@ archivo directamente de las *GitHub Releases* del repositorio de la app.
 
 Al publicar una release nueva no hace falta tocar el sitio. Conviene actualizar `release` de vez en cuando
 para que el respaldo, los datos para buscadores y la primera carga muestren la versión correcta.
-Las releases marcadas como *pre-release* o borrador se ignoran.
+Las releases marcadas como _pre-release_ o borrador se ignoran.
 
 ### Agregar la landing de otra app
 
@@ -64,15 +66,16 @@ Las releases marcadas como *pre-release* o borrador se ignoran.
 4. En `src/data/projects/mobile/<app>.ts` pon `links: { page: '<app>' }`.
 5. Imagen para compartir: `public/apps/<app>/og-es.png` y `og-en.png` (1200×630).
 
-Secciones opcionales: `companions` (personajes, DarmixPet) y `programs` (catálogo, DarmixFit); si una app no
+Secciones opcionales: `companions` (personajes de DarmixPet o momentos del panda de DarmixNight) y `programs` (catálogo, DarmixFit); si una app no
 las tiene, desaparecen del menú.
 
 **Apariencia (`look`):** cada app elige un estilo y sus fuentes.
 
-| Estilo | Cómo se ve | Ejemplo |
-| --- | --- | --- |
-| `sticker` | Contornos gruesos, sombras sólidas y esquinas redondas | DarmixPet (Fredoka + Nunito) |
-| `athletic` | Oscuro, líneas finas, títulos condensados en mayúsculas y acento neón | DarmixFit (Big Shoulders + Manrope) |
+| Estilo      | Cómo se ve                                                                        | Ejemplo                             |
+| ----------- | --------------------------------------------------------------------------------- | ----------------------------------- |
+| `sticker`   | Contornos gruesos, sombras sólidas y esquinas redondas                            | DarmixPet (Fredoka + Nunito)        |
+| `athletic`  | Oscuro, líneas finas, títulos condensados en mayúsculas y acento neón             | DarmixFit (Big Shoulders + Manrope) |
+| `celestial` | Cielo nocturno con estrellas, tarjetas suaves y botones píldora con brillo cálido | DarmixNight (Sora + Manrope)        |
 
 `defaultScheme: 'dark'` hace que la página abra en oscuro si el visitante no ha elegido tema.
 Para usar otras fuentes, instala su paquete de `@fontsource-variable/…` e impórtalo en
@@ -111,11 +114,11 @@ El sitio es 100 % estático: se despliega como Worker con archivos estáticos (`
 2. En Cloudflare: **Workers & Pages → Create → Import a repository** y elige el repositorio.
    - Build command: `npm run build`
    - Deploy command: `npx wrangler deploy` (el que viene por defecto)
-3. **Variables de entorno de build** (Settings → Variables and secrets, tipo *build*):
+3. **Variables de entorno de build** (Settings → Variables and secrets, tipo _build_):
    `PUBLIC_WEB3FORMS_KEY` = tu clave. Se inserta al compilar, por eso debe estar en el build.
-4. **Dominio:** en el Worker → Settings → Domains & Routes → Add → *Custom domain*:
+4. **Dominio:** en el Worker → Settings → Domains & Routes → Add → _Custom domain_:
    `darmixista.dev` y `www.darmixista.dev`. DNS y certificado se crean solos (el dominio ya está en tu cuenta).
-5. **www → sin www:** Rules → Redirect Rules → plantilla *Redirect from WWW to root* (301).
+5. **www → sin www:** Rules → Redirect Rules → plantilla _Redirect from WWW to root_ (301).
 6. Cada `git push` a la rama principal vuelve a publicar el sitio automáticamente.
 
 Archivos relacionados: `wrangler.jsonc` (despliegue y página 404), `public/_headers` (seguridad y caché),
@@ -130,14 +133,14 @@ Los buscadores no reciben la redirección automática de idioma.
 
 Después de publicar:
 
-1. **Google Search Console** → añade la propiedad de tipo *Dominio* `darmixista.dev` (verificación por DNS,
-   Cloudflare puede crear el registro TXT automáticamente) → *Sitemaps* → envía `sitemap-index.xml` →
-   *Inspección de URL* → solicita indexación de `/` y `/en/`.
-2. **Bing Webmaster Tools** → *Importar desde Google Search Console* (cubre también DuckDuckGo y Yahoo).
-3. **Enlaces hacia el sitio:** campo *Website* y README de tu perfil de GitHub, *Información de contacto* y
-   *Destacados* en LinkedIn, READMEs de tus proyectos y tu CV.
-4. **Comprobar:** vista previa al compartir con el *Post Inspector* de LinkedIn y datos estructurados con la
-   *Prueba de resultados enriquecidos* de Google.
+1. **Google Search Console** → añade la propiedad de tipo _Dominio_ `darmixista.dev` (verificación por DNS,
+   Cloudflare puede crear el registro TXT automáticamente) → _Sitemaps_ → envía `sitemap-index.xml` →
+   _Inspección de URL_ → solicita indexación de `/` y `/en/`.
+2. **Bing Webmaster Tools** → _Importar desde Google Search Console_ (cubre también DuckDuckGo y Yahoo).
+3. **Enlaces hacia el sitio:** campo _Website_ y README de tu perfil de GitHub, _Información de contacto_ y
+   _Destacados_ en LinkedIn, READMEs de tus proyectos y tu CV.
+4. **Comprobar:** vista previa al compartir con el _Post Inspector_ de LinkedIn y datos estructurados con la
+   _Prueba de resultados enriquecidos_ de Google.
 
 Las secciones (`#about`, `#projects-3`…) son anclas de la misma página: Google indexa una página por idioma
 con todo su contenido, lo cual es lo esperado para un portafolio de una sola página.

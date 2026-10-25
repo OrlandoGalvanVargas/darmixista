@@ -35,7 +35,8 @@ export type LandingIconName =
   | 'alarm'
   | 'headphones'
   | 'check'
-  | 'download';
+  | 'download'
+  | 'moon';
 
 /** Tonos de la paleta de la app (fondo de contenedor + texto) */
 export type LandingTone = 'primary' | 'secondary' | 'tertiary' | 'error' | 'gold';
@@ -70,6 +71,7 @@ export interface LandingPalette {
   accent: string;
   /** Texto sobre el acento (opcional; lo usa el estilo "athletic" en botones) */
   onAccent?: string;
+  bgTop?: string;
 }
 
 /**
@@ -78,7 +80,7 @@ export interface LandingPalette {
  * - athletic: oscuro, líneas finas, títulos condensados en mayúsculas y acento neón (DarmixFit)
  */
 export interface LandingLook {
-  style: 'sticker' | 'athletic';
+  style: 'sticker' | 'athletic' | 'celestial';
   /** Familias tipográficas (deben estar importadas en LandingLayout.astro) */
   fontDisplay: string;
   fontBody: string;
@@ -179,7 +181,7 @@ export interface AppLanding {
    * versión más reciente, actualiza solo el botón, la versión y el tamaño. No hace falta
    * tocar esto en cada release, pero conviene actualizarlo de vez en cuando.
    */
-  release: { version: string; apk: string; sizeMb: number; date: string };
+  release: { version: string; apk?: string; sizeMb?: number; date: string };
   minAndroid: string;
   year: string;
   look: LandingLook;
