@@ -1,0 +1,51 @@
+---
+import '@fontsource-variable/fredoka';
+import '@fontsource-variable/nunito';
+import './darmixpet.css';
+import type { Lang } from '../../i18n/ui';
+import { app, content, skins } from '../../data/landings/darmixpet';
+import { kitUi } from '../i18n';
+import Shell from '../kit/Shell.astro';
+import { appJsonLd } from '../kit/jsonld';
+import Sheet from '../kit/Sheet.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import HowItWorks from './HowItWorks.astro';
+import Companions from './Companions.astro';
+import Final from './Final.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang];
+const ui = kitUi[lang];
+const skin = skins[0];
+const jsonLd = appJsonLd({ app, lang, meta: c.meta, site: Astro.site!, screenshot: '/apps/darmixpet/shots/home.webp' });
+---
+
+<Shell
+  app={app}
+  lang={lang}
+  meta={c.meta}
+  skins={skins}
+  fontDisplay="'Fredoka Variable', 'Nunito Variable'"
+  fontBody="'Nunito Variable'"
+  jsonLd={jsonLd}
+>
+  <a href="#main" class="k-btn k-btn-sm pt-btn pt-btn-ghost fixed top-3 left-3 z-[60] -translate-y-24 focus:translate-y-0">{ui.skip}</a>
+  <Header app={app} lang={lang} nav={c.nav} />
+  <main id="main">
+    <Hero app={app} lang={lang} c={c} skin={skin} />
+    <HowItWorks c={c} />
+    <Companions c={c} skins={skins} />
+    <Final app={app} lang={lang} c={c} skin={skin} />
+  </main>
+  <Sheet app={app} lang={lang} install={c.install} labels={c.sheet} cardClass="rounded-2xl border-2 border-c-ink bg-c-bg" />
+</Shell>
+
+<script>
+  import { initKit } from '../kit/kit';
+  import { app } from '../../data/landings/darmixpet';
+  initKit({ repo: `${app.repo.owner}/${app.repo.name}`, version: app.release.version });
+</script>

@@ -1,0 +1,38 @@
+import type { Lang } from '../i18n/ui';
+
+export const kitUi = {
+  es: {
+    download: 'Descargar APK',
+    downloadFor: (name: string) => `Descargar ${name} para Android`,
+    free: 'Gratis',
+    android: (v: string) => `Android ${v}+`,
+    theme: 'Cambiar tema',
+    language: 'Idioma',
+    skip: 'Saltar al contenido',
+    close: 'Cerrar',
+    scanTitle: '¿Estás en tu computadora?',
+    scanBody: 'Escanea el código con tu teléfono Android para abrir esta página ahí.',
+    androidOnly: 'Solo para Android. No disponible para iPhone.',
+    footerReleases: 'Versiones',
+    footerIssues: 'Reportar un problema',
+    footerRepo: 'Repositorio',
+    footerMadeBy: 'Hecha por',
+  },
+  en: {
+    download: 'Download APK',
+    downloadFor: (name: string) => `Download ${name} for Android`,
+    free: 'Free',
+    android: (v: string) => `Android ${v}+`,
+    theme: 'Change theme',
+    language: 'Language',
+    skip: 'Skip to content',
+    close: 'Close',
+    scanTitle: 'On your computer?',
+    scanBody: 'Scan the code with your Android phone to open this page there.',
+    androidOnly: 'Android only. Not available for iPhone.',
+    footerReleases: 'Releases',
+    footerIssues: 'Report a problem',
+    footerRepo: 'Repository',
+    footerMadeBy: 'Made by',
+  },
+} as const satisfies Record<Lang, unknown>;

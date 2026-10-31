@@ -1,0 +1,203 @@
+---
+import Icon from '../kit/Icon.astro';
+import type { DarmixPetContent, Step } from '../../data/landings/darmixpet';
+
+interface Props {
+  c: DarmixPetContent;
+}
+const { c } = Astro.props;
+const h = c.how;
+const total = h.steps.length;
+---
+
+<section id="how" class="pt-screen" aria-labelledby="how-title">
+  <div class="k-container w-full">
+    <h2 id="how-title" class="pt-h2 text-center" data-k-reveal>{h.title}</h2>
+
+    <ol class="how-desk mt-[clamp(1.5rem,4vh,2.75rem)] grid-cols-4 gap-[clamp(1.25rem,2.5vw,2.5rem)]">
+      {
+        h.steps.map((s: Step, i: number) => (
+          <li class="flex flex-col items-center text-center" data-k-reveal style={`--d:${i}`}>
+            <div class="k-phone w-[min(100%,calc((100svh-22.5rem)*0.52))]">
+              <div class="k-phone-screen">
+                {s.media.video ? (
+                  <video src={s.media.video} poster={s.media.poster} muted loop playsinline preload="none" aria-label={s.media.alt} data-k-video />
+                ) : (
+                  <img src={s.media.poster} alt={s.media.alt} loading="lazy" />
+                )}
+              </div>
+            </div>
+            <h3 class="mt-5 text-[1.3rem] font-bold">
+              <span class="text-c-primary">{i + 1}.</span> {s.title}
+            </h3>
+            <p class="mt-1.5 max-w-[17rem] text-[0.98rem] leading-snug text-c-muted">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="how-mob mt-5" data-how role="group" aria-roledescription="carousel" aria-labelledby="how-title">
+      <div class="relative mx-auto w-[min(62vw,calc((100svh-23.5rem)*0.52))]" data-how-swipe>
+        <div class="k-phone">
+          <div class="k-phone-screen">
+            {
+              h.steps.map((s, i) =>
+                s.media.video ? (
+                  <video
+                    data-how-media={i}
+                    src={s.media.video}
+                    poster={s.media.poster}
+                    muted
+                    loop
+                    playsinline
+                    preload="none"
+                    aria-label={s.media.alt}
+                    class:list={['transition-opacity duration-300', i === 0 ? 'opacity-100' : 'opacity-0']}
+                  />
+                ) : (
+                  <img
+                    data-how-media={i}
+                    src={s.media.poster}
+                    alt={s.media.alt}
+                    loading="lazy"
+                    class:list={['transition-opacity duration-300', i === 0 ? 'opacity-100' : 'opacity-0']}
+                  />
+                ),
+              )
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="mx-auto mt-5 flex max-w-sm items-center gap-3">
+        <button type="button" class="pt-icon-btn" data-how-prev aria-label={h.prev}>
+          <Icon name="arrow" class="rotate-180" />
+        </button>
+        <div class="grid min-w-0 flex-1 text-center" aria-live="polite">
+          {
+            h.steps.map((s, i) => (
+              <div data-how-text={i} class:list={['[grid-area:1/1] transition-opacity duration-300', i === 0 ? 'opacity-100' : 'invisible opacity-0']}>
+                <p class="sr-only">{`${h.step} ${i + 1} / ${total}`}</p>
+                <h3 class="text-[1.2rem] font-bold">
+                  <span class="font-display text-c-primary">{i + 1}.</span> {s.title}
+                </h3>
+                <p class="mt-1 text-[0.95rem] leading-snug text-c-muted">{s.body}</p>
+              </div>
+            ))
+          }
+        </div>
+        <button type="button" class="pt-icon-btn" data-how-next aria-label={h.next}>
+          <Icon name="arrow" />
+        </button>
+      </div>
+      <div class="mt-3 flex justify-center gap-2" aria-hidden="true">
+        {h.steps.map((_, i) => <span data-how-dot={i} class:list={['h-2.5 rounded-full border-2 border-c-ink transition-all', i === 0 ? 'w-6 bg-c-primary' : 'w-2.5 bg-c-surface']} />)}
+      </div>
+    </div>
+    <ol class="how-list mx-auto mt-6 grid max-w-5xl gap-3 sm:grid-cols-2 sm:gap-4">
+      {
+        h.steps.map((s, i) => (
+          <li class="pt-card flex gap-3.5 rounded-2xl p-4">
+            <span class="k-tone-primary grid h-9 w-9 flex-none place-items-center rounded-full font-display text-lg font-bold">{i + 1}</span>
+            <div class="min-w-0">
+              <h3 class="text-[1.12rem] font-bold">{s.title}</h3>
+              <p class="mt-0.5 text-[0.95rem] leading-snug text-c-muted">{s.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .how-desk,
+  .how-mob {
+    display: none;
+  }
+  @media (max-width: 1023px) and (min-height: 620px) {
+    .how-mob {
+      display: block;
+    }
+    .how-list {
+      display: none;
+    }
+  }
+  @media (min-width: 1024px) and (min-height: 640px) {
+    .how-desk {
+      display: grid;
+    }
+    .how-list {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { reducedMotion } from '../kit/kit';
+
+  const box = document.querySelector<HTMLElement>('[data-how]');
+  if (box) {
+    const media = [...box.querySelectorAll<HTMLImageElement | HTMLVideoElement>('[data-how-media]')];
+    const texts = [...box.querySelectorAll<HTMLElement>('[data-how-text]')];
+    const dots = [...box.querySelectorAll<HTMLElement>('[data-how-dot]')];
+    const n = media.length;
+    let i = 0;
+    let inView = false;
+
+    const play = () => {
+      media.forEach((m, k) => {
+        if (!(m instanceof HTMLVideoElement)) return;
+        if (k === i && inView && !reducedMotion()) {
+          m.preload = 'auto';
+          m.currentTime = 0;
+          m.play().catch(() => undefined);
+        } else m.pause();
+      });
+    };
+
+    const go = (next: number) => {
+      i = (next + n) % n;
+      media.forEach((m, k) => {
+        m.classList.toggle('opacity-100', k === i);
+        m.classList.toggle('opacity-0', k !== i);
+      });
+      texts.forEach((t, k) => {
+        t.classList.toggle('opacity-100', k === i);
+        t.classList.toggle('opacity-0', k !== i);
+        t.classList.toggle('invisible', k !== i);
+      });
+      dots.forEach((d, k) => {
+        d.classList.toggle('w-6', k === i);
+        d.classList.toggle('bg-c-primary', k === i);
+        d.classList.toggle('w-2.5', k !== i);
+        d.classList.toggle('bg-c-surface', k !== i);
+      });
+      play();
+    };
+
+    box.querySelector('[data-how-prev]')?.addEventListener('click', () => go(i - 1));
+    box.querySelector('[data-how-next]')?.addEventListener('click', () => go(i + 1));
+
+    const swipe = box.querySelector<HTMLElement>('[data-how-swipe]');
+    let sx = 0;
+    let sy = 0;
+    swipe?.addEventListener('touchstart', (e) => {
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+    }, { passive: true });
+    swipe?.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? i + 1 : i - 1);
+    }, { passive: true });
+
+    new IntersectionObserver(
+      ([e]) => {
+        inView = e.isIntersecting && box.offsetParent !== null;
+        play();
+      },
+      { threshold: 0.3 },
+    ).observe(box);
+  }
+</script>

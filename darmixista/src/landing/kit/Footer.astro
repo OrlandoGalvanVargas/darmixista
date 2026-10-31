@@ -1,0 +1,45 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { SITE } from '../../config/site';
+import type { Lang } from '../../i18n/ui';
+import { kitUi } from '../i18n';
+import type { AppMeta } from '../types';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  class?: string;
+}
+const { app, lang, class: className } = Astro.props;
+const ui = kitUi[lang];
+const repo = `https://github.com/${app.repo.owner}/${app.repo.name}`;
+const year = new Date().getFullYear();
+const links = [
+  { href: `${repo}/releases`, label: ui.footerReleases },
+  { href: `${repo}/issues`, label: ui.footerIssues },
+  { href: repo, label: ui.footerRepo },
+];
+---
+
+<footer class:list={['flex flex-col items-center gap-x-6 gap-y-2 py-5 text-sm text-c-muted md:flex-row md:justify-between', className]}>
+  <ul class="flex flex-wrap justify-center gap-x-5 gap-y-1 font-display font-medium">
+    {
+      links.map((l) => (
+        <li>
+          <a class="transition-colors hover:text-c-text" href={l.href} target="_blank" rel="noopener noreferrer">
+            {l.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <p>
+    © {year} · {ui.footerMadeBy}{' '}
+    <a
+      href={getRelativeLocaleUrl(lang, '')}
+      class="font-semibold text-c-text underline decoration-c-primary decoration-2 underline-offset-4 hover:text-c-primary"
+    >
+      {SITE.brand}
+    </a>
+  </p>
+</footer>

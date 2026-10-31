@@ -1,0 +1,45 @@
+---
+import type { Lang } from '../../i18n/ui';
+import Download from '../kit/Download.astro';
+import Footer from '../kit/Footer.astro';
+import type { AppMeta, Skin } from '../types';
+import type { DarmixPetContent } from '../../data/landings/darmixpet';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  c: DarmixPetContent;
+  skin: Skin;
+}
+const { app, lang, c, skin } = Astro.props;
+---
+
+<section id="get" class="pt-screen pt-final relative flex-col overflow-hidden !pb-0" aria-labelledby="get-title">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_45%_at_50%_42%,rgb(var(--c-glow)/0.22),transparent_70%)]"
+    aria-hidden="true"
+  >
+  </div>
+  <div class="k-container relative flex w-full flex-1 flex-col items-center justify-center text-center">
+    <div class="pt-stage pt-stage-sm w-[clamp(8rem,26svh,13rem)]" data-k-reveal>
+      <span class="pt-halo" aria-hidden="true"></span>
+      <span class="pt-ring" aria-hidden="true"></span>
+      <img src={skin.imageSmall} alt="" width="200" height="320" loading="lazy" data-skin-img-sm class="pt-float relative z-[1] h-auto w-[52%]" />
+    </div>
+    <h2 id="get-title" class="pt-h2 mt-6" data-k-reveal>{c.final.title}</h2>
+    <p class="mt-3 max-w-md text-c-muted md:text-lg" data-k-reveal>{c.final.lead}</p>
+    <div class="mt-7 flex flex-col items-center gap-3" data-k-reveal>
+      <Download app={app} lang={lang} meta class="!items-center" btnClass="pt-btn pt-btn-primary" />
+      <button
+        type="button"
+        data-k-sheet-open="install"
+        class="font-display font-semibold text-c-primary underline decoration-2 underline-offset-4 hover:decoration-[3px]"
+      >
+        {c.final.howTo}
+      </button>
+    </div>
+  </div>
+  <div class="k-container relative w-full">
+    <Footer app={app} lang={lang} class="border-t-2 border-c-outline" />
+  </div>
+</section>

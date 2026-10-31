@@ -1,0 +1,39 @@
+---
+import QRCode from 'qrcode';
+import type { Lang } from '../../i18n/ui';
+import { kitUi } from '../i18n';
+
+interface Props {
+  url: string;
+  lang: Lang;
+  color: string;
+  class?: string;
+}
+const { url, lang, color, class: className } = Astro.props;
+const ui = kitUi[lang];
+const svg = await QRCode.toString(url, {
+  type: 'svg',
+  margin: 0,
+  errorCorrectionLevel: 'M',
+  color: { dark: color, light: '#0000' },
+});
+---
+
+<div class:list={['k-qr items-center gap-4', className]}>
+  <div class="h-24 w-24 flex-none rounded-xl bg-white p-2" set:html={svg} role="img" aria-label={url} />
+  <div>
+    <p class="font-display text-lg font-semibold">{ui.scanTitle}</p>
+    <p class="text-[0.95rem] text-c-muted">{ui.scanBody}</p>
+  </div>
+</div>
+
+<style>
+  .k-qr {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+    .k-qr {
+      display: flex;
+    }
+  }
+</style>

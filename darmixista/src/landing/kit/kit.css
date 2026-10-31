@@ -1,0 +1,285 @@
+@theme inline {
+  --color-c-bg: var(--c-bg);
+  --color-c-surface: var(--c-surface);
+  --color-c-surface-variant: var(--c-surfaceVariant);
+  --color-c-ink: var(--c-ink);
+  --color-c-shadow: var(--c-shadow);
+  --color-c-text: var(--c-text);
+  --color-c-muted: var(--c-muted);
+  --color-c-outline: var(--c-outline);
+  --color-c-primary: var(--c-primary);
+  --color-c-on-primary: var(--c-onPrimary);
+  --color-c-primary-container: var(--c-primaryContainer);
+  --color-c-on-primary-container: var(--c-onPrimaryContainer);
+  --color-c-accent: var(--c-accent);
+  --color-c-on-accent: var(--c-onAccent);
+  --color-c-accent-container: var(--c-accentContainer);
+  --color-c-on-accent-container: var(--c-onAccentContainer);
+
+  --font-display: var(--k-font-display), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--k-font-body), ui-rounded, system-ui, sans-serif;
+
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  .k-theme-dark {
+    display: none;
+  }
+  :root[data-theme="dark"] .k-theme-light {
+    display: none;
+  }
+  :root[data-theme="dark"] .k-theme-dark {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .k-theme-light {
+      display: none;
+    }
+    :root:not([data-theme="light"]) .k-theme-dark {
+      display: block;
+    }
+  }
+  :root.k-lock {
+    overflow: hidden;
+    padding-right: var(--k-sbw, 0px);
+  }
+  :root.k-lock body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    background-color: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--c-primaryContainer);
+    color: var(--c-onPrimaryContainer);
+  }
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+}
+
+@layer components {
+  .k-container {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .k-container {
+      padding-inline: 2rem;
+    }
+  }
+
+  .k-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3.25rem;
+    padding: 0.7rem 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 0.18s var(--ease-soft),
+      box-shadow 0.18s var(--ease-soft),
+      background-color 0.25s;
+  }
+  .k-btn svg {
+    width: 1.3em;
+    height: 1.3em;
+    flex: none;
+  }
+  .k-btn-sm {
+    min-height: 2.5rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .k-phone {
+    position: relative;
+    aspect-ratio: var(--ratio, 540 / 1036);
+    border-radius: 2.4rem;
+    padding: 0.45rem;
+    background: var(--c-ink);
+  }
+  .k-phone-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 1.95rem;
+    background: var(--c-bg);
+  }
+  .k-phone-screen > img,
+  .k-phone-screen > video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .k-sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 44rem;
+    max-height: min(88dvh, 52rem);
+    padding: 0;
+    border: 0;
+    color: var(--c-text);
+    background: var(--c-surface);
+    border-radius: 1.75rem 1.75rem 0 0;
+    overflow: hidden;
+    transform: translateY(100%);
+    transition:
+      transform 0.45s var(--ease-soft),
+      display 0.45s allow-discrete,
+      overlay 0.45s allow-discrete;
+  }
+  .k-sheet[open] {
+    transform: none;
+  }
+  @starting-style {
+    .k-sheet[open] {
+      transform: translateY(100%);
+    }
+  }
+  @media (min-width: 768px) {
+    .k-sheet {
+      inset: 0 0 0 auto;
+      margin: 0;
+      max-width: 34rem;
+      max-height: 100dvh;
+      height: 100dvh;
+      border-radius: 1.75rem 0 0 1.75rem;
+      transform: translateX(100%);
+    }
+    @starting-style {
+      .k-sheet[open] {
+        transform: translateX(100%);
+      }
+    }
+  }
+  .k-sheet::backdrop {
+    background: rgb(10 14 24 / 0);
+    backdrop-filter: blur(0);
+    transition:
+      background 0.4s,
+      backdrop-filter 0.4s,
+      display 0.4s allow-discrete,
+      overlay 0.4s allow-discrete;
+  }
+  .k-sheet[open]::backdrop {
+    background: rgb(10 14 24 / 0.45);
+    backdrop-filter: blur(3px);
+  }
+  @starting-style {
+    .k-sheet[open]::backdrop {
+      background: rgb(10 14 24 / 0);
+      backdrop-filter: blur(0);
+    }
+  }
+
+  .k-details > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .k-details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .k-details .k-chevron {
+    transition: transform 0.3s var(--ease-soft);
+  }
+  .k-details[open] .k-chevron {
+    transform: rotate(180deg);
+  }
+
+  .k-tone-primary {
+    background: var(--c-primaryContainer);
+    color: var(--c-onPrimaryContainer);
+  }
+  .k-tone-accent {
+    background: var(--c-accentContainer);
+    color: var(--c-onAccentContainer);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.k-js [data-k-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s var(--ease-soft),
+      transform 0.7s var(--ease-soft);
+    transition-delay: calc(var(--d, 0) * 90ms);
+  }
+  html.k-js [data-k-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: k-reveal 0.75s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes k-reveal {
+  from {
+    clip-path: circle(0 at var(--k-vt-x, 50%) var(--k-vt-y, 50%));
+  }
+  to {
+    clip-path: circle(var(--k-vt-r, 150vmax) at var(--k-vt-x, 50%) var(--k-vt-y, 50%));
+  }
+}

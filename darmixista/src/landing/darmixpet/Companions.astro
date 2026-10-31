@@ -1,0 +1,119 @@
+---
+import type { DarmixPetContent } from '../../data/landings/darmixpet';
+import type { Skin } from '../types';
+
+interface Props {
+  c: DarmixPetContent;
+  skins: Skin[];
+}
+const { c, skins } = Astro.props;
+const skinOf = (id: string) => skins.find((s) => s.id === id)!;
+const data = Object.fromEntries(skins.map((s) => [s.id, { img: s.image, sm: s.imageSmall, bgLight: s.light.bg, bgDark: s.dark.bg }]));
+---
+
+<script type="application/json" id="skin-data" set:html={JSON.stringify(data)} />
+
+<section id="companions" class="pt-screen pt-dots relative bg-c-surface-variant/60" aria-labelledby="companions-title">
+  <div class="k-container w-full">
+    <div class="mx-auto max-w-3xl text-center" data-k-reveal>
+      <h2 id="companions-title" class="pt-h2">{c.companions.title}</h2>
+      <p class="mt-3 text-c-muted md:text-lg">{c.companions.lead}</p>
+    </div>
+
+    <div
+      class="mx-auto mt-[clamp(1.25rem,4vh,2.75rem)] grid max-w-md gap-3.5 md:max-w-none md:grid-cols-3 md:gap-6"
+      role="radiogroup"
+      aria-labelledby="companions-title"
+    >
+      {
+        c.companions.characters.map((ch, i) => {
+          const skin = skinOf(ch.id);
+          const swatches = [skin.light.primary, skin.light.accent, skin.light.bg, skin.dark.primary];
+          return (
+            <button
+              type="button"
+              role="radio"
+              aria-checked={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              aria-label={ch.name}
+              data-skin-choice={ch.id}
+              data-k-reveal
+              style={`--d:${i};--g:${skin.glow}`}
+              class="pt-card pt-choice group relative grid cursor-pointer grid-cols-[4.5rem_1fr] min-[360px]:grid-cols-[5.5rem_1fr] items-center gap-4 overflow-hidden p-3 pr-4 text-left md:flex md:flex-col md:px-6 md:pt-5 md:pb-6 md:text-center"
+            >
+              <span class="pt-choice-glow pointer-events-none absolute inset-0 md:inset-x-0 md:bottom-auto md:h-3/5" aria-hidden="true" />
+              <span class="pt-choice-state absolute top-3 right-3 max-[359px]:hidden rounded-full px-2.5 py-0.5 font-display text-xs font-bold md:top-4 md:right-4 md:px-3 md:py-1">
+                <span class="pt-on">{c.companions.chosen}</span>
+                <span class="pt-off">{c.companions.choose}</span>
+              </span>
+              <img
+                src={skin.image}
+                alt=""
+                width="400"
+                height="640"
+                loading="lazy"
+                class="relative mx-auto h-[5.5rem] min-[360px]:h-[6.5rem] w-auto max-md:[@media(max-height:780px)]:h-[5.25rem] object-contain transition-transform duration-500 ease-(--ease-pop) group-hover:-translate-y-2 group-hover:-rotate-3 md:h-[clamp(8rem,30svh,15rem)]"
+              />
+              <span class="relative flex min-w-0 flex-col md:items-center">
+                <span class="font-display min-[360px]:pr-16 text-xl leading-tight font-bold md:mt-3 md:pr-0 md:text-2xl">{ch.name}</span>
+                <span class="mt-0.5 font-display text-xs font-semibold tracking-wide text-c-muted uppercase md:mt-1 md:text-sm">{ch.element}</span>
+                <span class="mt-1.5 font-display leading-snug italic max-md:[@media(max-height:780px)]:hidden md:mt-3 md:text-lg">“{ch.quote}”</span>
+                <span class="mt-2.5 flex gap-1.5 md:mt-4" aria-hidden="true">
+                  {swatches.map((col) => (
+                    <span class="h-4 w-4 rounded-full border-2 border-c-ink md:h-5 md:w-5" style={`background:${col}`} />
+                  ))}
+                </span>
+              </span>
+            </button>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .pt-choice-glow {
+    background: radial-gradient(70% 80% at 50% 0%, rgb(var(--g) / 0.3), transparent 75%);
+  }
+  @media (max-width: 767px) {
+    .pt-choice-glow {
+      background: radial-gradient(45% 90% at 12% 50%, rgb(var(--g) / 0.32), transparent 75%);
+    }
+  }
+  .pt-choice {
+    transition:
+      transform 0.25s var(--ease-soft),
+      box-shadow 0.25s var(--ease-soft);
+  }
+  .pt-choice:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0 var(--c-shadow);
+  }
+  .pt-choice[aria-checked='true'] {
+    outline: 4px solid var(--c-primary);
+    outline-offset: 3px;
+  }
+  .pt-choice-state {
+    border: 2px solid var(--c-ink);
+    background: var(--c-surface);
+  }
+  .pt-choice[aria-checked='true'] .pt-choice-state {
+    background: var(--c-primary);
+    color: var(--c-onPrimary);
+  }
+  .pt-on {
+    display: none;
+  }
+  .pt-choice[aria-checked='true'] .pt-on {
+    display: inline;
+  }
+  .pt-choice[aria-checked='true'] .pt-off {
+    display: none;
+  }
+</style>
+
+<script>
+  import { initSkins } from './skins';
+  initSkins();
+</script>

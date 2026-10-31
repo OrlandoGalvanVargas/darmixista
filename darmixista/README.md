@@ -59,7 +59,7 @@ Las releases marcadas como _pre-release_ o borrador se ignoran.
 
 ### Agregar la landing de otra app
 
-1. Copia `src/data/apps/darmixpet.ts` como `src/data/apps/<app>.ts` y cambia textos, paleta, repositorio y versión.
+1. Copia `src/data/apps/darmixfit.ts` como `src/data/apps/<app>.ts` y cambia textos, paleta, repositorio y versión.
 2. Pon sus imágenes en `public/apps/<app>/` (ícono, capturas, personajes, videos `.mp4` con su imagen de portada).
 3. Copia `src/pages/darmixpet/index.astro` y `src/pages/en/darmixpet/index.astro` a `src/pages/<app>/` y
    `src/pages/en/<app>/`, e importa tu archivo de datos.
@@ -80,6 +80,26 @@ las tiene, desaparecen del menú.
 `defaultScheme: 'dark'` hace que la página abra en oscuro si el visitante no ha elegido tema.
 Para usar otras fuentes, instala su paquete de `@fontsource-variable/…` e impórtalo en
 `src/layouts/LandingLayout.astro` (el navegador solo descarga las fuentes que usa cada página).
+
+### Nueva estructura de landings (en migración)
+
+DarmixPet ya usa la nueva estructura; DarmixFit y DarmixNight siguen con la anterior (`src/components/app-landing/`)
+hasta que se migren. La nueva estructura no depende de ningún archivo de la anterior.
+
+| Carpeta                                        | Contenido                                                                                                                                                                                                         |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/landing/kit/`                             | Piezas compartidas que no cambian entre apps: base y SEO (`Shell`), datos estructurados (`jsonld.ts`), íconos, botón de descarga, QR, panel «Antes de instalar», pie y comportamiento común (`kit.ts`, `kit.css`) |
+| `src/landing/types.ts` y `src/landing/i18n.ts` | Tipos y textos comunes del kit                                                                                                                                                                                    |
+| `src/landing/<app>/`                           | Diseño propio de cada app: secciones, estilos (`<app>.css`), scripts y su página (`<App>Page.astro`)                                                                                                              |
+| `src/data/landings/<app>.ts`                   | Textos, paletas, versión y contenido del panel de cada app                                                                                                                                                        |
+| `src/pages/<app>/` y `src/pages/en/<app>/`     | Rutas: solo renderizan `<App>Page` con su idioma                                                                                                                                                                  |
+
+Reglas para agregar o cambiar una landing:
+
+- Lo propio de una app vive en su carpeta y en su archivo de datos; no se agrega nada de una app al kit.
+- La paleta de cada app comparte los colores base (`CorePalette`); los colores extra (por ejemplo los estados de DarmixPet) se declaran en su archivo de datos y se mapean en su `<app>.css`.
+- El panel «Antes de instalar» muestra la pestaña de permisos solo si la app tiene permisos en sus datos.
+- Al terminar de migrar DarmixFit y DarmixNight se borran `src/components/app-landing/`, `src/layouts/LandingLayout.astro`, `src/styles/landing.css`, `src/scripts/landing.ts`, `src/data/apps/` e `src/i18n/landing.ts`.
 
 ## Formulario de contacto (Web3Forms)
 

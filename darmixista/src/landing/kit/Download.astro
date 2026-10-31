@@ -1,0 +1,58 @@
+---
+import Icon from './Icon.astro';
+import type { Lang } from '../../i18n/ui';
+import { kitUi } from '../i18n';
+import type { AppMeta } from '../types';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  class?: string;
+  btnClass?: string;
+  meta?: boolean;
+  label?: string;
+}
+const { app, lang, class: className, btnClass, meta = false, label } = Astro.props;
+const ui = kitUi[lang];
+const { owner, name } = app.repo;
+const { apk, sizeMb, version } = app.release;
+const href = apk
+  ? `https://github.com/${owner}/${name}/releases/download/v${version}/${apk}`
+  : `https://github.com/${owner}/${name}/releases/latest`;
+const locale = lang === 'es' ? 'es-MX' : 'en-US';
+const size = sizeMb ? `${sizeMb.toLocaleString(locale, { maximumFractionDigits: 1 })} MB` : '';
+---
+
+<div class:list={['flex flex-col items-start gap-2', className]}>
+  <a
+    href={href}
+    class:list={['k-btn', btnClass]}
+    data-k-apk
+    data-k-apk-fallback={apk ? undefined : ''}
+    aria-label={ui.downloadFor(app.name)}
+    rel="noopener"
+  >
+    <Icon name="download" />
+    <span>{label ?? ui.download}</span>
+  </a>
+  {
+    meta && (
+      <p class="flex flex-wrap items-center gap-x-2 gap-y-1 pl-1 text-sm text-c-muted">
+        <span class="inline-flex items-center gap-1.5">
+          <Icon name="android" class="h-4 w-4 text-c-primary" />
+          {ui.android(app.minAndroid)}
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>
+          v<span data-k-apk-version>{version}</span>
+        </span>
+        <span class="inline-flex items-center gap-2 [&[hidden]]:hidden" data-k-apk-size-wrap hidden={!size}>
+          <span aria-hidden="true">·</span>
+          <span data-k-apk-size>{size}</span>
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>{ui.free}</span>
+      </p>
+    )
+  }
+</div>
