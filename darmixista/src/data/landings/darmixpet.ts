@@ -24,12 +24,12 @@ const A = "/apps/darmixpet";
 export const app: AppMeta = {
   slug: "darmixpet",
   name: "DarmixPet",
-  repo: { owner: "OrlandoGalvanVargas", name: "DarmixPet" },
+  repo: { owner: "OrlandoGalvanVargas", name: "darmixpet" },
   release: {
-    version: "1.3.0",
-    apk: "DarmixPet-v1.3.0.apk",
-    sizeMb: 17.1,
-    date: "2026-10-30",
+    version: "1.4.0",
+    apk: "DarmixPet-v1.4.0.apk",
+    sizeMb: 17.3,
+    date: "2026-11-03",
   },
   minAndroid: "8.0",
   icon: `${A}/icon.webp`,
@@ -207,6 +207,7 @@ export interface Character {
   short: string;
   element: string;
   quote: string;
+  forYou: string;
 }
 
 export interface Step {
@@ -242,7 +243,7 @@ export interface DarmixPetContent {
 }
 
 const guide =
-  "https://github.com/OrlandoGalvanVargas/DarmixPet#-permisos-paso-a-paso";
+  "https://github.com/OrlandoGalvanVargas/darmixpet#-permisos-paso-a-paso";
 
 export const content: Record<Lang, DarmixPetContent> = {
   es: {
@@ -260,7 +261,7 @@ export const content: Record<Lang, DarmixPetContent> = {
     },
     hero: {
       title:
-        'Tu compañero de<br class="max-lg:hidden"> <em>tiempo de pantalla</em>.',
+        'Tu compañero de<br class="max-lg:hidden"> <em>tiempo de pantalla</em>',
       lead: "Una mascota que vive sobre tus apps y te avisa cuando ya es hora de soltar el teléfono.",
       howTo: "¿Cómo se instala?",
     },
@@ -280,7 +281,7 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           title: "Ponles límite",
-          body: "Minutos por sesión, descanso entre sesiones y cuántas veces al día.",
+          body: "Tú decides cuántos minutos por sesión, cuánto descanso y cuántas veces al día.",
           media: {
             video: `${A}/clips/limits.mp4`,
             poster: `${A}/clips/limits.webp`,
@@ -297,7 +298,7 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           title: "Te enseña tus notificaciones",
-          body: "Tócalo y te las muestra una por una, sin bajar la barra.",
+          body: "Lo tocas y te las muestra una por una, sin bajar la barra.",
           media: {
             video: `${A}/clips/notifications.mp4`,
             poster: `${A}/clips/notifications.webp`,
@@ -308,7 +309,7 @@ export const content: Record<Lang, DarmixPetContent> = {
     },
     companions: {
       title: "Elige a tu compañero",
-      lead: "Cada uno tiene su personalidad y le pone sus colores a la app. Toca uno para verlo aquí.",
+      lead: "Cada uno te cuida a su manera y le pone sus colores a la app.",
       chosen: "Elegido",
       choose: "Elegir",
       characters: [
@@ -317,21 +318,24 @@ export const content: Record<Lang, DarmixPetContent> = {
           name: "Archi el Archimago",
           short: "Archi",
           element: "Éter · Magia arcana",
-          quote: "Respira. Yo me encargo del ruido.",
+          quote: "Tú enfócate, yo vigilo.",
+          forYou: "Para ti, si te distraes fácil",
         },
         {
           id: "sylva",
           name: "Sylva el Sabio",
           short: "Sylva",
           element: "Naturaleza · Vitalidad",
-          quote: "Todo lo bueno crece con calma.",
+          quote: "Despacio también se llega.",
+          forYou: "Para ti, si se te olvida descansar",
         },
         {
           id: "galahad",
           name: "Sir Galahad el Guardián",
           short: "Galahad",
           element: "Tierra · Disciplina",
-          quote: "Tu tiempo es tu tesoro. Yo lo defiendo.",
+          quote: "Tu tiempo no se negocia.",
+          forYou: "Para ti, si necesitas límites firmes",
         },
       ],
     },
@@ -353,55 +357,51 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           title: "Dale los permisos",
-          body: "La app te dice qué tocar en cada uno.",
+          body: "Te los pide uno a la vez y te dice qué tocar.",
         },
         { title: "Elige a tu compañero", body: "Y listo." },
       ],
       permissionsIntro:
-        "Para funcionar, DarmixPet necesita algunos permisos. La primera vez que la abras te los pide uno por uno y te explica qué tocar.",
+        "La primera vez que abras DarmixPet te pide 7 permisos, uno a la vez y en orden. En cada paso te dice qué tocar según la marca de tu teléfono.",
       permissions: [
         {
-          icon: "lock",
-          title: "Ajustes restringidos",
-          why: "Solo en Android 13 o superior. Desbloquea los demás permisos.",
-          badge: "Primero",
-        },
-        {
-          icon: "layers",
-          title: "Mostrar sobre otras apps",
-          why: "Para que tu mascota aparezca encima de tus apps.",
-        },
-        {
-          icon: "hourglass",
-          title: "Acceso a datos de uso",
-          why: "Para medir cuánto tiempo usas cada app.",
+          icon: "accessibility",
+          title: "Detección instantánea",
+          why: "Para saber al momento qué app abres, sin leer lo que escribes",
         },
         {
           icon: "bell",
           title: "Leer notificaciones",
-          why: "Para enseñarte tus notificaciones y leerte los mensajes en voz alta.",
+          why: "Para enseñarte tus notificaciones y avisarte de tus mensajes",
+        },
+        {
+          icon: "hourglass",
+          title: "Acceso a datos de uso",
+          why: "Para medir cuánto tiempo pasas en cada app",
+        },
+        {
+          icon: "layers",
+          title: "Mostrar sobre otras apps",
+          why: "Para que tu mascota flote encima de tus apps",
         },
         {
           icon: "bell",
           title: "Notificaciones",
-          why: "Para avisarte cuando una app entra en descanso.",
+          why: "Para avisarte de los descansos y mantener despierta a tu mascota",
         },
         {
           icon: "battery",
-          title: "Batería sin restricciones",
-          why: "Para que Android no la cierre por ahorrar batería.",
-        },
-        {
-          icon: "accessibility",
-          title: "Accesibilidad",
-          why: "Para saber al momento qué app abriste. No lee lo que escribes.",
+          title: "Ignorar optimización de batería",
+          why: "Para que Android no cierre a tu mascota",
         },
         {
           icon: "sun",
           title: "Modificar ajustes del sistema",
-          why: "Solo para cambiar el brillo desde el menú rápido.",
+          why: "Solo para cambiar el brillo desde el menú rápido",
         },
       ],
+      permissionsNote:
+        "En Android 13 o superior, Android puede mostrar el aviso de ajuste restringido. Se desbloquea una sola vez y la app te enseña cómo en ese mismo paso.",
       permissionsGuide: { label: "Ver la guía paso a paso", href: guide },
       faq: [
         {
@@ -410,7 +410,7 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           q: "¿Por qué no está en Google Play?",
-          a: "Por ahora solo se publica en GitHub como APK. Por eso Android pide un paso extra en algunos permisos. Las actualizaciones te llegan desde la misma app.",
+          a: "Es un proyecto personal y se publica directo como APK. Por eso Android pide un paso extra en algunos permisos. Las actualizaciones te llegan desde la misma app.",
         },
         {
           q: "¿Es seguro instalar un APK?",
@@ -418,7 +418,11 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           q: "¿Lee mis mensajes?",
-          a: "Solo para enseñártelos cuando tocas a tu mascota o para leerlos en voz alta. Nada sale de tu teléfono y puedes apagar la voz cuando quieras.",
+          a: "Solo para enseñártelos cuando tocas a tu mascota y para avisarte que llegó uno. No guarda nada ni lo manda a ningún lado.",
+        },
+        {
+          q: "¿Gasta mucha batería?",
+          a: "No. Solo revisa qué app está abierta mientras la pantalla está encendida. Si quieres un descanso total, puedes dormir a tu mascota desde su menú rápido.",
         },
         {
           q: "¿Cómo se actualiza?",
@@ -448,7 +452,7 @@ export const content: Record<Lang, DarmixPetContent> = {
     },
     hero: {
       title:
-        'Your <em><span class="whitespace-nowrap">screen-time</span></em><br class="max-lg:hidden"> companion.',
+        'Your <em><span class="whitespace-nowrap">screen-time</span></em><br class="max-lg:hidden"> companion',
       lead: "A pet that lives on top of your apps and lets you know when it’s time to put the phone down.",
       howTo: "How do I install it?",
     },
@@ -468,7 +472,7 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           title: "Give them a limit",
-          body: "Minutes per session, breaks between sessions and how many times a day.",
+          body: "You decide the minutes per session, the break and how many times a day.",
           media: {
             video: `${A}/clips/limits.mp4`,
             poster: `${A}/clips/limits.webp`,
@@ -496,7 +500,7 @@ export const content: Record<Lang, DarmixPetContent> = {
     },
     companions: {
       title: "Choose your companion",
-      lead: "Each one has its own personality and gives the app its colors. Tap one to see it here.",
+      lead: "Each one looks after you in its own way and gives the app its colors.",
       chosen: "Chosen",
       choose: "Choose",
       characters: [
@@ -505,21 +509,24 @@ export const content: Record<Lang, DarmixPetContent> = {
           name: "Archi the Archmage",
           short: "Archi",
           element: "Ether · Arcane magic",
-          quote: "Breathe. I’ll handle the noise.",
+          quote: "You focus, I’ll keep watch.",
+          forYou: "For you if you get distracted easily",
         },
         {
           id: "sylva",
           name: "Sylva the Sage",
           short: "Sylva",
           element: "Nature · Vitality",
-          quote: "All good things grow slowly.",
+          quote: "Slow still gets you there.",
+          forYou: "For you if you forget to rest",
         },
         {
           id: "galahad",
           name: "Sir Galahad the Guardian",
           short: "Galahad",
           element: "Earth · Discipline",
-          quote: "Your time is your treasure. I defend it.",
+          quote: "Your time is non-negotiable.",
+          forYou: "For you if you need firm limits",
         },
       ],
     },
@@ -541,55 +548,51 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           title: "Grant the permissions",
-          body: "The app tells you what to tap for each one.",
+          body: "It asks for them one at a time and tells you what to tap.",
         },
         { title: "Pick your companion", body: "And you’re done." },
       ],
       permissionsIntro:
-        "DarmixPet needs a few permissions to work. The first time you open it, it asks for them one at a time and tells you what to tap.",
+        "The first time you open DarmixPet it asks for 7 permissions, one at a time and in order. Each step tells you what to tap for your phone’s brand.",
       permissions: [
         {
-          icon: "lock",
-          title: "Restricted settings",
-          why: "Only on Android 13 or later. Unlocks the other permissions.",
-          badge: "First",
-        },
-        {
-          icon: "layers",
-          title: "Display over other apps",
-          why: "So your pet can show up on top of your apps.",
-        },
-        {
-          icon: "hourglass",
-          title: "Usage access",
-          why: "To measure how long you use each app.",
+          icon: "accessibility",
+          title: "Instant detection",
+          why: "To know right away which app you open, without reading what you type",
         },
         {
           icon: "bell",
           title: "Read notifications",
-          why: "To show you your notifications and read messages out loud.",
+          why: "To show you your notifications and let you know about messages",
+        },
+        {
+          icon: "hourglass",
+          title: "Usage access",
+          why: "To measure how long you spend in each app",
+        },
+        {
+          icon: "layers",
+          title: "Display over other apps",
+          why: "So your pet can float on top of your apps",
         },
         {
           icon: "bell",
           title: "Notifications",
-          why: "To let you know when an app goes on a break.",
+          why: "To tell you about breaks and keep your pet awake",
         },
         {
           icon: "battery",
-          title: "Unrestricted battery",
-          why: "So Android doesn’t close it to save battery.",
-        },
-        {
-          icon: "accessibility",
-          title: "Accessibility",
-          why: "To know right away which app you opened. It doesn’t read what you type.",
+          title: "Ignore battery optimization",
+          why: "So Android doesn’t close your pet",
         },
         {
           icon: "sun",
           title: "Modify system settings",
-          why: "Only to change brightness from the quick menu.",
+          why: "Only to change brightness from the quick menu",
         },
       ],
+      permissionsNote:
+        "On Android 13 or later, Android may show a restricted setting notice. You unlock it only once, and the app shows you how in that same step.",
       permissionsGuide: { label: "See the step-by-step guide", href: guide },
       faq: [
         {
@@ -598,7 +601,7 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           q: "Why isn’t it on Google Play?",
-          a: "For now it’s only published on GitHub as an APK. That’s why Android asks for an extra step on some permissions. Updates come from the app itself.",
+          a: "It’s a personal project published directly as an APK. That’s why Android asks for an extra step on some permissions. Updates come from the app itself.",
         },
         {
           q: "Is it safe to install an APK?",
@@ -606,7 +609,11 @@ export const content: Record<Lang, DarmixPetContent> = {
         },
         {
           q: "Does it read my messages?",
-          a: "Only to show them when you tap your pet or to read them out loud. Nothing leaves your phone and you can turn the voice off anytime.",
+          a: "Only to show them when you tap your pet and to let you know one arrived. It doesn’t store anything or send it anywhere.",
+        },
+        {
+          q: "Does it drain the battery?",
+          a: "No. It only checks which app is open while the screen is on. If you want a full break, you can put your pet to sleep from its quick menu.",
         },
         {
           q: "How does it update?",
