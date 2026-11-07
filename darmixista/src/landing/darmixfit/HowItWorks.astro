@@ -1,0 +1,96 @@
+---
+import type { DarmixFitContent } from '../../data/landings/darmixfit';
+
+interface Props {
+  c: DarmixFitContent;
+}
+const { c } = Astro.props;
+const h = c.how;
+---
+
+<section id="how" class="df-screen" aria-labelledby="how-title" data-rail="1">
+  <div class="df-glow right-[2%] top-[12%] h-[44rem] w-[44rem]" aria-hidden="true"></div>
+  <div class="k-container relative grid w-full items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-16">
+    <div>
+      <p class="df-kicker" data-k-reveal>{h.kicker}</p>
+      <h2 id="how-title" class="df-display df-h2 mt-3" data-k-reveal set:html={h.title} />
+      <ol class="mt-[clamp(1rem,4vh,2.5rem)] grid max-w-[36rem] gap-2 sm:gap-3.5" data-how-rows>
+        {
+          h.rows.map((r, i) => (
+            <li class="df-panel df-cut df-row grid grid-cols-[2.4rem_1fr] items-center gap-3 px-3.5 py-2.5 sm:grid-cols-[4rem_1fr] sm:gap-4 sm:px-6 sm:py-4" data-how-row={i} data-k-reveal style={`--d:${i}`}>
+              <span class="font-display text-[1.9rem] leading-none font-black text-c-primary sm:text-[2.75rem]">{String(i + 1).padStart(2, '0')}</span>
+              <span>
+                <span class="block font-display text-[1.2rem] leading-tight font-extrabold tracking-[0.02em] uppercase sm:text-[1.55rem]">{r.title}</span>
+                <span class="df-row-body mt-0.5 hidden text-[0.95rem] leading-snug text-c-muted sm:block">{r.body}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="relative mx-auto w-[min(46vw,calc((100svh-27.5rem)*0.52),15rem)] min-w-[8.5rem] sm:max-lg:w-[min(28vw,calc((100svh-30rem)*0.52))] lg:w-[min(21rem,calc((100svh-10rem)*0.52))]" data-k-reveal>
+      <div class="df-phone">
+        <video
+          src="/apps/darmixfit/clips/workout.mp4"
+          poster="/apps/darmixfit/clips/workout.webp"
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label={h.video}
+          data-k-video
+          data-how-video
+        ></video>
+      </div>
+      <span class="df-tag df-cut absolute top-[13%] -left-[18%] hidden lg:block" aria-hidden="true">{h.resting} <span data-how-clock>0:05</span></span>
+      <span class="df-tag df-cut absolute -right-[20%] bottom-[18%] hidden lg:block" aria-hidden="true">{h.set}</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .df-row {
+    transition:
+      box-shadow 0.35s,
+      transform 0.35s;
+  }
+  .df-row.is-on {
+    box-shadow:
+      inset 0 0 0 1px var(--c-accent),
+      0 0 34px -12px rgb(var(--c-glow) / 0.9);
+  }
+  .df-tag {
+    --cut: 8px;
+    padding: 0.55rem 0.9rem;
+    background: var(--c-bg);
+    box-shadow: inset 0 0 0 1px var(--c-accent);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-primary);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>('[data-how-video]');
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-how-row]')];
+  const clock = document.querySelector('[data-how-clock]');
+  if (video && rows.length) {
+    let last = -1;
+    const mark = (i: number) => {
+      if (i === last) return;
+      last = i;
+      rows.forEach((r, k) => r.classList.toggle('is-on', k === i));
+    };
+    mark(0);
+    video.addEventListener('timeupdate', () => {
+      const t = video.currentTime;
+      mark(t < 0.9 ? 0 : t < 5.5 ? 1 : 2);
+      if (clock) clock.textContent = `0:0${Math.max(0, Math.min(5, Math.ceil(5.9 - t)))}`;
+    });
+  }
+</script>

@@ -11,7 +11,7 @@ const skinOf = (id: string) => skins.find((s) => s.id === id)!;
 const data = Object.fromEntries(skins.map((s) => [s.id, { img: s.image, sm: s.imageSmall, bgLight: s.light.bg, bgDark: s.dark.bg }]));
 ---
 
-<script type="application/json" id="skin-data" set:html={JSON.stringify(data)} />
+<script type="application/json" id="k-skin-data" set:html={JSON.stringify(data)} />
 
 <section id="companions" class="pt-screen pt-dots relative bg-c-surface-variant/60" aria-labelledby="companions-title">
   <div class="k-container w-full">
@@ -56,9 +56,10 @@ const data = Object.fromEntries(skins.map((s) => [s.id, { img: s.image, sm: s.im
               />
               <span class="relative flex min-w-0 flex-col md:items-center">
                 <span class="font-display min-[360px]:pr-16 text-xl leading-tight font-bold md:mt-3 md:pr-0 md:text-2xl">{ch.name}</span>
-                <span class="mt-0.5 font-display text-xs font-semibold tracking-wide text-c-muted uppercase md:mt-1 md:text-sm">{ch.element}</span>
+                <span class="mt-0.5 font-display text-xs font-semibold tracking-wide text-c-muted uppercase max-md:[@media(max-height:780px)]:hidden md:mt-1 md:text-sm">{ch.element}</span>
                 <span class="mt-1.5 font-display leading-snug italic max-md:[@media(max-height:780px)]:hidden md:mt-3 md:text-lg">“{ch.quote}”</span>
-                <span class="mt-2.5 flex gap-1.5 md:mt-4" aria-hidden="true">
+                <span class="mt-1 text-sm leading-snug text-c-muted md:mt-1.5">{ch.forYou}</span>
+                <span class="mt-4 hidden gap-1.5 md:flex" aria-hidden="true">
                   {swatches.map((col) => (
                     <span class="h-4 w-4 rounded-full border-2 border-c-ink md:h-5 md:w-5" style={`background:${col}`} />
                   ))}

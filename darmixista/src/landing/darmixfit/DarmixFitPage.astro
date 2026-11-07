@@ -1,0 +1,55 @@
+---
+import '@fontsource-variable/big-shoulders';
+import '@fontsource-variable/manrope';
+import './darmixfit.css';
+import type { Lang } from '../../i18n/ui';
+import { app, content, skins, swatches } from '../../data/landings/darmixfit';
+import { kitUi } from '../i18n';
+import Shell from '../kit/Shell.astro';
+import { appJsonLd } from '../kit/jsonld';
+import Sheet from '../kit/Sheet.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import HowItWorks from './HowItWorks.astro';
+import Programs from './Programs.astro';
+import Final from './Final.astro';
+import Rail from './Rail.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang];
+const ui = kitUi[lang];
+const jsonLd = appJsonLd({ app, lang, meta: c.meta, site: Astro.site!, screenshot: '/apps/darmixfit/shots/today.webp' });
+---
+
+<Shell
+  app={app}
+  lang={lang}
+  meta={c.meta}
+  skins={skins}
+  fontDisplay="'Big Shoulders Variable'"
+  fontBody="'Manrope Variable'"
+  jsonLd={jsonLd}
+  defaultScheme="dark"
+>
+  <a href="#main" class="k-btn k-btn-sm df-btn fixed top-3 left-3 z-[60] -translate-y-24 focus:translate-y-0">{ui.skip}</a>
+  <Header app={app} lang={lang} nav={c.nav} />
+  <Rail labels={c.rail} />
+  <main id="main">
+    <Hero app={app} lang={lang} c={c} />
+    <HowItWorks c={c} />
+    <Programs c={c} skins={skins} swatches={swatches} />
+    <Final app={app} lang={lang} c={c} />
+  </main>
+  <Sheet app={app} lang={lang} install={c.install} labels={c.sheet} cardClass="df-cut bg-c-bg shadow-[inset_0_0_0_1px_var(--c-ink)] [--cut:10px]" />
+</Shell>
+
+<script>
+  import { initKit } from '../kit/kit';
+  import { initReactors } from './reactor';
+  import { app } from '../../data/landings/darmixfit';
+  initKit({ repo: `${app.repo.owner}/${app.repo.name}`, version: app.release.version });
+  initReactors();
+</script>

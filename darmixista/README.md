@@ -83,23 +83,23 @@ Para usar otras fuentes, instala su paquete de `@fontsource-variable/…` e imp�
 
 ### Nueva estructura de landings (en migración)
 
-DarmixPet ya usa la nueva estructura; DarmixFit y DarmixNight siguen con la anterior (`src/components/app-landing/`)
-hasta que se migren. La nueva estructura no depende de ningún archivo de la anterior.
+DarmixPet y DarmixFit ya usan la nueva estructura; DarmixNight sigue con la anterior (`src/components/app-landing/`)
+hasta que se migre. La nueva estructura no depende de ningún archivo de la anterior.
 
-| Carpeta                                        | Contenido                                                                                                                                                                                                         |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/landing/kit/`                             | Piezas compartidas que no cambian entre apps: base y SEO (`Shell`), datos estructurados (`jsonld.ts`), íconos, botón de descarga, QR, panel «Antes de instalar», pie y comportamiento común (`kit.ts`, `kit.css`) |
-| `src/landing/types.ts` y `src/landing/i18n.ts` | Tipos y textos comunes del kit                                                                                                                                                                                    |
-| `src/landing/<app>/`                           | Diseño propio de cada app: secciones, estilos (`<app>.css`), scripts y su página (`<App>Page.astro`)                                                                                                              |
-| `src/data/landings/<app>.ts`                   | Textos, paletas, versión y contenido del panel de cada app                                                                                                                                                        |
-| `src/pages/<app>/` y `src/pages/en/<app>/`     | Rutas: solo renderizan `<App>Page` con su idioma                                                                                                                                                                  |
+| Carpeta                                        | Contenido                                                                                                                                                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/landing/kit/`                             | Piezas compartidas que no cambian entre apps: base y SEO (`Shell`), datos estructurados (`jsonld.ts`), íconos, botón de descarga, QR, panel «Antes de instalar», pie, cambio de paleta (`skins.ts`) y comportamiento común (`kit.ts`, `kit.css`) |
+| `src/landing/types.ts` y `src/landing/i18n.ts` | Tipos y textos comunes del kit                                                                                                                                                                                                                   |
+| `src/landing/<app>/`                           | Diseño propio de cada app: secciones, estilos (`<app>.css`), scripts y su página (`<App>Page.astro`)                                                                                                                                             |
+| `src/data/landings/<app>.ts`                   | Textos, paletas, versión y contenido del panel de cada app                                                                                                                                                                                       |
+| `src/pages/<app>/` y `src/pages/en/<app>/`     | Rutas: solo renderizan `<App>Page` con su idioma                                                                                                                                                                                                 |
 
 Reglas para agregar o cambiar una landing:
 
 - Lo propio de una app vive en su carpeta y en su archivo de datos; no se agrega nada de una app al kit.
 - La paleta de cada app comparte los colores base (`CorePalette`); los colores extra (por ejemplo los estados de DarmixPet) se declaran en su archivo de datos y se mapean en su `<app>.css`.
 - El panel «Antes de instalar» muestra la pestaña de permisos solo si la app tiene permisos en sus datos.
-- Al terminar de migrar DarmixFit y DarmixNight se borran `src/components/app-landing/`, `src/layouts/LandingLayout.astro`, `src/styles/landing.css`, `src/scripts/landing.ts`, `src/data/apps/` e `src/i18n/landing.ts`.
+- Al terminar de migrar DarmixNight se borran `src/components/app-landing/`, `src/layouts/LandingLayout.astro`, `src/styles/landing.css`, `src/scripts/landing.ts`, `src/data/apps/` e `src/i18n/landing.ts`.
 
 ## Formulario de contacto (Web3Forms)
 

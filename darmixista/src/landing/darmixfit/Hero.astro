@@ -1,0 +1,86 @@
+---
+import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import type { Lang } from '../../i18n/ui';
+import Download from '../kit/Download.astro';
+import Qr from '../kit/Qr.astro';
+import { kitUi } from '../i18n';
+import type { AppMeta } from '../types';
+import type { DarmixFitContent } from '../../data/landings/darmixfit';
+import Reactor from './Reactor.astro';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  c: DarmixFitContent;
+}
+const { app, lang, c } = Astro.props;
+const ui = kitUi[lang];
+---
+
+<section id="top" class="df-screen df-hero" data-rail="0">
+  <div class="df-glow right-[-12%] top-[5%] h-[min(62rem,110vw)] w-[min(62rem,110vw)]" aria-hidden="true"></div>
+  <div class="k-container relative grid w-full items-center gap-6 lg:grid-cols-[1.14fr_0.86fr] lg:gap-10">
+    <div>
+      <p class="df-kicker">{c.hero.kicker}</p>
+      <h1 class="df-display mt-4 text-[clamp(3.1rem,min(5.6vw,11vh),5.5rem)]" set:html={c.hero.title} />
+      <p class="mt-[clamp(0.9rem,2.6vh,1.5rem)] max-w-[30em] text-[clamp(1rem,min(1.4vw,2.3vh),1.2rem)] leading-relaxed text-c-muted">{c.hero.lead}</p>
+      <div class="mt-[clamp(1.25rem,4.5vh,2.25rem)] flex flex-col items-start gap-3">
+        <Download app={app} lang={lang} meta btnClass="df-btn" />
+        <button type="button" data-k-sheet-open="install" class="df-link pl-0.5">{c.hero.howTo}</button>
+      </div>
+      <p class="df-ios mt-3 hidden text-sm font-semibold text-c-primary">{ui.androidOnly}</p>
+      <Qr
+        url={getAbsoluteLocaleUrl(lang, `${app.slug}/`)}
+        lang={lang}
+        color="#0E100D"
+        class="df-qr mt-[clamp(1.25rem,5vh,2.5rem)] max-w-sm"
+      />
+    </div>
+
+    <div class="relative flex justify-center">
+      <div class="relative aspect-square w-[min(76vw,max(11rem,35svh))] max-lg:[@media(max-height:780px)]:w-[min(64vw,max(10rem,30svh))] flex-none p-[6%] lg:w-[min(100%,36rem,66svh)]" data-reactor-stage>
+        <div class="df-glow inset-[-14%]" aria-hidden="true"></div>
+        <span class="df-brk df-brk-tl" aria-hidden="true"></span>
+        <span class="df-brk df-brk-tr" aria-hidden="true"></span>
+        <span class="df-brk df-brk-bl" aria-hidden="true"></span>
+        <span class="df-brk df-brk-br" aria-hidden="true"></span>
+        <p class="df-hud absolute top-0 left-[11%] hidden -translate-y-1/2 sm:block" aria-hidden="true">{c.reactor.charge} <b data-charge>0%</b></p>
+        <p class="df-hud absolute right-[11%] bottom-0 hidden translate-y-1/2 sm:block" aria-hidden="true">
+          <span class="df-tilt-touch">{c.reactor.tiltTouch}</span><span class="df-tilt-mouse">{c.reactor.tiltMouse}</span>
+        </p>
+        <Reactor uid="hero" level={0} of={c.reactor.of} done={c.reactor.done} mode="hero" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  :global(html[data-ios]) .df-ios {
+    display: block;
+  }
+  .df-tilt-mouse {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .df-tilt-mouse {
+      display: inline;
+    }
+    .df-tilt-touch {
+      display: none;
+    }
+  }
+  :global(.df-qr > :first-child) {
+    border-radius: 0;
+    background: #f4f6f1;
+  }
+  :global(.df-qr p:first-child) {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  @media (max-width: 1023px) {
+    .df-hero {
+      align-items: flex-start;
+    }
+  }
+</style>

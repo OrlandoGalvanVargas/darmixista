@@ -1,0 +1,63 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import Icon from '../kit/Icon.astro';
+import { languages, type Lang } from '../../i18n/ui';
+import Download from '../kit/Download.astro';
+import { kitUi } from '../i18n';
+import type { AppMeta } from '../types';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  nav: { how: string; programs: string; help: string };
+}
+const { app, lang, nav } = Astro.props;
+const ui = kitUi[lang];
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-transparent bg-c-bg/85 backdrop-blur-md transition-[border-color] duration-300 data-[scrolled]:border-c-ink"
+  data-k-header
+>
+  <div class="k-container flex h-[4.5rem] items-center justify-between gap-2 sm:gap-4">
+    <a href="#top" class="flex min-w-0 items-center gap-2" aria-label={app.name}>
+      <img src="/apps/darmixfit/glyph.webp" alt="" width="40" height="40" class="h-9 w-9 flex-none sm:h-10 sm:w-10" />
+      <span class="font-display text-[1.35rem] leading-none font-black tracking-[0.01em] uppercase max-[339px]:sr-only sm:text-[1.6rem]">
+        Darmix<span class="text-c-primary">Fit</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-7 lg:flex" aria-label={app.name}>
+      <a href="#how" class="text-[0.8rem] font-bold tracking-[0.14em] text-c-muted uppercase transition-colors hover:text-c-primary">{nav.how}</a>
+      <a href="#programs" class="text-[0.8rem] font-bold tracking-[0.14em] text-c-muted uppercase transition-colors hover:text-c-primary">{nav.programs}</a>
+    </nav>
+
+    <div class="flex flex-none items-center gap-1.5 sm:gap-2">
+      <div class="df-cut flex h-10 items-center gap-0.5 bg-c-surface p-[3px] shadow-[inset_0_0_0_1px_var(--c-outline)] [--cut:8px]" role="group" aria-label={ui.language}>
+        {
+          (Object.keys(languages) as Lang[]).map((code) => (
+            <a
+              href={getRelativeLocaleUrl(code, `${app.slug}/`)}
+              hreflang={code}
+              lang={code}
+              data-k-lang={code}
+              aria-current={code === lang ? 'true' : undefined}
+              class:list={[
+                'df-cut px-2 py-1.5 font-display sm:px-2.5 text-[0.95rem] leading-none font-extrabold uppercase transition-colors [--cut:6px]',
+                code === lang ? 'bg-c-accent text-c-on-accent' : 'text-c-muted hover:text-c-text',
+              ]}
+            >
+              {code}
+            </a>
+          ))
+        }
+      </div>
+      <button type="button" class="df-icon-btn font-display text-lg font-black" data-k-sheet-open="install" aria-label={nav.help} title={nav.help}>?</button>
+      <button type="button" class="df-icon-btn" data-k-theme aria-label={ui.theme} title={ui.theme}>
+        <Icon name="sun" class="k-theme-light" />
+        <Icon name="moon" class="k-theme-dark" />
+      </button>
+      <Download app={app} lang={lang} class="hidden md:flex" btnClass="k-btn-sm df-btn" />
+    </div>
+  </div>
+</header>

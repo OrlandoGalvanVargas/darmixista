@@ -1,0 +1,131 @@
+---
+import type { DarmixFitContent } from '../../data/landings/darmixfit';
+import type { Skin } from '../types';
+
+interface Props {
+  c: DarmixFitContent;
+  skins: Skin[];
+  swatches: Record<string, string>;
+}
+const { c, skins, swatches } = Astro.props;
+const p = c.programs;
+const data = Object.fromEntries(skins.map((s) => [s.id, { bgLight: s.light.bg, bgDark: s.dark.bg }]));
+const loop = [...p.list, ...p.list];
+---
+
+<script type="application/json" id="k-skin-data" set:html={JSON.stringify(data)} />
+
+<section id="programs" class="df-screen" aria-labelledby="programs-title" data-rail="2">
+  <div class="df-glow top-[8%] left-[-14%] h-[34rem] w-[54rem]" aria-hidden="true"></div>
+  <div class="k-container relative w-full">
+    <p class="df-kicker" data-k-reveal>{p.kicker}</p>
+    <h2 id="programs-title" class="df-display df-h2 mt-3" data-k-reveal set:html={p.title} />
+
+    <ul class="mt-[clamp(1rem,4.5vh,2.75rem)] grid grid-cols-3 gap-2 sm:gap-4 lg:gap-5">
+      {
+        p.stats.map((s, i) => (
+          <li class="df-panel df-cut relative px-3 pt-3 pb-3.5 sm:px-6 sm:pt-6 sm:pb-6 lg:px-7" data-k-reveal style={`--d:${i}`}>
+            <span class="df-brk df-brk-tl [--b:14px]" aria-hidden="true" />
+            <span class="df-stat block font-display text-[clamp(3.2rem,min(9vw,14vh),7.5rem)] leading-[0.82] font-black text-c-primary" data-count={s.value}>
+              {s.value}
+            </span>
+            <span class="mt-2 block font-display text-[0.95rem] leading-[1.05] font-extrabold tracking-[0.02em] uppercase sm:mt-3 sm:text-[1.6rem]">{s.label}</span>
+            <span class="mt-1 hidden text-[0.95rem] leading-snug text-c-muted sm:block">{s.body}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="df-cut mt-3 flex flex-col gap-3 border border-dashed border-c-outline p-3.5 sm:mt-5 sm:p-5 lg:flex-row lg:items-center lg:gap-6" data-k-reveal>
+      <div class="min-w-0 flex-1">
+        <p class="font-display text-[1.35rem] leading-none font-extrabold tracking-[0.03em] uppercase">{p.color.title}</p>
+        <p class="mt-1 text-[0.85rem] text-c-muted">{p.color.body}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex" role="radiogroup" aria-label={p.color.title}>
+        {
+          skins.map((s, i) => (
+            <button
+              type="button"
+              role="radio"
+              aria-checked={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-skin-choice={s.id}
+              class="df-swatch df-cut flex h-11 items-center gap-2.5 pr-4 pl-2.5 font-display text-base font-extrabold tracking-[0.1em] uppercase"
+            >
+              <span class="df-cut h-[1.375rem] w-[1.375rem] flex-none [--cut:5px]" style={`background:${swatches[s.id]}`} aria-hidden="true" />
+              {p.color.names[s.id]}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-[clamp(1rem,3.5vh,2rem)] overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]" aria-label={p.kicker}>
+      <ul class="df-marquee flex w-max gap-6 font-display text-[1rem] font-extrabold tracking-[0.06em] whitespace-nowrap uppercase sm:gap-9 sm:text-[1.25rem]">
+        {
+          loop.map((name, i) => (
+            <li class:list={['flex items-center gap-6 sm:gap-9', i % 2 ? 'text-c-outline' : 'text-c-muted']} aria-hidden={i >= p.list.length ? 'true' : undefined}>
+              {name}
+              <span class="text-c-outline" aria-hidden="true">/</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .df-swatch {
+    --cut: 8px;
+    box-shadow: inset 0 0 0 1px var(--c-outline);
+    background: var(--c-surface);
+    transition:
+      box-shadow 0.25s,
+      color 0.25s;
+  }
+  .df-swatch:hover {
+    box-shadow: inset 0 0 0 1px var(--c-muted);
+  }
+  .df-swatch[aria-checked='true'] {
+    color: var(--c-primary);
+    box-shadow:
+      inset 0 0 0 1.5px var(--c-accent),
+      0 0 20px -6px rgb(var(--c-glow) / 0.8);
+  }
+  :global(:root:not([data-theme='light'])) .df-stat {
+    text-shadow: 0 0 50px rgb(var(--c-glow) / 0.35);
+  }
+</style>
+
+<script>
+  import { initSkinChoice } from '../kit/skins';
+  import { reducedMotion } from '../kit/kit';
+
+  initSkinChoice();
+
+  const stats = [...document.querySelectorAll<HTMLElement>('[data-count]')];
+  if (stats.length && !reducedMotion()) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          const to = Number(el.dataset.count);
+          if (!to) return;
+          const start = performance.now();
+          const step = (now: number) => {
+            const k = Math.min(1, (now - start) / 900);
+            el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3))));
+            if (k < 1) requestAnimationFrame(step);
+          };
+          el.textContent = '0';
+          requestAnimationFrame(step);
+        });
+      },
+      { threshold: 0.6 },
+    );
+    stats.forEach((s) => io.observe(s));
+  }
+</script>
