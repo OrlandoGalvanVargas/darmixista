@@ -1,0 +1,52 @@
+---
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/inter-tight';
+import './darmixnight.css';
+import type { Lang } from '../../i18n/ui';
+import { app, content, skins } from '../../data/landings/darmixnight';
+import { kitUi } from '../i18n';
+import Shell from '../kit/Shell.astro';
+import { appJsonLd } from '../kit/jsonld';
+import Sheet from '../kit/Sheet.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Clock from './Clock.astro';
+import Knob from './Knob.astro';
+import Final from './Final.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang];
+const ui = kitUi[lang];
+const jsonLd = appJsonLd({ app, lang, meta: c.meta, site: Astro.site!, screenshot: '/apps/darmixnight/shots/noche.webp' });
+---
+
+<Shell
+  app={app}
+  lang={lang}
+  meta={c.meta}
+  skins={skins}
+  fontDisplay="'Instrument Serif'"
+  fontBody="'Inter Tight Variable'"
+  jsonLd={jsonLd}
+  defaultScheme="dark"
+>
+  <a href="#main" class="k-btn k-btn-sm dn-btn fixed top-3 left-3 z-[60] -translate-y-24 focus:translate-y-0">{ui.skip}</a>
+  <Header app={app} lang={lang} nav={c.nav} />
+  <main id="main">
+    <Hero app={app} lang={lang} c={c} />
+    <Clock c={c} />
+    <Knob c={c} />
+    <Final app={app} lang={lang} c={c} />
+  </main>
+  <Sheet app={app} lang={lang} install={c.install} labels={c.sheet} cardClass="rounded-2xl bg-c-bg shadow-[inset_0_0_0_1px_var(--c-ink)]" />
+</Shell>
+
+<script>
+  import { initKit } from '../kit/kit';
+  import { app } from '../../data/landings/darmixnight';
+  initKit({ repo: `${app.repo.owner}/${app.repo.name}`, version: app.release.version });
+</script>

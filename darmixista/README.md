@@ -26,7 +26,7 @@ npm run dev
 | Servicios                                          | `src/data/services.ts`                                 |
 | CV en PDF                                          | `public/cv/`                                           |
 | Capturas de proyectos                              | `public/projects/`                                     |
-| Landings de apps móviles (textos, paleta, versión) | `src/data/apps/`                                       |
+| Landings de apps móviles (textos, paleta, versión) | `src/data/landings/`                                   |
 | Imágenes y videos de cada landing                  | `public/apps/<app>/`                                   |
 
 ## Landings de apps móviles
@@ -48,7 +48,7 @@ archivo directamente de las _GitHub Releases_ del repositorio de la app.
 
 ### Cómo se elige la versión que se descarga
 
-1. El botón apunta a la versión escrita en `release` de `src/data/apps/<app>.ts` (respaldo).
+1. El botón apunta a la versión escrita en `release` de `src/data/landings/<app>.ts` (respaldo).
 2. Al abrir la página, el navegador consulta `api.github.com/repos/<dueño>/<repo>/releases/latest`;
    si hay una versión más nueva con un `.apk`, actualiza el enlace, la versión y el tamaño.
 3. Si GitHub no responde, el enlace de respaldo sigue funcionando.
@@ -57,49 +57,33 @@ Al publicar una release nueva no hace falta tocar el sitio. Conviene actualizar 
 para que el respaldo, los datos para buscadores y la primera carga muestren la versión correcta.
 Las releases marcadas como _pre-release_ o borrador se ignoran.
 
-### Agregar la landing de otra app
+### Estructura de las landings
 
-1. Copia `src/data/apps/darmixfit.ts` como `src/data/apps/<app>.ts` y cambia textos, paleta, repositorio y versión.
-2. Pon sus imágenes en `public/apps/<app>/` (ícono, capturas, personajes, videos `.mp4` con su imagen de portada).
-3. Copia `src/pages/darmixpet/index.astro` y `src/pages/en/darmixpet/index.astro` a `src/pages/<app>/` y
-   `src/pages/en/<app>/`, e importa tu archivo de datos.
-4. En `src/data/projects/mobile/<app>.ts` pon `links: { page: '<app>' }`.
-5. Imagen para compartir: `public/apps/<app>/og-es.png` y `og-en.png` (1200×630).
+Cada app tiene su propio diseño sobre un kit compartido. Crear o cambiar una landing solo toca su carpeta y su archivo de datos.
 
-Secciones opcionales: `companions` (personajes de DarmixPet o momentos del panda de DarmixNight) y `programs` (catálogo, DarmixFit); si una app no
-las tiene, desaparecen del menú.
+| Carpeta                                        | Contenido                                                                                                                                                                                                              |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/landing/kit/`                             | Piezas compartidas: base y SEO (`Shell`), datos estructurados (`jsonld.ts`), íconos, botón de descarga, QR, panel «Antes de instalar», pie, cambio de paleta (`skins.ts`) y comportamiento común (`kit.ts`, `kit.css`) |
+| `src/landing/types.ts` y `src/landing/i18n.ts` | Tipos y textos comunes del kit                                                                                                                                                                                         |
+| `src/landing/<app>/`                           | Diseño propio de cada app: secciones, estilos (`<app>.css`), scripts y su página (`<App>Page.astro`)                                                                                                                   |
+| `src/data/landings/<app>.ts`                   | Textos, paletas, versión y contenido del panel de cada app                                                                                                                                                             |
+| `src/pages/<app>/` y `src/pages/en/<app>/`     | Rutas: solo renderizan `<App>Page` con su idioma                                                                                                                                                                       |
+| `public/apps/<app>/`                           | Íconos, imágenes, videos e imágenes para compartir (`og-es.png` y `og-en.png`, 1200×630)                                                                                                                               |
 
-**Apariencia (`look`):** cada app elige un estilo y sus fuentes.
-
-| Estilo      | Cómo se ve                                                                        | Ejemplo                             |
-| ----------- | --------------------------------------------------------------------------------- | ----------------------------------- |
-| `sticker`   | Contornos gruesos, sombras sólidas y esquinas redondas                            | DarmixPet (Fredoka + Nunito)        |
-| `athletic`  | Oscuro, líneas finas, títulos condensados en mayúsculas y acento neón             | DarmixFit (Big Shoulders + Manrope) |
-| `celestial` | Cielo nocturno con estrellas, tarjetas suaves y botones píldora con brillo cálido | DarmixNight (Sora + Manrope)        |
-
-`defaultScheme: 'dark'` hace que la página abra en oscuro si el visitante no ha elegido tema.
-Para usar otras fuentes, instala su paquete de `@fontsource-variable/…` e impórtalo en
-`src/layouts/LandingLayout.astro` (el navegador solo descarga las fuentes que usa cada página).
-
-### Nueva estructura de landings (en migración)
-
-DarmixPet y DarmixFit ya usan la nueva estructura; DarmixNight sigue con la anterior (`src/components/app-landing/`)
-hasta que se migre. La nueva estructura no depende de ningún archivo de la anterior.
-
-| Carpeta                                        | Contenido                                                                                                                                                                                                                                        |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/landing/kit/`                             | Piezas compartidas que no cambian entre apps: base y SEO (`Shell`), datos estructurados (`jsonld.ts`), íconos, botón de descarga, QR, panel «Antes de instalar», pie, cambio de paleta (`skins.ts`) y comportamiento común (`kit.ts`, `kit.css`) |
-| `src/landing/types.ts` y `src/landing/i18n.ts` | Tipos y textos comunes del kit                                                                                                                                                                                                                   |
-| `src/landing/<app>/`                           | Diseño propio de cada app: secciones, estilos (`<app>.css`), scripts y su página (`<App>Page.astro`)                                                                                                                                             |
-| `src/data/landings/<app>.ts`                   | Textos, paletas, versión y contenido del panel de cada app                                                                                                                                                                                       |
-| `src/pages/<app>/` y `src/pages/en/<app>/`     | Rutas: solo renderizan `<App>Page` con su idioma                                                                                                                                                                                                 |
+| App         | Estilo                                                                              | Fuentes                        |
+| ----------- | ----------------------------------------------------------------------------------- | ------------------------------ |
+| DarmixPet   | Claro y juguetón, bordes gruesos; la página toma los colores del personaje elegido  | Fredoka + Nunito               |
+| DarmixFit   | Oscuro tipo panel de control; un reactor se carga al bajar; cuatro colores          | Big Shoulders + Manrope        |
+| DarmixNight | Nocturno y editorial; la lámpara se apaga al tocarla; reloj real y perilla que gira | Instrument Serif + Inter Tight |
 
 Reglas para agregar o cambiar una landing:
 
 - Lo propio de una app vive en su carpeta y en su archivo de datos; no se agrega nada de una app al kit.
-- La paleta de cada app comparte los colores base (`CorePalette`); los colores extra (por ejemplo los estados de DarmixPet) se declaran en su archivo de datos y se mapean en su `<app>.css`.
+- La paleta de cada app comparte los colores base (`CorePalette`); los colores extra se declaran en su archivo de datos y se mapean en su `<app>.css`.
+- Las fuentes se instalan con `@fontsource` y se importan en la página de la app, así cada página solo descarga las suyas.
+- `defaultScheme: 'dark'` en `Shell` hace que la página abra en oscuro.
 - El panel «Antes de instalar» muestra la pestaña de permisos solo si la app tiene permisos en sus datos.
-- Al terminar de migrar DarmixNight se borran `src/components/app-landing/`, `src/layouts/LandingLayout.astro`, `src/styles/landing.css`, `src/scripts/landing.ts`, `src/data/apps/` e `src/i18n/landing.ts`.
+- En `src/data/projects/mobile/<app>.ts`, `links: { page: '<app>' }` conecta la tarjeta del portafolio con su landing.
 
 ## Formulario de contacto (Web3Forms)
 

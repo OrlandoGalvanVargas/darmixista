@@ -1,0 +1,159 @@
+@import "tailwindcss";
+@import "../kit/kit.css";
+
+@theme inline {
+  --color-c-clay: var(--c-clay);
+  --color-c-amber: var(--c-amber);
+  --color-c-flame: var(--c-flame);
+  --color-c-bronze: var(--c-bronze);
+}
+
+:root {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: 4.75rem;
+}
+
+body {
+  font-size: 1rem;
+}
+
+.dn-screen {
+  position: relative;
+  min-height: calc(100svh - 4.75rem);
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(1.5rem, 6vh, 4.5rem);
+  overflow: hidden;
+}
+
+@layer components {
+  .dn-serif {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 0.98;
+  }
+  .dn-serif em,
+  .dn-em {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--c-primary);
+    transition: color 1.2s ease;
+  }
+  .dn-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--c-clay);
+  }
+  .dn-kicker::before {
+    content: "";
+    width: 1.75rem;
+    height: 1px;
+    background: var(--c-primary);
+  }
+  .dn-h2 {
+    font-size: clamp(2.75rem, min(5.2vw, 9vh), 5.25rem);
+  }
+  .dn-lead {
+    font-size: clamp(1rem, min(1.35vw, 2.3vh), 1.15rem);
+    line-height: 1.65;
+    color: var(--c-clay);
+  }
+
+  .dn-btn {
+    border-radius: 999px;
+    min-height: 3.4rem;
+    padding: 0 1.75rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0;
+    color: var(--c-onPrimary);
+    background: linear-gradient(180deg, #ffa066, var(--c-primary) 60%, #e66f33);
+    box-shadow:
+      inset 0 0 0 1px #ffb78a,
+      0 10px 40px -10px rgb(var(--c-glow) / 0.6);
+  }
+  .dn-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 0 0 1px #ffc6a3,
+      0 14px 50px -10px rgb(var(--c-glow) / 0.75);
+  }
+  .dn-btn.k-btn-sm {
+    min-height: 2.5rem;
+    padding: 0 1.1rem;
+    font-size: 0.875rem;
+  }
+
+  .dn-icon-btn {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: none;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px var(--c-ink);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.35rem;
+    color: var(--c-amber);
+    transition: box-shadow 0.2s;
+  }
+  .dn-icon-btn:hover {
+    box-shadow: inset 0 0 0 1px var(--c-primary);
+  }
+
+  .dn-link {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--c-amber);
+    border-bottom: 1px solid rgb(255 176 103 / 0.4);
+    transition: border-color 0.2s;
+  }
+  .dn-link:hover {
+    border-color: var(--c-amber);
+  }
+
+  .dn-glow {
+    position: absolute;
+    pointer-events: none;
+    background: radial-gradient(closest-side, rgb(var(--c-glow) / 0.13), transparent);
+  }
+}
+
+.k-sheet {
+  background: var(--c-surface);
+}
+.k-sheet h2 {
+  font-size: 2rem;
+  font-weight: 400;
+}
+.k-sheet h3,
+.k-sheet summary,
+.k-sheet [role="tab"],
+.k-sheet ul .font-display {
+  font-family: var(--font-body);
+}
+.k-sheet h3,
+.k-sheet summary {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.k-sheet [role="tab"] {
+  font-weight: 500;
+}
+.k-sheet ol > li > span {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.35rem;
+}

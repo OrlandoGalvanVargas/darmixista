@@ -105,6 +105,14 @@ const tabs = [
             }
           </ul>
           {
+            install.permissionsNote && (
+              <p class="mt-4 flex gap-2.5 text-[0.92rem] leading-snug text-c-muted">
+                <Icon name="lock" class="mt-0.5 h-4 w-4 flex-none text-c-primary" />
+                <span>{install.permissionsNote}</span>
+              </p>
+            )
+          }
+          {
             install.permissionsGuide && (
               <a
                 href={install.permissionsGuide.href}

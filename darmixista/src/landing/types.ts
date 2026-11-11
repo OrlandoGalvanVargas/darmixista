@@ -58,6 +58,7 @@ export interface InstallContent {
   steps: Array<{ title: string; body: string }>;
   permissionsIntro?: string;
   permissions?: Array<{ icon: IconName; title: string; why: string; badge?: string }>;
+  permissionsNote?: string;
   permissionsGuide?: { label: string; href: string };
   faq: Array<{ q: string; a: string }>;
 }

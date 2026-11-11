@@ -1,0 +1,55 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { languages, type Lang } from '../../i18n/ui';
+import Download from '../kit/Download.astro';
+import { kitUi } from '../i18n';
+import type { AppMeta } from '../types';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  nav: { how: string; emergency: string; help: string };
+}
+const { app, lang, nav } = Astro.props;
+const ui = kitUi[lang];
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-transparent bg-c-bg/80 backdrop-blur-md transition-[border-color] duration-500 data-[scrolled]:border-c-ink"
+  data-k-header
+>
+  <div class="k-container flex h-[4.75rem] items-center justify-between gap-3">
+    <a href="#top" class="flex items-baseline text-[1.35rem] font-semibold tracking-[-0.01em] sm:text-[1.45rem]" aria-label={app.name}>
+      Darmix<span class="dn-em text-[1.2em] leading-none">Night</span>
+    </a>
+
+    <nav class="hidden items-center gap-8 text-[0.9rem] text-c-clay lg:flex" aria-label={app.name}>
+      <a href="#how" class="transition-colors hover:text-c-text">{nav.how}</a>
+      <a href="#emergency" class="transition-colors hover:text-c-text">{nav.emergency}</a>
+    </nav>
+
+    <div class="flex flex-none items-center gap-2">
+      <div class="flex items-center rounded-full p-[3px] text-[0.8rem] font-semibold shadow-[inset_0_0_0_1px_var(--c-ink)]" role="group" aria-label={ui.language}>
+        {
+          (Object.keys(languages) as Lang[]).map((code) => (
+            <a
+              href={getRelativeLocaleUrl(code, `${app.slug}/`)}
+              hreflang={code}
+              lang={code}
+              data-k-lang={code}
+              aria-current={code === lang ? 'true' : undefined}
+              class:list={[
+                'rounded-full px-2.5 py-1.5 uppercase transition-colors',
+                code === lang ? 'bg-c-surface-variant text-c-text' : 'text-c-muted hover:text-c-text',
+              ]}
+            >
+              {code}
+            </a>
+          ))
+        }
+      </div>
+      <button type="button" class="dn-icon-btn" data-k-sheet-open="install" aria-label={nav.help} title={nav.help}>?</button>
+      <Download app={app} lang={lang} class="hidden md:flex" btnClass="k-btn-sm dn-btn" />
+    </div>
+  </div>
+</header>

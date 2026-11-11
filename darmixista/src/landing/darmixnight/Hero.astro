@@ -1,0 +1,208 @@
+---
+import { getAbsoluteLocaleUrl } from 'astro:i18n';
+import type { Lang } from '../../i18n/ui';
+import Download from '../kit/Download.astro';
+import Qr from '../kit/Qr.astro';
+import { kitUi } from '../i18n';
+import type { AppMeta } from '../types';
+import { scene, type DarmixNightContent } from '../../data/landings/darmixnight';
+
+interface Props {
+  app: AppMeta;
+  lang: Lang;
+  c: DarmixNightContent;
+}
+const { app, lang, c } = Astro.props;
+const ui = kitUi[lang];
+---
+
+<section id="top" class="dn-screen dn-hero" data-lamp="on">
+  <div class="dn-stars" aria-hidden="true"></div>
+  <div class="dn-room">
+    <div class="dn-room-art">
+      <img src={scene.dark} alt="" width="1122" height="1402" class="dn-room-img" />
+      <img src={scene.lit} alt="" width="1122" height="1402" fetchpriority="high" class="dn-room-img dn-room-lit" />
+      <button
+        type="button"
+        class="dn-lamp"
+        data-lamp-toggle
+        aria-pressed="false"
+        aria-label={c.hero.lampOff}
+        data-on={c.hero.lampOff}
+        data-off={c.hero.lampOn}></button>
+    </div>
+  </div>
+
+  <div class="k-container relative z-[2] w-full">
+    <div class="dn-hero-text">
+      <p class="dn-kicker">{c.hero.kicker}</p>
+      <h1 class="dn-serif mt-[clamp(0.9rem,2.6vh,1.5rem)] text-[clamp(2.9rem,min(5vw,9.5vh),5rem)]" set:html={c.hero.title} />
+      <p class="dn-lead mt-[clamp(0.9rem,2.8vh,1.5rem)] max-w-[30em]">{c.hero.lead}</p>
+      <div class="mt-[clamp(1.25rem,4vh,2.25rem)] flex flex-col items-start gap-3">
+        <Download app={app} lang={lang} meta btnClass="dn-btn" />
+        <button type="button" data-k-sheet-open="install" class="dn-link">{c.hero.howTo}</button>
+      </div>
+      <p class="dn-ios mt-3 hidden text-sm font-semibold text-c-primary">{ui.androidOnly}</p>
+      <Qr url={getAbsoluteLocaleUrl(lang, `${app.slug}/`)} lang={lang} color="#0C0604" class="dn-qr mt-[clamp(1.25rem,5vh,2.5rem)] max-w-sm" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .dn-hero {
+    isolation: isolate;
+  }
+  .dn-stars {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.55;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, #fff8, transparent),
+      radial-gradient(1px 1px at 32% 12%, #fff6, transparent),
+      radial-gradient(1.5px 1.5px at 22% 78%, #fff5, transparent),
+      radial-gradient(1px 1px at 44% 40%, #fff4, transparent),
+      radial-gradient(1px 1px at 8% 60%, #fff5, transparent),
+      radial-gradient(1px 1px at 52% 88%, #fff4, transparent);
+  }
+  .dn-room {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .dn-room-art {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    aspect-ratio: 1122 / 1402;
+  }
+  .dn-room-art::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--c-bg), transparent 32%),
+      linear-gradient(0deg, var(--c-bg), transparent 30%);
+  }
+  .dn-room-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .dn-room-lit {
+    transition:
+      opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1),
+      filter 0.5s;
+  }
+  .dn-lamp {
+    position: absolute;
+    z-index: 1;
+    left: 21%;
+    top: 34%;
+    width: 15%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dn-hero > .k-container {
+    pointer-events: none;
+  }
+  .dn-hero-text {
+    width: min(100%, 30rem);
+    pointer-events: auto;
+  }
+  @media (min-width: 1280px) {
+    .dn-hero-text {
+      width: 40rem;
+    }
+  }
+  .dn-hero[data-lamp='off'] .dn-room-lit {
+    opacity: 0;
+  }
+  .dn-hero[data-lamp='off'] :global(h1 em) {
+    color: var(--c-clay);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .dn-lamp {
+      cursor: pointer;
+    }
+    .dn-hero:has(.dn-lamp:hover) .dn-room-lit {
+      filter: brightness(1.2) saturate(1.1);
+    }
+  }
+  .dn-lamp:focus-visible {
+    outline: 2px solid var(--c-amber);
+    outline-offset: 4px;
+  }
+  :global(html[data-ios]) .dn-ios {
+    display: block;
+  }
+  :global(.dn-qr > :first-child) {
+    background: var(--c-text);
+  }
+  :global(.dn-qr p:first-child) {
+    font-style: italic;
+    font-size: 1.15rem;
+  }
+
+  @media (max-width: 1023px) {
+    .dn-hero {
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding-top: 0;
+    }
+    .dn-room {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: min(100vw * 0.95, 44svh);
+    }
+    @media (max-height: 760px) {
+      .dn-room {
+        height: min(100vw * 0.85, 36svh);
+      }
+      flex: none;
+    }
+    .dn-room-art {
+      left: 50%;
+      right: auto;
+      top: auto;
+      bottom: 0;
+      height: auto;
+      width: max(100%, 44svh * 1.06);
+      translate: -50% 26%;
+    }
+    .dn-room-art::after {
+      background: linear-gradient(0deg, var(--c-bg) 22%, transparent 48%);
+    }
+    .dn-hero-text {
+      width: 100%;
+      margin-top: max(-3.5rem, -6svh);
+    }
+    :global(.dn-qr) {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('.dn-hero');
+  const lamp = hero?.querySelector<HTMLButtonElement>('[data-lamp-toggle]');
+  if (hero && lamp) {
+    lamp.addEventListener('click', () => {
+      const off = hero.dataset.lamp !== 'off';
+      hero.dataset.lamp = off ? 'off' : 'on';
+      lamp.setAttribute('aria-pressed', String(off));
+      lamp.setAttribute('aria-label', (off ? lamp.dataset.off : lamp.dataset.on) ?? '');
+      if (navigator.vibrate) navigator.vibrate(8);
+    });
+  }
+</script>
