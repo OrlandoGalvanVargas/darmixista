@@ -15,7 +15,7 @@ export const app: AppMeta = {
   slug: 'darmixnight',
   name: 'DarmixNight',
   repo: { owner: 'OrlandoGalvanVargas', name: 'darmixnight' },
-  release: { version: '2.0', apk: 'DarmixNight-v2.0.apk', sizeMb: 10.3, date: '2026-11-11' },
+  release: { version: '2.0.1', apk: 'DarmixNight-v2.0.1.apk', sizeMb: 10.8, date: '2026-11-12' },
   minAndroid: '8.0',
   icon: `${A}/icon.webp`,
   icon192: `${A}/icon-192.png`,
@@ -59,20 +59,32 @@ export const scene = {
   lock: `${A}/shots/bloqueo.webp`,
 };
 
+export interface Moment {
+  when: string;
+  text: string;
+}
+
 export interface DarmixNightContent {
   meta: PageMeta;
   nav: { how: string; emergency: string; help: string };
-  hero: { kicker: string; title: string; lead: string; howTo: string; lampOff: string; lampOn: string };
-  how: { kicker: string; title: string; lead: string; allowed: string[]; lockAlt: string };
-  emergency: {
-    kicker: string;
+  hero: { title: string; lead: string; howTo: string };
+  how: {
     title: string;
-    steps: Array<{ value: string; text: string }>;
-    night: string;
+    sleep: { label: string; time: string; ampm: string };
+    wake: { label: string; time: string; ampm: string };
+    example: string;
+    moments: Moment[];
+    lockAlt: string;
+  };
+  emergency: {
+    title: string;
+    lead: string;
+    steps: string[];
+    rule: string;
     knob: string;
     unit: string;
   };
-  final: { kicker: string; title: string; lead: string; howTo: string };
+  final: { title: string; lead: string; howTo: string };
   sheet: { title: string; tabs: { install: string; permissions: string; faq: string } };
   install: InstallContent;
 }
@@ -90,36 +102,33 @@ export const content: Record<Lang, DarmixNightContent> = {
     },
     nav: { how: 'Cómo funciona', emergency: 'Emergencias', help: 'Antes de instalar' },
     hero: {
-      kicker: 'Android · Bloqueo nocturno',
       title: 'Apaga la pantalla<br> <em>Enciende el descanso</em>',
-      lead: 'A la hora que elijas, cualquier app que abras queda cubierta hasta la mañana. Para que el «solo un video más» deje de robarte horas de sueño.',
+      lead: 'Eliges a qué hora te duermes y a qué hora despiertas. Si en ese horario abres una app, DarmixNight la tapa hasta la mañana.',
       howTo: '¿Cómo se instala?',
-      lampOff: 'Apagar la lámpara',
-      lampOn: 'Encender la lámpara',
     },
     how: {
-      kicker: 'Cómo funciona',
-      title: 'La habitación <em>ya duerme</em>',
-      lead: 'Si abres una app durante tu horario, una pantalla de descanso la cubre. Se activa sola, aunque reinicies el teléfono.',
-      allowed: ['Llamadas', 'Mensajes', 'Contactos', 'Cámara', 'Ajustes'],
+      title: 'Tú eliges <em>el horario</em>',
+      sleep: { label: 'Te duermes', time: '11:30', ampm: 'pm' },
+      wake: { label: 'Despiertas', time: '5:00', ampm: 'am' },
+      example: 'Es el horario que trae de inicio. Lo cambias cuando quieras.',
+      moments: [
+        { when: 'Antes', text: 'Usas tu teléfono como siempre. La app solo espera.' },
+        { when: 'Durante', text: 'Cualquier app que abras queda tapada por una pantalla que te dice cuánto falta para despertar.' },
+        { when: 'Siempre', text: 'Llamadas, mensajes, contactos, cámara y ajustes funcionan sin bloqueo.' },
+      ],
       lockAlt: 'Pantalla de descanso de DarmixNight: la habitación a oscuras, la hora y el tiempo que falta para despertar',
     },
     emergency: {
-      kicker: 'Emergencias',
-      title: 'Una salida,<br> <em>pero no fácil</em>',
-      steps: [
-        { value: '20 s', text: 'Mantienes presionado el botón' },
-        { value: '1 frase', text: 'La escribes para confirmar' },
-        { value: '1–30', text: 'Minutos que eliges con la perilla' },
-      ],
-      night: 'De noche, no hay salida.',
-      knob: 'Minutos de salida',
+      title: '¿Y si de verdad <em>lo necesitas?</em>',
+      lead: 'Puedes desbloquearlo un rato, pero cuesta trabajo a propósito, para que no lo hagas por impulso.',
+      steps: ['Mantienes presionado el botón 20 segundos', 'Escribes una frase para confirmar', 'Eliges con la perilla de 1 a 30 minutos'],
+      rule: 'Entre las 11 de la noche y las 5 de la mañana no se puede desbloquear. Las llamadas y los mensajes siguen funcionando.',
+      knob: 'Minutos de desbloqueo',
       unit: 'min',
     },
     final: {
-      kicker: 'Gratis · Sin cuentas · Sin anuncios',
       title: '<em>Buenas noches</em>',
-      lead: 'Tu horario y tu uso nunca salen del teléfono.',
+      lead: 'Gratis, sin anuncios y sin crear cuenta. Tu horario se guarda solo en tu teléfono.',
       howTo: '¿Cómo se instala?',
     },
     sheet: { title: 'Antes de instalar', tabs: { install: 'Instalar', permissions: 'Permisos', faq: 'Preguntas' } },
@@ -151,7 +160,7 @@ export const content: Record<Lang, DarmixNightContent> = {
         { q: '¿Puedo recibir llamadas y mensajes?', a: 'Sí. Llamadas, mensajes, contactos, cámara y ajustes nunca se bloquean.' },
         {
           q: '¿Y si tengo una emergencia?',
-          a: 'De día puedes salir de 1 a 30 minutos: mantienes presionado 20 segundos y escribes una frase. De noche no hay salida.',
+          a: 'Puedes desbloquearlo de 1 a 30 minutos: mantienes presionado 20 segundos y escribes una frase. Entre las 11 pm y las 5 am no se puede, pero llamadas y mensajes siguen funcionando.',
         },
         {
           q: '¿Puedo tomarme una noche libre?',
@@ -189,36 +198,33 @@ export const content: Record<Lang, DarmixNightContent> = {
     },
     nav: { how: 'How it works', emergency: 'Emergencies', help: 'Before installing' },
     hero: {
-      kicker: 'Android · Bedtime lock',
       title: 'Turn off the screen<br> <em>Turn on your rest</em>',
-      lead: 'At the time you choose, any app you open stays covered until morning. So “just one more video” stops stealing your sleep.',
+      lead: 'You choose when you go to sleep and when you wake up. If you open an app during that time, DarmixNight covers it until morning.',
       howTo: 'How do I install it?',
-      lampOff: 'Turn off the lamp',
-      lampOn: 'Turn on the lamp',
     },
     how: {
-      kicker: 'How it works',
-      title: 'The room is <em>already asleep</em>',
-      lead: 'If you open an app during your schedule, a rest screen covers it. It turns on by itself, even after a restart.',
-      allowed: ['Calls', 'Messages', 'Contacts', 'Camera', 'Settings'],
+      title: 'You choose <em>the schedule</em>',
+      sleep: { label: 'You sleep', time: '11:30', ampm: 'pm' },
+      wake: { label: 'You wake up', time: '5:00', ampm: 'am' },
+      example: 'That’s the schedule it starts with. Change it whenever you want.',
+      moments: [
+        { when: 'Before', text: 'You use your phone as usual. The app just waits.' },
+        { when: 'During', text: 'Any app you open is covered by a screen that tells you how long until you wake up.' },
+        { when: 'Always', text: 'Calls, messages, contacts, camera and settings work without being locked.' },
+      ],
       lockAlt: 'DarmixNight rest screen: the dark room, the time and how long until you wake up',
     },
     emergency: {
-      kicker: 'Emergencies',
-      title: 'A way out,<br> <em>but not an easy one</em>',
-      steps: [
-        { value: '20 s', text: 'You hold the button down' },
-        { value: '1 phrase', text: 'You type it to confirm' },
-        { value: '1–30', text: 'Minutes you pick with the knob' },
-      ],
-      night: 'At night, there’s no way out.',
-      knob: 'Minutes out',
+      title: 'What if you <em>really need it?</em>',
+      lead: 'You can unlock it for a while, but it takes effort on purpose, so you don’t do it on impulse.',
+      steps: ['You hold the button for 20 seconds', 'You type a phrase to confirm', 'You pick 1 to 30 minutes with the knob'],
+      rule: 'Between 11 at night and 5 in the morning you can’t unlock it. Calls and messages keep working.',
+      knob: 'Unlock minutes',
       unit: 'min',
     },
     final: {
-      kicker: 'Free · No accounts · No ads',
       title: '<em>Good night</em>',
-      lead: 'Your schedule and your usage never leave your phone.',
+      lead: 'Free, no ads and no sign-up. Your schedule is saved only on your phone.',
       howTo: 'How do I install it?',
     },
     sheet: { title: 'Before installing', tabs: { install: 'Install', permissions: 'Permissions', faq: 'FAQ' } },
@@ -250,7 +256,7 @@ export const content: Record<Lang, DarmixNightContent> = {
         { q: 'Can I still get calls and messages?', a: 'Yes. Calls, messages, contacts, camera and settings are never blocked.' },
         {
           q: 'What if I have an emergency?',
-          a: 'During the day you can get out for 1 to 30 minutes: hold for 20 seconds and type a phrase. At night there’s no way out.',
+          a: 'You can unlock it for 1 to 30 minutes: hold for 20 seconds and type a phrase. Between 11 pm and 5 am you can’t, but calls and messages keep working.',
         },
         {
           q: 'Can I take a night off?',

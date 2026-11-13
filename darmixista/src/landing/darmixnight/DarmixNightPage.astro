@@ -11,7 +11,7 @@ import { appJsonLd } from '../kit/jsonld';
 import Sheet from '../kit/Sheet.astro';
 import Header from './Header.astro';
 import Hero from './Hero.astro';
-import Clock from './Clock.astro';
+import How from './How.astro';
 import Knob from './Knob.astro';
 import Final from './Final.astro';
 
@@ -38,7 +38,7 @@ const jsonLd = appJsonLd({ app, lang, meta: c.meta, site: Astro.site!, screensho
   <Header app={app} lang={lang} nav={c.nav} />
   <main id="main">
     <Hero app={app} lang={lang} c={c} />
-    <Clock c={c} />
+    <How c={c} />
     <Knob c={c} />
     <Final app={app} lang={lang} c={c} />
   </main>

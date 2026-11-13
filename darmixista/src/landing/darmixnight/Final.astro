@@ -16,8 +16,7 @@ const { app, lang, c } = Astro.props;
 <section id="get" class="dn-screen dn-final flex-col !pb-0" aria-labelledby="get-title">
   <div class="dn-window" aria-hidden="true" style={`--img:url(${scene.window})`}></div>
   <div class="k-container relative flex w-full flex-1 flex-col items-center justify-end pb-[clamp(2rem,7vh,5rem)] text-center">
-    <p class="dn-kicker justify-center text-center before:hidden" data-k-reveal>{c.final.kicker}</p>
-    <h2 id="get-title" class="dn-serif mt-3 text-[clamp(4rem,min(10vw,17vh),9.5rem)] leading-[0.9]" data-k-reveal set:html={c.final.title} />
+    <h2 id="get-title" class="dn-serif text-[clamp(4rem,min(10vw,17vh),9.5rem)] leading-[0.9]" data-k-reveal set:html={c.final.title} />
     <p class="dn-lead mt-4 max-w-xl" data-k-reveal>{c.final.lead}</p>
     <div class="mt-[clamp(1.25rem,4vh,2rem)] flex flex-col items-center gap-3" data-k-reveal>
       <Download app={app} lang={lang} meta class="!items-center" btnClass="dn-btn" />

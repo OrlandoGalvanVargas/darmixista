@@ -25,7 +25,7 @@ const arc = (v: number) => {
 
 <section id="emergency" class="dn-screen" aria-labelledby="emergency-title">
   <div class="dn-glow top-[12%] left-[-6%] h-[40rem] w-[40rem]" aria-hidden="true"></div>
-  <div class="k-container relative grid w-full items-center gap-8 lg:grid-cols-[auto_1fr] lg:gap-24">
+  <div class="dn-emg k-container relative grid w-full items-center gap-5 lg:grid-cols-[auto_1fr] lg:gap-24">
     <div class="dn-knob-wrap mx-auto" data-k-reveal>
       <svg viewBox="0 0 400 400" class="dn-dial" aria-hidden="true">
         <circle cx="200" cy="200" r="190" fill="none" stroke="var(--c-ink)"></circle>
@@ -71,20 +71,23 @@ const arc = (v: number) => {
       <p class="dn-knob-value" aria-hidden="true"><span data-knob-value>{start}</span> <span class="dn-em text-[0.5em]">{e.unit}</span></p>
     </div>
 
-    <div>
-      <p class="dn-kicker" data-k-reveal>{e.kicker}</p>
-      <h2 id="emergency-title" class="dn-serif dn-h2 mt-[clamp(0.9rem,2.6vh,1.5rem)]" data-k-reveal set:html={e.title} />
-      <dl class="mt-[clamp(1rem,3.5vh,2rem)] grid max-w-[30rem] gap-3" data-k-reveal>
+    <div class="dn-emg-text">
+      <h2 id="emergency-title" class="dn-serif dn-h2" data-k-reveal set:html={e.title} />
+      <p class="dn-lead mt-[clamp(0.8rem,2.4vh,1.25rem)] max-w-[30em]" data-k-reveal>{e.lead}</p>
+      <ol class="mt-[clamp(1rem,3.5vh,1.75rem)] grid max-w-[30rem] gap-2.5" data-k-reveal>
         {
-          e.steps.map((s) => (
-            <div class="flex items-baseline gap-4 border-b border-c-ink pb-3">
-              <dt class="dn-em min-w-[4.5rem] text-[1.75rem] leading-none">{s.value}</dt>
-              <dd class="text-[0.98rem] text-c-clay">{s.text}</dd>
-            </div>
+          e.steps.map((step, i) => (
+            <li class="flex items-baseline gap-4 border-b border-c-ink pb-2.5">
+              <span class="dn-em min-w-[1.5rem] text-[1.6rem] leading-none">{i + 1}</span>
+              <span class="text-[0.98rem] text-c-clay">{step}</span>
+            </li>
           ))
         }
-      </dl>
-      <p class="mt-5 font-display text-[1.6rem] italic" data-k-reveal>{e.night}</p>
+      </ol>
+      <p class="dn-rule mt-[clamp(1rem,3vh,1.5rem)] max-w-[30rem]" data-k-reveal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+        <span>{e.rule}</span>
+      </p>
     </div>
   </div>
 </section>
@@ -157,10 +160,63 @@ const arc = (v: number) => {
     line-height: 1;
     white-space: nowrap;
   }
+  @media (max-width: 639px) {
+    .dn-rule {
+      padding: 0.75rem 0.9rem;
+      font-size: 0.85rem;
+    }
+  }
+  .dn-rule {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 1rem;
+    background: var(--c-surface);
+    box-shadow: inset 0 0 0 1px var(--c-ink);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--c-text);
+  }
+  .dn-rule svg {
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.15rem;
+    color: var(--c-amber);
+  }
   @media (max-width: 1023px) {
     .dn-knob-wrap {
-      width: min(58vw, calc(100svh - 35rem), 22rem);
-      min-width: 10.5rem;
+      width: min(46vw, 15rem);
+      margin: 0 auto 2.5rem;
+    }
+    .dn-knob-value {
+      bottom: -2.4rem;
+      font-size: 2.4rem;
+    }
+  }
+  @media (max-width: 767px) {
+    .dn-emg {
+      grid-template-columns: auto 1fr;
+      column-gap: 1.25rem;
+      row-gap: 0;
+    }
+    .dn-emg-text {
+      display: contents;
+    }
+    .dn-knob-wrap {
+      grid-row: 1;
+      grid-column: 1;
+      width: clamp(7.5rem, 34vw, 10rem);
+      margin: 0 0 2.5rem;
+    }
+    .dn-emg-text > :global(h2) {
+      grid-row: 1;
+      grid-column: 2;
+      font-size: clamp(2.1rem, 9vw, 2.75rem);
+      margin-bottom: 2.5rem;
+    }
+    .dn-emg-text > :not(h2) {
+      grid-column: 1 / -1;
     }
   }
 </style>
