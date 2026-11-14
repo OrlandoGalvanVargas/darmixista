@@ -11,7 +11,7 @@ export const kitUi = {
     skip: 'Saltar al contenido',
     close: 'Cerrar',
     scanTitle: '¿Estás en tu computadora?',
-    scanBody: 'Escanea el código con tu teléfono Android para abrir esta página ahí.',
+    scanBody: 'Escanea el código con tu teléfono Android para abrir está página ahí.',
     androidOnly: 'Solo para Android. No disponible para iPhone.',
     footerReleases: 'Versiones',
     footerIssues: 'Reportar un problema',
