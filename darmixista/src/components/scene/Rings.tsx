@@ -11,17 +11,50 @@ import {
   isSiteLoaded,
   readCurrentPose,
 } from '../../lib/stage-events';
-import { createBandGeometry, createBrushedTexture } from './materials';
+import {
+  createBandGeometry,
+  createBrushedTexture,
+  createFinish,
+  createInlayGeometry,
+  type BandProfile,
+  type Finish,
+} from './materials';
 
-const BAND = { width: 0.34, thickness: 0.075 };
+const BAND = { width: 0.34, thickness: 0.08, bevel: 0.022 };
 
-const RINGS = [
-  { radius: 1.62, color: '#d4d7db', roughness: 0.34, clearcoat: 0.25, speed: 0.26, start: 0.6 },
-  { radius: 1.27, color: '#a4a9b0', roughness: 0.42, clearcoat: 0.15, speed: -0.36, start: 1.1 },
-  { radius: 0.93, color: '#e6e8eb', roughness: 0.26, clearcoat: 0.4, speed: 0.47, start: 2.0 },
-] as const;
+interface RingSpec {
+  profile: BandProfile;
+  body: Finish;
+  inlay?: Finish;
+  speed: number;
+  start: number;
+}
 
-const OUTER_DIAMETER = (RINGS[0].radius + BAND.thickness) * 2;
+const RINGS: readonly RingSpec[] = [
+  {
+    profile: { radius: 1.62, ...BAND, channel: { width: 0.2, depth: 0.018 } },
+    body: 'polished',
+    inlay: 'black-gloss',
+    speed: 0.26,
+    start: 0.6,
+  },
+  {
+    profile: { radius: 1.27, ...BAND, channel: { width: 0.22, depth: 0.016, groove: 0.03 } },
+    body: 'black-gloss',
+    inlay: 'gunmetal',
+    speed: -0.36,
+    start: 1.1,
+  },
+  {
+    profile: { radius: 0.93, ...BAND, channel: { width: 0.05, depth: 0.014 } },
+    body: 'brushed',
+    inlay: 'black-gloss',
+    speed: 0.47,
+    start: 2.0,
+  },
+];
+
+const OUTER_DIAMETER = (RINGS[0].profile.radius + BAND.thickness) * 2;
 const CONTAINER_MAX = 1400;
 const MOBILE_BP = 768;
 
@@ -70,6 +103,21 @@ function backgroundPose(vw: number, vh: number): Pose {
   return { x: 0, y: 0, s: diameter / OUTER_DIAMETER };
 }
 
+interface BandProps {
+  part: { body: THREE.BufferGeometry; inlay: THREE.BufferGeometry | null };
+  material: { body: THREE.Material; inlay: THREE.Material | null };
+  rotation: [number, number, number];
+}
+
+function Band({ part, material, rotation }: BandProps) {
+  return (
+    <group rotation={rotation}>
+      <mesh geometry={part.body} material={material.body} />
+      {part.inlay && material.inlay && <mesh geometry={part.inlay} material={material.inlay} />}
+    </group>
+  );
+}
+
 export function Rings() {
   const placement = useRef<THREE.Group>(null);
   const tilt = useRef<THREE.Group>(null);
@@ -93,35 +141,38 @@ export function Rings() {
   );
 
   const brushed = useMemo(() => createBrushedTexture(), []);
-  const geometries = useMemo(
-    () => RINGS.map((r) => createBandGeometry(r.radius, BAND.width, BAND.thickness)),
+  const parts = useMemo(
+    () =>
+      RINGS.map((r) => ({
+        body: createBandGeometry(r.profile),
+        inlay: r.inlay ? createInlayGeometry(r.profile) : null,
+      })),
     [],
   );
   const materials = useMemo(
     () =>
-      RINGS.map(
-        (r) =>
-          new THREE.MeshPhysicalMaterial({
-            color: r.color,
-            metalness: 1,
-            roughness: r.roughness,
-            roughnessMap: brushed,
-            anisotropy: 0.6,
-            clearcoat: r.clearcoat,
-            clearcoatRoughness: 0.2,
-            envMapIntensity: 1.2,
-          }),
-      ),
+      RINGS.map((r) => ({
+        body: createFinish(r.body, brushed),
+        inlay: r.inlay ? createFinish(r.inlay, brushed) : null,
+      })),
     [brushed],
   );
+  const allMaterials = useMemo(
+    () => materials.flatMap((m) => (m.inlay ? [m.body, m.inlay] : [m.body])),
+    [materials],
+  );
+  const baseGlow = useMemo(() => allMaterials.map((m) => m.envMapIntensity), [allMaterials]);
 
   useEffect(
     () => () => {
-      geometries.forEach((g) => g.dispose());
-      materials.forEach((m) => m.dispose());
+      parts.forEach((g) => {
+        g.body.dispose();
+        g.inlay?.dispose();
+      });
+      allMaterials.forEach((m) => m.dispose());
       brushed.dispose();
     },
-    [geometries, materials, brushed],
+    [parts, allMaterials, brushed],
   );
 
   useEffect(() => {
@@ -314,8 +365,10 @@ export function Rings() {
     f.cy = screenCircle.current.cy;
     f.r = screenCircle.current.r;
 
-    const glow = THREE.MathUtils.lerp(1.2, 0.3, m);
-    for (const mat of materials) mat.envMapIntensity = glow;
+    const dim = THREE.MathUtils.lerp(1, 0.25, m);
+    allMaterials.forEach((mat, n) => {
+      mat.envMapIntensity = baseGlow[n] * dim;
+    });
 
     const friction = mo.dragging ? 0.6 : DRAG.friction + m * 6;
     const decay = Math.exp(-friction * dt);
@@ -353,11 +406,11 @@ export function Rings() {
       <group ref={tilt}>
         <group ref={spin}>
           <group ref={gimbal0} rotation={[0, RINGS[0].start, 0]}>
-            <mesh geometry={geometries[0]} material={materials[0]} rotation={faceCamera} />
+            <Band part={parts[0]} material={materials[0]} rotation={faceCamera} />
             <group ref={gimbal1} rotation={[RINGS[1].start, 0, 0]}>
-              <mesh geometry={geometries[1]} material={materials[1]} rotation={faceCamera} />
+              <Band part={parts[1]} material={materials[1]} rotation={faceCamera} />
               <group ref={gimbal2} rotation={[0, RINGS[2].start, 0]}>
-                <mesh geometry={geometries[2]} material={materials[2]} rotation={faceCamera} />
+                <Band part={parts[2]} material={materials[2]} rotation={faceCamera} />
               </group>
             </group>
           </group>

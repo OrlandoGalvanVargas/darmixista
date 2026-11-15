@@ -1,37 +1,99 @@
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-export function createBandGeometry(
-  radius: number,
-  width: number,
-  thickness: number,
-  segments = 192,
-): THREE.LatheGeometry {
-  const hw = width / 2;
-  const ht = thickness / 2;
-  const r = Math.min(ht, hw) * 0.9;
-  const steps = 10;
+export interface BandProfile {
+  radius: number;
+  width: number;
+  thickness: number;
+  bevel: number;
+  channel?: { width: number; depth: number; groove?: number };
+}
 
-  const corners = [
-    { cx: radius + ht - r, cy: -hw + r, start: -Math.PI / 2 },
-    { cx: radius + ht - r, cy: hw - r, start: 0 },
-    { cx: radius - ht + r, cy: hw - r, start: Math.PI / 2 },
-    { cx: radius - ht + r, cy: -hw + r, start: Math.PI },
+const SEGMENTS = 256;
+
+type V = THREE.Vector2;
+const v = (x: number, y: number) => new THREE.Vector2(x, y);
+
+function lathe(strips: V[][]): THREE.BufferGeometry {
+  const pieces = strips.map((pts) => new THREE.LatheGeometry(pts, SEGMENTS));
+  const merged = mergeGeometries(pieces, false);
+  pieces.forEach((g) => g.dispose());
+  if (!merged) throw new Error('no se pudo unir la geometría del anillo');
+  return merged;
+}
+
+function arc(cx: number, cy: number, r: number, from: number, to: number, steps: number): THREE.Vector2[] {
+  const out: THREE.Vector2[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = from + ((to - from) * i) / steps;
+    out.push(new THREE.Vector2(cx + Math.cos(a) * r, cy + Math.sin(a) * r));
+  }
+  return out;
+}
+
+export function createBandGeometry(p: BandProfile): THREE.BufferGeometry {
+  const hw = p.width / 2;
+  const ht = p.thickness / 2;
+  const ro = p.radius + ht;
+  const ri = p.radius - ht;
+  const b = p.bevel;
+  const fillet = ht * 0.45;
+
+  const outer: V[][] = [];
+  if (p.channel) {
+    const cw = p.channel.width / 2;
+    const cd = p.channel.depth;
+    outer.push([v(ro, -(hw - b)), v(ro, -cw)]);
+    outer.push([v(ro, -cw), v(ro - cd, -cw)]);
+    outer.push([v(ro - cd, -cw), v(ro - cd, cw)]);
+    outer.push([v(ro - cd, cw), v(ro, cw)]);
+    outer.push([v(ro, cw), v(ro, hw - b)]);
+  } else {
+    outer.push([v(ro, -(hw - b)), v(ro, hw - b)]);
+  }
+
+  const bevelTop = [v(ro, hw - b), v(ro - b, hw)];
+  const bevelBottom = [v(ro - b, -hw), v(ro, -(hw - b))];
+  const inner = [
+    v(ro - b, hw),
+    v(ri + fillet, hw),
+    ...arc(ri + fillet, hw - fillet, fillet, Math.PI / 2, Math.PI, 6).slice(1),
+    v(ri, -(hw - fillet)),
+    ...arc(ri + fillet, -(hw - fillet), fillet, Math.PI, Math.PI * 1.5, 6).slice(1),
+    v(ro - b, -hw),
   ];
 
-  const points: THREE.Vector2[] = [];
-  for (const c of corners) {
-    for (let i = 0; i <= steps; i++) {
-      const a = c.start + (i / steps) * (Math.PI / 2);
-      points.push(new THREE.Vector2(c.cx + Math.cos(a) * r, c.cy + Math.sin(a) * r));
-    }
-  }
-  points.push(points[0].clone());
+  return lathe([...outer, bevelTop, inner, bevelBottom]);
+}
 
-  return new THREE.LatheGeometry(points, segments);
+function inlayStrips(ro: number, floor: number, lip: number, from: number, to: number): V[][] {
+  return [
+    [v(floor, from), v(ro - lip, from)],
+    [v(ro - lip, from), v(ro, from + lip)],
+    [v(ro, from + lip), v(ro, to - lip)],
+    [v(ro, to - lip), v(ro - lip, to)],
+    [v(ro - lip, to), v(floor, to)],
+  ];
+}
+
+export function createInlayGeometry(p: BandProfile): THREE.BufferGeometry {
+  if (!p.channel) throw new Error('inlay requires a channel');
+  const ht = p.thickness / 2;
+  const ro = p.radius + ht;
+  const cw = p.channel.width / 2 - 0.002;
+  const cd = p.channel.depth;
+  const lip = cd * 0.35;
+  const floor = ro - cd + 0.001;
+  const groove = p.channel.groove ?? 0;
+  if (groove > 0) {
+    const g = groove / 2;
+    return lathe([...inlayStrips(ro, floor, lip, -cw, -g), ...inlayStrips(ro, floor, lip, g, cw)]);
+  }
+  return lathe(inlayStrips(ro, floor, lip, -cw, cw));
 }
 
 export function createBrushedTexture(): THREE.CanvasTexture {
-  const w = 512;
+  const w = 8;
   const h = 512;
   const canvas = document.createElement('canvas');
   canvas.width = w;
@@ -39,30 +101,68 @@ export function createBrushedTexture(): THREE.CanvasTexture {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('2D canvas no disponible');
 
-  ctx.fillStyle = 'rgb(225,225,225)';
+  ctx.fillStyle = 'rgb(190,190,190)';
   ctx.fillRect(0, 0, w, h);
-
   for (let y = 0; y < h; y++) {
-    const v = Math.round(175 + Math.random() * 80);
-    ctx.fillStyle = `rgba(${v},${v},${v},0.6)`;
+    const v = Math.round(120 + Math.random() * 135);
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
     ctx.fillRect(0, y, w, 1);
-  }
-
-  for (let i = 0; i < 900; i++) {
-    const y = Math.random() * h;
-    const x = Math.random() * w;
-    const len = w * (0.15 + Math.random() * 0.85);
-    const v = Math.random() > 0.5 ? 255 : 150;
-    ctx.fillStyle = `rgba(${v},${v},${v},0.22)`;
-    ctx.fillRect(x, y, len, 0.7);
-    ctx.fillRect(x - w, y, len, 0.7);
   }
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(4, 1);
+  texture.repeat.set(1, 1);
   texture.anisotropy = 8;
   texture.colorSpace = THREE.NoColorSpace;
   return texture;
+}
+
+export type Finish = 'polished' | 'brushed' | 'gunmetal' | 'black-gloss' | 'black-matte';
+
+export function createFinish(finish: Finish, brushed: THREE.Texture): THREE.MeshPhysicalMaterial {
+  switch (finish) {
+    case 'polished':
+      return new THREE.MeshPhysicalMaterial({
+        color: '#eef0f3',
+        metalness: 1,
+        roughness: 0.2,
+        envMapIntensity: 1.4,
+      });
+    case 'brushed':
+      return new THREE.MeshPhysicalMaterial({
+        color: '#c9ccd1',
+        metalness: 1,
+        roughness: 0.4,
+        roughnessMap: brushed,
+        envMapIntensity: 1.15,
+      });
+    case 'gunmetal':
+      return new THREE.MeshPhysicalMaterial({
+        color: '#6f7378',
+        metalness: 1,
+        roughness: 0.48,
+        roughnessMap: brushed,
+        envMapIntensity: 1,
+      });
+    case 'black-gloss':
+      return new THREE.MeshPhysicalMaterial({
+        color: '#0d0e10',
+        metalness: 0.85,
+        roughness: 0.12,
+        clearcoat: 1,
+        clearcoatRoughness: 0.06,
+        envMapIntensity: 1.2,
+      });
+    case 'black-matte':
+      return new THREE.MeshPhysicalMaterial({
+        color: '#17181b',
+        metalness: 0.95,
+        roughness: 0.52,
+        roughnessMap: brushed,
+        clearcoat: 0.35,
+        clearcoatRoughness: 0.3,
+        envMapIntensity: 1.1,
+      });
+  }
 }

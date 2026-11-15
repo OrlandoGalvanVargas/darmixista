@@ -6,20 +6,14 @@ import { Rings } from './Rings';
 
 function Studio() {
   return (
-    <Environment resolution={256} frames={1}>
-      {}
-      <color attach="background" args={['#1c1c1c']} />
-      {}
-      <Lightformer form="rect" intensity={1.6} position={[0, 6, 2]} scale={[12, 4, 1]} target={[0, 0, 0]} />
-      {}
-      <Lightformer form="rect" intensity={1.4} position={[-6, 0.5, 3]} scale={[1.6, 10, 1]} target={[0, 0, 0]} />
-      <Lightformer form="rect" intensity={0.9} position={[6, -0.5, 2]} scale={[1.6, 10, 1]} target={[0, 0, 0]} />
-      <Lightformer form="rect" intensity={0.7} position={[-4, 0, -5]} scale={[1.2, 10, 1]} target={[0, 0, 0]} />
-      <Lightformer form="rect" intensity={0.7} position={[4, 0, -5]} scale={[1.2, 10, 1]} target={[0, 0, 0]} />
-      {}
-      <Lightformer form="rect" intensity={0.45} position={[0, 0, 8]} scale={[14, 8, 1]} target={[0, 0, 0]} />
-      {}
-      <Lightformer form="rect" intensity={0.25} position={[0, -6, 0]} scale={[12, 4, 1]} target={[0, 0, 0]} />
+    <Environment resolution={512} frames={1}>
+      <color attach="background" args={['#6b6e73']} />
+      <Lightformer form="rect" intensity={3} position={[0, 7, 1]} scale={[16, 6, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={1.8} position={[-7, 1, 3]} scale={[2.2, 12, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={1.2} position={[7, -0.5, 2]} scale={[2.2, 12, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={0.9} position={[0, 0, 9]} scale={[18, 10, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={0.5} color="#0b0c0e" position={[0, -7, 0]} scale={[16, 5, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={0.6} color="#0b0c0e" position={[0, 2, -8]} scale={[18, 8, 1]} target={[0, 0, 0]} />
     </Environment>
   );
 }
@@ -53,7 +47,7 @@ export default function RingsScene() {
         camera={{ position: [0, 0, 9], fov: 35 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
-          gl.toneMappingExposure = 1.05;
+          gl.toneMappingExposure = 1.1;
         }}
         fallback={<NoWebGL />}
       >
