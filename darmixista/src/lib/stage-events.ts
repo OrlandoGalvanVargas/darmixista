@@ -3,6 +3,20 @@ export const SCENE_READY = 'darmixista:scene-ready';
 export const SITE_LOADED = 'darmixista:loaded';
 
 export type RingPose = 'hero' | 'background';
+export interface StageFx {
+  portal: number;
+  cx: number;
+  cy: number;
+  r: number;
+}
+
+export const PORTAL_HOLE = 0.53;
+
+export function getStageFx(): StageFx {
+  const w = window as Window & { __darmixistaFx?: StageFx };
+  w.__darmixistaFx ??= { portal: 0, cx: 0, cy: 0, r: 0 };
+  return w.__darmixistaFx;
+}
 
 export interface StageChangeDetail {
   index: number;

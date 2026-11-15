@@ -1,15 +1,16 @@
 import { gsap } from 'gsap';
-import { STAGE_CHANGE, type RingPose, type StageChangeDetail } from '../lib/stage-events';
+import { SplitText } from 'gsap/SplitText';
+import {
+  PORTAL_HOLE,
+  STAGE_CHANGE,
+  getStageFx,
+  type RingPose,
+  type StageChangeDetail,
+} from '../lib/stage-events';
+
+gsap.registerPlugin(SplitText);
 
 const MOTION = {
-  stage: {
-    exit: { scale: 0.86, duration: 0.75, ease: 'power2.in' },
-    enter: { scale: 0.74, duration: 1.0, ease: 'power3.out', at: 0.38 },
-  },
-  content: {
-    exit: { scale: 1.07, duration: 0.5, ease: 'power2.in' },
-    enter: { scale: 0.94, duration: 0.8, ease: 'power3.out', at: 0.3 },
-  },
   slide: {
     textShift: 48,
     mediaShift: 110,
@@ -21,9 +22,12 @@ const MOTION = {
   revealSub: { y: 8, duration: 0.6, stagger: 0.012 },
   draw: { duration: 1.2, ease: 'power2.inOut' },
   rings: {
-    hero: { filter: 'blur(0px) brightness(1)', opacity: 1 },
-    background: { filter: 'blur(7px) brightness(0.42)', opacity: 0.9 },
+    hero: { opacity: 1 },
+    background: { opacity: 0.5 },
   } satisfies Record<RingPose, gsap.TweenVars>,
+  portal: { duration: 1.15, exitScale: 1.1, exitDuration: 0.35, enterAt: 0.05 },
+  fade: { duration: 0.3, enterAt: 0.1 },
+  chars: { yPercent: 70, duration: 0.8, stagger: 0.02 },
   rewindSpeed: 1.6,
   hurrySpeed: 2.4,
   wheelGestureGap: 220,
@@ -66,6 +70,17 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
   const progress = document.querySelector<HTMLElement>('[data-stage-progress]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const desktop = window.matchMedia(DESKTOP_QUERY);
+  const fx = getStageFx();
+  const splits = new WeakMap<HTMLElement, HTMLElement[]>();
+  const charsOf = (el: HTMLElement): HTMLElement[] => {
+    let chars = splits.get(el);
+    if (!chars) {
+      chars = SplitText.create(el, { type: 'chars', charsClass: 'kc' }).chars as HTMLElement[];
+      splits.set(el, chars);
+    }
+    return chars;
+  };
+  const isKinetic = (el: HTMLElement) => /^H[12]$/.test(el.tagName);
 
   const slidesOf = (section: HTMLElement) =>
     Array.from(section.querySelectorAll<HTMLElement>('[data-slide]'));
@@ -150,6 +165,9 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     const items = nodes(i, '[data-reveal], [data-reveal-sub]');
     gsap.killTweensOf(items);
     set(items, { autoAlpha: 1, x: 0, y: 0 });
+    const chars = nodes(i, '.kc');
+    gsap.killTweensOf(chars);
+    set(chars, { autoAlpha: 1, yPercent: 0 });
     set(slideNodes(i, '[data-slide-media]'), { autoAlpha: 1, x: 0, scale: 1 });
     set(nodes(i, '[data-draw]'), { scaleX: 1, scaleY: 1 });
   }
@@ -163,12 +181,29 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       tl.call(() => showEntrance(i), undefined, at);
       return;
     }
-    if (reveal.length) {
+    const kinetic = reveal.filter(isKinetic);
+    const plain = reveal.filter((el) => !isKinetic(el));
+    kinetic.forEach((el) => {
+      const chars = charsOf(el);
+      tl.set(el, { autoAlpha: 1, y: 0 }, at).fromTo(
+        chars,
+        { yPercent: MOTION.chars.yPercent, autoAlpha: 0 },
+        {
+          yPercent: 0,
+          autoAlpha: 1,
+          duration: MOTION.chars.duration,
+          stagger: MOTION.chars.stagger,
+          ease: 'power3.out',
+        },
+        at,
+      );
+    });
+    if (plain.length) {
       tl.fromTo(
-        reveal,
+        plain,
         { autoAlpha: 0, x: 0, y: MOTION.reveal.y },
         { autoAlpha: 1, y: 0, duration: MOTION.reveal.duration, stagger: MOTION.reveal.stagger, ease: 'power3.out' },
-        at,
+        at + (kinetic.length ? 0.2 : 0),
       );
     }
     if (sub.length) {
@@ -207,9 +242,10 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     gsap.killTweensOf(allSlides);
     allSections.forEach((s) => {
       const active = s === section;
-      gsap.set(s, { autoAlpha: active ? 1 : 0, clearProps: 'transform' });
+      gsap.set(s, { autoAlpha: active ? 1 : 0, clearProps: 'transform,clipPath' });
       s.inert = !active;
     });
+    fx.portal = 0;
     allSlides.forEach((s) => {
       const active = s === slide;
       const visible = s.closest('[data-section]') === section ? active : true;
@@ -274,34 +310,38 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
 
     if (sameSection) buildSlideTransition(tl, from, to);
-    else buildSectionTransition(tl, from, to);
+    else if (reduceMotion.matches) buildFadeTransition(tl, from, to);
+    else buildPortalTransition(tl, from, to);
 
     transition = { from, to, tl };
   }
 
-  function buildSectionTransition(tl: gsap.core.Timeline, from: number, to: number) {
+  function buildFadeTransition(tl: gsap.core.Timeline, from: number, to: number) {
     const fromEl = steps[from].section;
     const toEl = steps[to].section;
-    const forward = to > from;
-    const contentOnly = poseOf(from) === 'background' && poseOf(to) === 'background';
+    const m = MOTION.fade;
+    if (steps[to].slide) showSlideOf(to);
+    tl.to(fromEl, { autoAlpha: 0, duration: m.duration }).fromTo(toEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: m.duration }, m.enterAt);
+    addEntrance(tl, to, m.enterAt);
+  }
 
+  function buildPortalTransition(tl: gsap.core.Timeline, from: number, to: number) {
+    const fromEl = steps[from].section;
+    const toEl = steps[to].section;
+    const m = MOTION.portal;
     if (steps[to].slide) showSlideOf(to);
 
-    if (reduceMotion.matches) {
-      tl.to(fromEl, { autoAlpha: 0, duration: 0.3 }).fromTo(toEl, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.1);
-      addEntrance(tl, to, 0.1);
-      return;
-    }
-    const m = contentOnly ? MOTION.content : MOTION.stage;
-    const exitScale = contentOnly && !forward ? 2 - m.exit.scale : m.exit.scale;
-    const enterScale = contentOnly && !forward ? 2 - m.enter.scale : m.enter.scale;
-    tl.to(fromEl, { scale: exitScale, autoAlpha: 0, duration: m.exit.duration, ease: m.exit.ease, force3D: true }).fromTo(
-      toEl,
-      { scale: enterScale, autoAlpha: 0 },
-      { scale: 1, autoAlpha: 1, duration: m.enter.duration, ease: m.enter.ease, force3D: true },
-      m.enter.at,
-    );
-    addEntrance(tl, to, m.enter.at + 0.12);
+    const clip = () => {
+      const p = fx.portal;
+      const r = p >= 0.5 ? 100000 : fx.r * PORTAL_HOLE * Math.min(1, p / 0.3);
+      toEl.style.clipPath = `circle(${r.toFixed(1)}px at ${fx.cx.toFixed(1)}px ${fx.cy.toFixed(1)}px)`;
+    };
+
+    tl.set(toEl, { autoAlpha: 1, clipPath: 'circle(0px at 50% 50%)' }, 0)
+      .fromTo(fx, { portal: 0 }, { portal: 1, duration: m.duration, ease: 'none', onUpdate: clip }, 0)
+      .to(fromEl, { scale: m.exitScale, autoAlpha: 0, duration: m.exitDuration, ease: 'power2.in', force3D: true }, 0)
+      .set(toEl, { clipPath: 'none' }, m.duration);
+    addEntrance(tl, to, m.enterAt);
   }
 
   function buildSlideTransition(tl: gsap.core.Timeline, from: number, to: number) {

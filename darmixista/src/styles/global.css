@@ -43,6 +43,10 @@
     overflow: hidden;
   }
 
+  .kc {
+    will-change: transform, opacity;
+  }
+
   .stage-section {
     position: absolute;
     inset: 0;

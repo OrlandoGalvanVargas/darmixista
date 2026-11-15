@@ -3,9 +3,11 @@ import { gsap } from 'gsap';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import {
+  PORTAL_HOLE,
   SCENE_READY,
   SITE_LOADED,
   STAGE_CHANGE,
+  getStageFx,
   isSiteLoaded,
   readCurrentPose,
 } from '../../lib/stage-events';
@@ -39,6 +41,11 @@ interface Pose {
 }
 
 const HUD_SPACE = 48;
+const PORTAL_MARGIN = 1.12;
+
+const nearestFlat = (angle: number) => Math.round(angle / Math.PI) * Math.PI;
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 function heroPose(vw: number, vh: number, pxW: number, pxH: number, contentBottom: number): Pose {
   if (pxW < MOBILE_BP) {
@@ -77,6 +84,8 @@ export function Rings() {
   const screenCircle = useRef({ cx: 0, cy: 0, r: 0 });
   const motion = useRef({ vx: 0, vy: 0, hover: 0, hovered: false, dragging: false, lastX: 0, lastY: 0 });
   const announcedReady = useRef(false);
+  const fx = useRef(getStageFx());
+  const acc = useRef({ g0: RINGS[0].start, g1: RINGS[1].start, g2: RINGS[2].start, sx: 0, sy: 0, tx: BASE_TILT.x, ty: BASE_TILT.y });
 
   const reducedMotion = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -271,45 +280,69 @@ export function Rings() {
     const a = heroPose(viewport.width, viewport.height, size.width, size.height, heroBottom.current);
     const b = backgroundPose(viewport.width, viewport.height);
     const m = state.mix;
-    const x = THREE.MathUtils.lerp(a.x, b.x, m);
-    const y = THREE.MathUtils.lerp(a.y, b.y, m);
-    mo.hover = THREE.MathUtils.damp(mo.hover, mo.hovered || mo.dragging ? 1 : 0, 6, dt);
-    const scale =
-      THREE.MathUtils.lerp(a.s, b.s, m) * (0.55 + 0.45 * state.intro) * (1 + 0.035 * mo.hover);
-    placement.current.position.set(x, y, 0);
-    placement.current.scale.setScalar(scale);
-
+    const f = fx.current;
+    const p = f.portal;
     const toPx = size.height / viewport.height;
+    mo.hover = THREE.MathUtils.damp(mo.hover, mo.hovered || mo.dragging ? 1 : 0, 6, dt);
+    let x = THREE.MathUtils.lerp(a.x, b.x, m);
+    let y = THREE.MathUtils.lerp(a.y, b.y, m);
+    let scale =
+      THREE.MathUtils.lerp(a.s, b.s, m) * (0.55 + 0.45 * state.intro) * (1 + 0.035 * mo.hover);
+    let face = 0;
+    if (p > 0 && p < 1) {
+      if (p < 0.5) {
+        const k = easeInOut(p / 0.5);
+        const peakPx = (Math.hypot(size.width, size.height) / 2) * PORTAL_MARGIN / PORTAL_HOLE;
+        const basePx = (OUTER_DIAMETER / 2) * scale * toPx;
+        scale *= THREE.MathUtils.lerp(1, peakPx / basePx, k);
+        x = THREE.MathUtils.lerp(x, 0, k);
+        y = THREE.MathUtils.lerp(y, 0, k);
+        face = easeOut(Math.min(1, p / 0.3));
+      } else {
+        const k = easeOut((p - 0.5) / 0.5);
+        scale *= k;
+        face = 1 - k;
+      }
+    }
+    placement.current.position.set(x, y, 0);
+    placement.current.scale.setScalar(Math.max(scale, 0.0001));
+
     screenCircle.current.cx = size.width / 2 + x * toPx;
     screenCircle.current.cy = size.height / 2 - y * toPx;
     screenCircle.current.r = (OUTER_DIAMETER / 2) * scale * toPx;
+    f.cx = screenCircle.current.cx;
+    f.cy = screenCircle.current.cy;
+    f.r = screenCircle.current.r;
+
+    const glow = THREE.MathUtils.lerp(1.2, 0.3, m);
+    for (const mat of materials) mat.envMapIntensity = glow;
 
     const friction = mo.dragging ? 0.6 : DRAG.friction + m * 6;
     const decay = Math.exp(-friction * dt);
     mo.vx *= decay;
     mo.vy *= decay;
-    spin.current.rotation.x += mo.vx * dt;
-    spin.current.rotation.y += mo.vy * dt;
+    const r = acc.current;
+    r.sx += mo.vx * dt;
+    r.sy += mo.vy * dt;
 
     const freeSpin = Math.min(Math.hypot(mo.vx, mo.vy) * DRAG.boost, 3);
     const speed = (reducedMotion ? 0.25 : 1) * (1 - 0.4 * m) * (1 + freeSpin + 0.25 * mo.hover);
-    g[0]!.rotation.y += RINGS[0].speed * dt * speed;
-    g[1]!.rotation.x += RINGS[1].speed * dt * speed;
-    g[2]!.rotation.y += RINGS[2].speed * dt * speed;
+    r.g0 += RINGS[0].speed * dt * speed;
+    r.g1 += RINGS[1].speed * dt * speed;
+    r.g2 += RINGS[2].speed * dt * speed;
 
     const follow = 1 - m;
-    tilt.current.rotation.x = THREE.MathUtils.damp(
-      tilt.current.rotation.x,
-      BASE_TILT.x + pointer.current.y * 0.18 * follow,
-      2.5,
-      dt,
-    );
-    tilt.current.rotation.y = THREE.MathUtils.damp(
-      tilt.current.rotation.y,
-      BASE_TILT.y + pointer.current.x * 0.28 * follow,
-      2.5,
-      dt,
-    );
+    r.tx = THREE.MathUtils.damp(r.tx, BASE_TILT.x + pointer.current.y * 0.18 * follow, 2.5, dt);
+    r.ty = THREE.MathUtils.damp(r.ty, BASE_TILT.y + pointer.current.x * 0.28 * follow, 2.5, dt);
+
+    const flat = (v: number) => THREE.MathUtils.lerp(v, nearestFlat(v), face);
+    spin.current.rotation.x = flat(r.sx);
+    spin.current.rotation.y = flat(r.sy);
+    g[0]!.rotation.y = flat(r.g0);
+    g[1]!.rotation.x = flat(r.g1);
+    g[2]!.rotation.y = flat(r.g2);
+    tilt.current.rotation.x = flat(r.tx);
+    tilt.current.rotation.y = flat(r.ty);
     tilt.current.rotation.z = BASE_TILT.z + (1 - state.intro) * 1.4;
   });
 

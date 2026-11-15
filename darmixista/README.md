@@ -107,6 +107,16 @@ Reglas para agregar o cambiar una landing:
 - El panel «Antes de instalar» muestra la pestaña de permisos solo si la app tiene permisos en sus datos.
 - En `src/data/projects/mobile/<app>.ts`, `links: { page: '<app>' }` conecta la tarjeta del portafolio con su landing.
 
+## Transición entre secciones
+
+El cambio de sección es un «portal»: los anillos 3D se encaran a la cámara, se abren hasta salir de la pantalla y la
+sección nueva aparece por el hueco central; después vuelven a su posición de fondo. Los títulos entran letra por letra
+con el plugin SplitText de GSAP.
+
+Los tiempos están en la tabla `MOTION` de `src/scripts/stage.ts` (`portal`, `chars`, `rings`); la geometría del portal
+vive en `src/components/scene/Rings.tsx` (`PORTAL_MARGIN`) y en `src/lib/stage-events.ts` (`PORTAL_HOLE`, la relación
+entre el hueco del anillo interior y el exterior). Con «reducir movimiento» activado en el sistema se usa un fundido simple.
+
 ## Formulario de contacto (Web3Forms)
 
 La clave va en `.env` como `PUBLIC_WEB3FORMS_KEY`. Al publicar, agrega la misma variable en el panel del
