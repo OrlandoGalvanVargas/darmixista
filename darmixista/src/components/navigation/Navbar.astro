@@ -22,12 +22,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <span class="text-[13px] font-semibold tracking-[0.26em] uppercase">{SITE.brand}</span>
     </a>
     <nav aria-label={t.nav.label} class="hidden items-center gap-6 lg:flex xl:gap-9">
-      <ul class="flex items-center gap-5 font-mono text-[12px] tracking-[0.14em] whitespace-nowrap uppercase xl:gap-8 xl:tracking-[0.18em]">
+      <ul class="flex items-center gap-7 text-[14px] font-medium tracking-[0.01em] whitespace-nowrap xl:gap-9">
         {
-          NAV_ITEMS.map((item, i) => (
+          NAV_ITEMS.map((item) => (
             <li>
               <a href={`#${item.id}`} data-goto={item.id} data-nav-item={item.id} class="nav-link">
-                <span class="mr-1.5 text-accent/70">{pad(i + 1)}</span>
                 {t.nav[item.key]}
               </a>
             </li>
@@ -79,7 +78,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         }
       </ul>
     </nav>
-    <a href={`mailto:${SITE.contact.email}`} class="font-mono text-[12px] tracking-[0.12em] text-accent">{SITE.contact.email}</a>
+    <a href={`mailto:${SITE.contact.email}`} class="text-[15px] font-medium text-accent">{SITE.contact.email}</a>
   </div>
 </header>
 

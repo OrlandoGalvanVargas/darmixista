@@ -10,7 +10,7 @@ const { lang, label } = Astro.props;
 const entries = Object.entries(languages) as [Lang, string][];
 ---
 
-<div class="flex items-center font-mono text-[11px] tracking-[0.2em]" role="group" aria-label={label}>
+<div class="flex items-center text-[13px] font-medium tracking-[0.08em]" role="group" aria-label={label}>
   {
     entries.map(([code, text], i) => (
       <>
