@@ -1,24 +1,15 @@
 import { gsap } from 'gsap';
 import { STAGE_CHANGE, type RingPose, type StageChangeDetail } from '../lib/stage-events';
 
-/* ──────────────────────────────────────────────
-   Ajustes de las transiciones
-   ────────────────────────────────────────────── */
 const MOTION = {
-  /** Hero ↔ sección: la actual se encoge hacia el centro y la nueva llega desde el fondo (los anillos se mueven) */
   stage: {
     exit: { scale: 0.86, duration: 0.75, ease: 'power2.in' },
     enter: { scale: 0.74, duration: 1.0, ease: 'power3.out', at: 0.38 },
   },
-  /**
-   * Entre pasos con los anillos de fondo: los anillos se quedan quietos y solo cambia el contenido.
-   * Al avanzar, el actual se acerca a ti y se desvanece; el siguiente llega desde atrás (al regresar, al revés).
-   */
   content: {
     exit: { scale: 1.07, duration: 0.5, ease: 'power2.in' },
     enter: { scale: 0.94, duration: 0.8, ease: 'power3.out', at: 0.3 },
   },
-  /** Entre diapositivas de un carrusel: desplazamiento horizontal (el marco de la sección no se mueve) */
   slide: {
     textShift: 48,
     mediaShift: 110,
@@ -26,31 +17,22 @@ const MOTION = {
     enterAt: 0.32,
     enterDuration: 0.75,
   },
-  /** Elementos [data-reveal] (escalonados) y [data-reveal-sub] (píldoras, más rápidos) */
   reveal: { y: 18, duration: 0.9, stagger: 0.07 },
   revealSub: { y: 8, duration: 0.6, stagger: 0.012 },
-  /** Líneas [data-draw="x|y"] que se dibujan al entrar */
   draw: { duration: 1.2, ease: 'power2.inOut' },
-  /** Estado visual de la capa de anillos según la pose */
   rings: {
     hero: { filter: 'blur(0px) brightness(1)', opacity: 1 },
     background: { filter: 'blur(7px) brightness(0.42)', opacity: 0.9 },
   } satisfies Record<RingPose, gsap.TweenVars>,
-  /** Velocidad al rebobinar o al acelerar una transición interrumpida */
   rewindSpeed: 1.6,
   hurrySpeed: 2.4,
-  /** Rueda: pausa (ms) que separa un gesto de otro; la inercia del trackpad cuenta como el mismo gesto */
   wheelGestureGap: 220,
-  /** Rueda: desplazamiento mínimo acumulado para contar como intención */
   wheelThreshold: 14,
-  /** Touch: distancia mínima del swipe (px) */
   swipeThreshold: 42,
 };
 
-/** Desde este ancho se usan las secciones de escritorio (`data-only="desktop"`) */
 const DESKTOP_QUERY = '(min-width: 768px)';
 
-/** Un paso = una sección, o una diapositiva dentro de una sección con carrusel */
 interface Step {
   id: string;
   section: HTMLElement;
@@ -66,26 +48,9 @@ interface Transition {
 }
 
 export interface StageOptions {
-  /** Promesa que se resuelve cuando la pantalla de carga termina (para la entrada inicial) */
   ready?: Promise<void>;
 }
 
-/**
- * Atributos que entiende el controlador en cada <section data-section>:
- *  - data-rings="hero|background"  pose de los anillos
- *  - data-nav="about"               grupo del menú (varios pasos pueden compartir uno)
- *  - data-only="desktop|mobile"     el paso solo existe en ese tamaño
- *  - data-fallback="id"             a dónde ir si el paso no existe en el tamaño actual
- * Carruseles: los hijos [data-slide] de la sección son pasos (#id, #id-2, #id-3…).
- *  - [data-slide-media]             parte visual de la diapositiva (se desplaza más)
- *  - [data-carousel-index]          número de diapositiva actual
- *  - [data-carousel-bar]            barra de progreso del carrusel
- *  - [data-carousel-prev|next]      botones; [data-carousel-goto="n"] va a la diapositiva n (0..)
- * Y dentro de cada sección o diapositiva:
- *  - [data-reveal]       aparece escalonado al entrar
- *  - [data-reveal-sub]   aparece escalonado rápido (listas largas)
- *  - [data-draw="x|y"]   línea que se dibuja al entrar
- */
 export function initStage({ ready = Promise.resolve() }: StageOptions = {}): void {
   const stage = document.querySelector<HTMLElement>('[data-stage]');
   if (!stage || stage.dataset.ready) return;
@@ -106,12 +71,10 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     Array.from(section.querySelectorAll<HTMLElement>('[data-slide]'));
   const allSlides = allSections.flatMap(slidesOf);
 
-  /** gsap.set que ignora listas vacías (evita avisos "GSAP target not found") */
   const set = (targets: Element[], vars: gsap.TweenVars) => {
     if (targets.length) gsap.set(targets, vars);
   };
 
-  /** Pasos activos para el tamaño de pantalla actual */
   let steps: Step[] = [];
   const buildSteps = () => {
     const skip = desktop.matches ? 'mobile' : 'desktop';
@@ -137,7 +100,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
   };
   buildSteps();
 
-  /** Resuelve un id (o su sustituto si no existe en este tamaño) a un índice; -1 si no hay */
   const resolve = (id: string): number => {
     const i = steps.findIndex((s) => s.id === id);
     if (i >= 0) return i;
@@ -150,7 +112,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
   const groupOf = (i: number) => steps[i].section.dataset.nav ?? steps[i].section.id;
   const groups = () => [...new Set(steps.map((_, i) => groupOf(i)))];
 
-  /** Nodos de entrada del paso: los de su sección, excepto los que viven en otras diapositivas */
   const nodes = (i: number, sel: string) => {
     const { section, slide } = steps[i];
     return Array.from(section.querySelectorAll<HTMLElement>(sel)).filter((el) => {
@@ -158,18 +119,14 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       return !owner || owner === slide;
     });
   };
-  /** Nodos de entrada que pertenecen solo a la diapositiva (para la transición horizontal) */
   const slideNodes = (i: number, sel: string) =>
     steps[i].slide ? Array.from(steps[i].slide!.querySelectorAll<HTMLElement>(sel)) : [];
 
-  /** Paso "destino" actual (durante una transición ya apunta al que entra) */
   let current = indexFromHash();
   let transition: Transition | null = null;
-  /** Una sola petición en espera: la última intención del usuario */
   let pending: number | null = null;
   let inputEnabled = false;
 
-  /* ── Estado inicial (el contenido espera a la pantalla de carga) ── */
   showOnly(current);
   hideEntrance(current);
   if (ringsLayer) gsap.set(ringsLayer, MOTION.rings[poseOf(current)]);
@@ -180,9 +137,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     addEntrance(gsap.timeline(), current, 0.1);
   });
 
-  /* ──────────────────────────────────────────────
-     Visibilidad y elementos de entrada
-     ────────────────────────────────────────────── */
   function hideEntrance(i: number) {
     set(nodes(i, '[data-reveal]'), { autoAlpha: 0, x: 0, y: MOTION.reveal.y });
     set(nodes(i, '[data-reveal-sub]'), { autoAlpha: 0, y: MOTION.revealSub.y });
@@ -200,7 +154,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     set(nodes(i, '[data-draw]'), { scaleX: 1, scaleY: 1 });
   }
 
-  /** Agrega la aparición de los elementos del paso `i` a una línea de tiempo */
   function addEntrance(tl: gsap.core.Timeline, i: number, at: number) {
     const reveal = nodes(i, '[data-reveal]');
     const sub = nodes(i, '[data-reveal-sub]');
@@ -240,7 +193,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
   }
 
-  /** Muestra solo la diapositiva del paso `i` dentro de su sección */
   function showSlideOf(i: number) {
     const { section, slide } = steps[i];
     slidesOf(section).forEach((s) => {
@@ -249,12 +201,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
   }
 
-  /**
-   * "Asienta" el escenario en el paso `i`: detiene cualquier animación sobre secciones y
-   * diapositivas y deja visible solo ese paso. Se ejecuta antes de cada transición y al
-   * terminar cada una, así ningún estado intermedio (por cambios muy rápidos) puede quedar
-   * visible: la visibilidad nunca depende del historial de animaciones.
-   */
   function settle(i: number) {
     const { section, slide } = steps[i];
     gsap.killTweensOf(allSections);
@@ -266,12 +212,10 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
     allSlides.forEach((s) => {
       const active = s === slide;
-      // Las diapositivas de otras secciones quedan listas en "1": su sección ya las oculta
       const visible = s.closest('[data-section]') === section ? active : true;
       gsap.set(s, { autoAlpha: visible ? 1 : 0 });
       s.inert = !active;
       if (!active) {
-        // Elementos de diapositivas ocultas en su posición neutra (listos para la próxima entrada)
         const items = Array.from(s.querySelectorAll<HTMLElement>('[data-reveal], [data-reveal-sub], [data-slide-media]'));
         gsap.killTweensOf(items);
         set(items, { autoAlpha: 1, x: 0, y: 0, scale: 1 });
@@ -279,25 +223,19 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
   }
 
-  /** Solo el paso `i` visible (estado inicial y cambio de tamaño) */
   function showOnly(i: number) {
     settle(i);
   }
 
-  /* ──────────────────────────────────────────────
-     Navegación interrumpible
-     ────────────────────────────────────────────── */
   function go(target: number) {
     if (target < 0 || target >= steps.length) return;
 
     if (transition) {
       const { from, to, tl } = transition;
-      // Regreso a mitad de camino → se rebobina la misma animación (respuesta inmediata)
       if (target === from && !tl.reversed()) {
         announce(from, to, true);
         pending = null;
         if (tl.time() === 0) {
-          // Aún no se pintaba ningún frame: no hay nada que rebobinar
           tl.kill();
           transition = null;
           settle(from);
@@ -307,14 +245,12 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
         tl.timeScale(MOTION.rewindSpeed).reverse();
         return;
       }
-      // Cambio de opinión otra vez → vuelve a avanzar
       if (target === to && tl.reversed()) {
         announce(to, from, true);
         tl.timeScale(MOTION.rewindSpeed).play();
         pending = null;
         return;
       }
-      // Otro paso distinto → se acelera el actual y se encadena al terminar
       if (target !== current) {
         pending = target;
         tl.timeScale(MOTION.hurrySpeed);
@@ -343,14 +279,12 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     transition = { from, to, tl };
   }
 
-  /** Cambio entre secciones distintas (zoom de escenario o de contenido) */
   function buildSectionTransition(tl: gsap.core.Timeline, from: number, to: number) {
     const fromEl = steps[from].section;
     const toEl = steps[to].section;
     const forward = to > from;
     const contentOnly = poseOf(from) === 'background' && poseOf(to) === 'background';
 
-    // La sección que entra muestra la diapositiva correcta antes de aparecer
     if (steps[to].slide) showSlideOf(to);
 
     if (reduceMotion.matches) {
@@ -359,10 +293,8 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       return;
     }
     const m = contentOnly ? MOTION.content : MOTION.stage;
-    // En la transición de contenido, la dirección invierte el sentido del zoom
     const exitScale = contentOnly && !forward ? 2 - m.exit.scale : m.exit.scale;
     const enterScale = contentOnly && !forward ? 2 - m.enter.scale : m.enter.scale;
-    // Solo transform + opacity: se resuelven en la GPU, sin repintar
     tl.to(fromEl, { scale: exitScale, autoAlpha: 0, duration: m.exit.duration, ease: m.exit.ease, force3D: true }).fromTo(
       toEl,
       { scale: enterScale, autoAlpha: 0 },
@@ -372,7 +304,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     addEntrance(tl, to, m.enter.at + 0.12);
   }
 
-  /** Cambio entre diapositivas del mismo carrusel: horizontal, el marco se queda quieto */
   function buildSlideTransition(tl: gsap.core.Timeline, from: number, to: number) {
     const dir = to > from ? 1 : -1;
     const fromSlide = steps[from].slide!;
@@ -419,7 +350,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     }
   }
 
-  /** `shown` es el paso que quedó visible al terminar (avance o rebobinado) */
   function finish(_hidden: number, shown: number) {
     transition?.tl.kill();
     transition = null;
@@ -431,7 +361,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     if (next !== null && next !== current) start(current, next);
   }
 
-  /** Actualiza estado, menú, contadores, hash, accesibilidad y la escena 3D */
   function announce(i: number, prev: number, animate: boolean) {
     current = i;
     const step = steps[i];
@@ -447,7 +376,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       if (el.dataset.navItem === group) el.setAttribute('aria-current', 'true');
       else el.removeAttribute('aria-current');
     });
-    // El contador cuenta secciones del menú; la barra avanza paso a paso
     if (counter) counter.textContent = String(groupList.indexOf(group) + 1).padStart(2, '0');
     if (total) total.textContent = String(groupList.length).padStart(2, '0');
     if (progress) {
@@ -459,7 +387,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       });
     }
 
-    // Carrusel: número, barra, flechas y puntos de la sección
     if (step.slide) syncCarousel(step, animate);
 
     if (ringsLayer && poseOf(i) !== poseOf(prev)) {
@@ -501,7 +428,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
   }
 
-  /** Paso relativo dentro del carrusel actual (no sale de la sección) */
   function slideBy(dir: 1 | -1) {
     const step = steps[current];
     if (!step.slide) return;
@@ -510,7 +436,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     go(current + dir);
   }
 
-  /* ── Cambio de tamaño (p. ej. girar el teléfono): se reorganizan los pasos sin perder el lugar ── */
   desktop.addEventListener('change', () => {
     pending = null;
     if (transition) {
@@ -532,12 +457,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     history.replaceState(null, '', i === 0 ? location.pathname + location.search : `#${steps[i].id}`);
   });
 
-  /* ──────────────────────────────────────────────
-     Entradas
-     Cada gesto (un movimiento de rueda, un swipe, una tecla) produce como máximo
-     un paso por dirección. Así la inercia no se salta pasos, pero un gesto
-     nuevo responde al instante, aunque haya una animación en curso.
-     ────────────────────────────────────────────── */
   let gesture = 0;
   let usedGesture = -1;
   let usedDir = 0;
@@ -549,22 +468,19 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     root.dataset.dialog !== 'open' &&
     root.dataset.typing !== 'true';
 
-  /** `within`: el gesto es horizontal (solo mueve el carrusel, nunca cambia de sección) */
   function request(dir: 1 | -1, gestureId: number, within = false) {
     if (!canInteract()) return;
     const key = within ? dir * 2 : dir;
-    if (gestureId === usedGesture && key === usedDir) return; // mismo gesto, misma dirección
+    if (gestureId === usedGesture && key === usedDir) return;
     usedGesture = gestureId;
     usedDir = key;
     if (within) slideBy(dir);
     else go(current + dir);
   }
 
-  // Rueda / trackpad (el desplazamiento horizontal del trackpad mueve el carrusel)
   let lastWheel = 0;
   let wheelAccumY = 0;
   let wheelAccumX = 0;
-  /** Un textarea que todavía puede desplazarse en esa dirección se queda con la rueda */
   const textareaCanScroll = (target: EventTarget | null, dy: number) => {
     const area = (target as Element | null)?.closest?.('textarea');
     if (!area || area.scrollHeight <= area.clientHeight) return false;
@@ -595,7 +511,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     { passive: true },
   );
 
-  // Touch (swipe vertical = pasos; swipe horizontal en un carrusel = diapositivas)
   let touchY = 0;
   let touchX = 0;
   let touchIgnored = false;
@@ -625,7 +540,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     { passive: true },
   );
 
-  // Teclado (↑↓ pasos; ←→ dentro del carrusel)
   window.addEventListener('keydown', (e) => {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
     const el = e.target as HTMLElement | null;
@@ -645,10 +559,9 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     const action = map[e.key];
     if (!action) return;
     e.preventDefault();
-    if (!e.repeat) action(); // mantener la tecla presionada no dispara una ráfaga
+    if (!e.repeat) action();
   });
 
-  // Clics: enlaces internos (menú, botones) y controles de carrusel
   document.addEventListener('click', (e) => {
     const target = e.target as Element | null;
     if (!target || !inputEnabled) return;

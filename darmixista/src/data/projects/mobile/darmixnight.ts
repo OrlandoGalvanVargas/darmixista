@@ -3,12 +3,17 @@ import type { Project } from '../types';
 const project: Project = {
   order: 3,
   slug: 'darmixnight',
+  audience: 'personal',
   title: 'DarmixNight',
   year: '2026',
   category: { es: 'Sueño y bienestar digital', en: 'Sleep and digital wellbeing' },
   summary: {
-    es: 'Bloquea tu teléfono durante tu horario de descanso: cualquier app queda cubierta hasta la mañana, dentro de una habitación nocturna ilustrada.',
-    en: 'Locks your phone during your sleep schedule: any app is covered until morning, inside an illustrated night room.',
+    es: 'A tu hora de dormir, las apps quedan bloqueadas hasta la mañana para que el teléfono no interrumpa tu descanso.',
+    en: 'At your bedtime, apps stay locked until morning so the phone doesn’t interrupt your rest.',
+  },
+  summaryShort: {
+    es: 'A tu hora de dormir, las apps quedan bloqueadas hasta la mañana para que el teléfono no interrumpa tu descanso.',
+    en: 'At your bedtime, apps stay locked until morning so the phone doesn’t interrupt your rest.',
   },
   description: {
     es: 'App Android que cubre cualquier app con una pantalla de descanso durante el horario que elijas. Un AccessibilityService detecta la app en primer plano y una ventana superpuesta en Compose dibuja el bloqueo; un servicio en primer plano con alarmas exactas mantiene el horario al minuto y se reactiva tras reinicios o si el sistema lo detiene. Llamadas, mensajes, cámara y ajustes nunca se bloquean, y el desbloqueo de emergencia solo existe de día, con fricción y registro semanal. Toda la app vive en una habitación ilustrada que cambia con el estado del servicio, con controles de latón y cobre, sonidos mecánicos propios, permisos guiados y actualizaciones desde GitHub Releases con PackageInstaller. Código abierto bajo licencia MIT.',

@@ -10,7 +10,6 @@ interface Props {
   lang: Lang;
   title?: string;
   noindex?: boolean;
-  /** Desactiva la redirección automática de idioma (p. ej. en la página 404) */
   skipLangRedirect?: boolean;
 }
 const { lang, title, noindex = false, skipLangRedirect = false } = Astro.props;

@@ -1,16 +1,10 @@
 ---
-/**
- * Formulario de contacto (Web3Forms). Se usa en escritorio (junto a los canales) y en el paso
- * móvil. La lógica de envío vive en src/scripts/contact.ts.
- * Estados: data-state="idle | sending | sent | error" en el <form>.
- */
 import { SITE, WEB3FORMS_KEY } from '../../config/site';
 import { LIMITS } from '../../scripts/contact';
 import { useTranslations, type Lang } from '../../i18n/ui';
 
 interface Props {
   lang: Lang;
-  /** Prefijo para ids únicos (hay dos copias del formulario: escritorio y móvil) */
   idPrefix: string;
 }
 const { lang, idPrefix } = Astro.props;
@@ -81,7 +75,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
       <p class="cf-error" data-error-for="message" aria-live="polite"></p>
     </div>
 
-    <!-- Trampa para bots (Web3Forms la ignora si viene marcada); invisible para personas -->
     <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
 
     <div class="cf-actions">
@@ -94,7 +87,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
     </div>
   </form>
 
-  <!-- Confirmación -->
   <div class="cf-sent" data-form-sent hidden>
     <svg viewBox="0 0 48 48" class="cf-check" aria-hidden="true">
       <circle cx="24" cy="24" r="22" pathLength="1" />
@@ -167,7 +159,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
   .cf-types .cf-label {
     margin-bottom: 0.6rem;
   }
-  /* Campos de línea: solo un borde inferior que se ilumina en cian al enfocar */
   .cf-input {
     width: 100%;
     padding: 0.45rem 0 0.55rem;
@@ -218,7 +209,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
     display: none;
   }
 
-  /* Píldoras de tipo de proyecto */
   .cf-chip span {
     display: inline-flex;
     padding: 0.3rem 0.9rem;
@@ -262,7 +252,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
     color: #ff8a8a;
   }
 
-  /* Enviando: un anillo que gira (eco de los anillos del sitio) */
   .cf-spinner {
     display: none;
     width: 0.95rem;
@@ -288,7 +277,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
     }
   }
 
-  /* Confirmación */
   .cf-sent {
     display: flex;
     flex-direction: column;
@@ -323,7 +311,6 @@ const id = (name: string) => `${idPrefix}-${name}`;
     }
   }
 
-  /* Teléfonos bajos: mensaje más compacto */
   @media (max-width: 767px) and (max-height: 700px) {
     .cf {
       gap: 0.7rem;

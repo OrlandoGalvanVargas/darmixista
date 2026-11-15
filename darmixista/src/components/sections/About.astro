@@ -1,4 +1,5 @@
 ---
+import { SITE } from '../../config/site';
 import { useTranslations, type Lang } from '../../i18n/ui';
 
 interface Props {
@@ -8,46 +9,89 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<!--
-  data-rings="background": los anillos pasan al centro, desenfocados y oscurecidos.
-  En móvil se muestra una versión resumida del texto para que quepa en una pantalla.
--->
 <section id="about" class="stage-section" data-section data-nav="about" data-rings="background" aria-labelledby="about-title">
   <div class="section-body" data-section-body>
-    <div class="mx-auto flex h-full max-w-[920px] flex-col items-center justify-center px-6 text-center md:px-12">
-      <h2
-        id="about-title"
-        data-reveal
-        class="text-[clamp(2.1rem,min(5.5vw,9vh),4.75rem)] leading-[1] font-semibold tracking-[-0.035em]"
-      >
-        {t.about.title}
-      </h2>
-
-      <!-- Escritorio / tablet -->
-      <div class="hidden md:block">
-        <p data-reveal class="mt-[clamp(1.25rem,4vh,2.5rem)] text-[clamp(1rem,2.4vh,1.25rem)] leading-relaxed text-muted">
-          {t.about.lead}
-        </p>
-        <p
-          data-reveal
-          class="about-body mt-[clamp(0.75rem,2.5vh,1.5rem)] text-[clamp(1rem,2.4vh,1.25rem)] leading-relaxed text-muted"
-          set:html={t.about.body}
-        />
-      </div>
-
-      <!-- Móvil: versión corta -->
-      <div class="md:hidden">
-        <p data-reveal class="mt-6 text-[15px] leading-relaxed text-muted">{t.about.leadShort}</p>
-        <p data-reveal class="about-body mt-4 text-[15px] leading-relaxed text-muted" set:html={t.about.bodyShort} />
+    <div class="mx-auto flex h-full max-w-[1100px] flex-col items-center justify-center px-6 pt-16 pb-12 md:px-12 md:pt-[5.25rem]">
+      <div class="grid w-full grid-cols-1 items-center gap-[clamp(1.25rem,4vh,2.5rem)] md:grid-cols-12 md:gap-10 lg:gap-14">
+        <div data-reveal class="about-photo mx-auto md:col-span-4 md:mx-0 lg:col-span-4">
+          <img src={SITE.person.photo} alt={t.about.photoAlt} width="720" height="720" loading="lazy" decoding="async" />
+        </div>
+        <div class="text-center md:col-span-8 md:text-left lg:col-span-8">
+          <h2
+            id="about-title"
+            data-reveal
+            class="text-[clamp(1.9rem,min(4.4vw,8vh),4rem)] leading-[1] font-semibold tracking-[-0.035em]"
+          >
+            {t.about.title}
+          </h2>
+          <p data-reveal class="about-lead-long mt-[clamp(1rem,3.2vh,1.75rem)] text-[clamp(0.95rem,2.2vh,1.2rem)] leading-relaxed text-muted">
+            {t.about.lead}
+          </p>
+          <p data-reveal class="about-lead-short mt-[clamp(1rem,3.2vh,1.75rem)] text-[clamp(0.95rem,2.2vh,1.2rem)] leading-relaxed text-muted">
+            {t.about.leadShort}
+          </p>
+          <p data-reveal class="about-long mt-[clamp(0.75rem,2.4vh,1.25rem)] text-[clamp(0.95rem,2.2vh,1.2rem)] leading-relaxed text-muted">
+            {t.about.body}
+          </p>
+          <p data-reveal class="about-short mt-[clamp(0.75rem,2.4vh,1.25rem)] text-[clamp(0.95rem,2.2vh,1.2rem)] leading-relaxed text-muted">
+            {t.about.bodyShort}
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* Las palabras clave del texto (en <strong>) se resaltan en blanco */
-  .about-body :global(strong) {
-    color: var(--color-fg);
-    font-weight: 500;
+  .about-photo {
+    position: relative;
+    width: clamp(6.5rem, 19vh, 11rem);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    padding: 4px;
+    background: conic-gradient(from 210deg, var(--color-accent), transparent 55%, var(--color-accent));
+  }
+  .about-photo::after {
+    content: '';
+    position: absolute;
+    inset: -14%;
+    z-index: -1;
+    border-radius: 999px;
+    background: radial-gradient(closest-side, rgb(0 229 255 / 0.18), transparent);
+  }
+  .about-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    object-fit: cover;
+    border: 3px solid var(--color-ink);
+  }
+  @media (min-width: 768px) {
+    .about-photo {
+      width: min(100%, 26vh, 20rem);
+    }
+  }
+  .about-short,
+  .about-lead-short {
+    display: none;
+  }
+  @media (max-width: 767px), (min-width: 768px) and (max-height: 620px) {
+    .about-long,
+    .about-lead-long {
+      display: none;
+    }
+    .about-short,
+    .about-lead-short {
+      display: block;
+    }
+  }
+  @media (max-width: 767px) and (max-height: 620px) {
+    .about-short {
+      display: none;
+    }
+    .about-photo {
+      width: 5rem;
+    }
   }
 </style>

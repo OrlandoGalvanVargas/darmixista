@@ -4,10 +4,9 @@ import { LANG_STORAGE_KEY } from '../lib/lang-redirect';
 
 export { LANG_STORAGE_KEY };
 
-/** Menú móvil + selector de idioma */
 export function initNavigation(): void {
   const root = document.documentElement;
-  if (root.dataset.navReady) return; // evita registrar eventos dos veces (recarga en caliente)
+  if (root.dataset.navReady) return;
   root.dataset.navReady = 'true';
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
@@ -40,14 +39,12 @@ export function initNavigation(): void {
     if (mq.matches) setOpen(false);
   });
 
-  // Cambio de idioma: recuerda la preferencia y conserva la sección actual
   document.querySelectorAll<HTMLAnchorElement>('[data-lang-link]').forEach((link) => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       try {
         localStorage.setItem(LANG_STORAGE_KEY, link.dataset.langLink ?? '');
       } catch {
-        /* almacenamiento no disponible: no pasa nada */
       }
       location.href = link.pathname + location.hash;
     });

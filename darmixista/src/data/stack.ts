@@ -1,10 +1,5 @@
 import type { Lang } from '../i18n/ui';
 
-/**
- * Tecnologías por categoría.
- * `core: true` = las que usas a diario (llevan un punto cian).
- * En teléfonos de pantalla baja solo se muestran las `core` para que todo quepa.
- */
 export interface StackItem {
   name: string;
   core?: boolean;
@@ -24,9 +19,8 @@ export const STACK: StackCategory[] = [
       { name: 'C# / .NET', core: true },
       { name: 'ASP.NET Core', core: true },
       { name: 'Java / Spring Boot', core: true },
+      { name: 'Laravel' },
       { name: 'PostgreSQL' },
-      { name: 'Entity Framework' },
-      { name: 'JWT / OAuth' },
     ],
   },
   {
@@ -35,7 +29,6 @@ export const STACK: StackCategory[] = [
     items: [
       { name: 'React', core: true },
       { name: 'TypeScript', core: true },
-      { name: 'Vite' },
       { name: 'Tailwind CSS' },
       { name: 'TanStack Query' },
       { name: 'Astro' },
@@ -43,12 +36,11 @@ export const STACK: StackCategory[] = [
   },
   {
     id: 'mobile',
-    label: { es: 'Móvil', en: 'Mobile' },
+    label: { es: 'Android', en: 'Android' },
     items: [
       { name: 'Kotlin', core: true },
-      { name: 'Android', core: true },
+      { name: 'Jetpack Compose', core: true },
       { name: 'Room' },
-      { name: 'WorkManager' },
       { name: 'Foreground Services' },
     ],
   },
@@ -57,11 +49,9 @@ export const STACK: StackCategory[] = [
     label: { es: 'Arquitectura', en: 'Architecture' },
     items: [
       { name: 'Vertical Slice', core: true },
-      { name: 'CQRS / MediatR' },
-      { name: 'DDD' },
+      { name: 'CQRS' },
       { name: 'REST / OpenAPI' },
       { name: 'Docker', core: true },
-      { name: 'AWS' },
       { name: 'CI/CD' },
     ],
   },

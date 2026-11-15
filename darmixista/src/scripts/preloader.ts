@@ -2,16 +2,10 @@ import { gsap } from 'gsap';
 import { SCENE_READY, SITE_LOADED } from '../lib/stage-events';
 
 const CONFIG = {
-  /** Tiempo mínimo visible (ms): evita un parpadeo en recargas rápidas */
   minVisible: 700,
-  /** Si algo tarda demasiado (red lenta, sin WebGL), se continúa igual (ms) */
   maxWait: 9000,
 };
 
-/**
- * Muestra el progreso real de la carga y resuelve la promesa cuando la pantalla
- * de carga terminó de salir. El resto del sitio espera esa promesa para animar su entrada.
- */
 export function runPreloader(): Promise<void> {
   const root = document.documentElement;
   const el = document.querySelector<HTMLElement>('[data-preloader]');
@@ -28,9 +22,7 @@ export function runPreloader(): Promise<void> {
   const count = el.querySelector<HTMLElement>('[data-preloader-count]');
   const inner = el.querySelector<HTMLElement>('[data-preloader-inner]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const startedAt = performance.now();
 
-  // Indicador que avanza suave hacia el porcentaje real
   const shown = { value: 0 };
   const render = () => {
     if (count) count.textContent = String(Math.round(shown.value));
@@ -39,7 +31,6 @@ export function runPreloader(): Promise<void> {
   const advanceTo = (value: number, duration = 0.6) =>
     gsap.to(shown, { value, duration, ease: 'power2.out', onUpdate: render, overwrite: true });
 
-  // Hitos reales de carga, cada uno con su peso
   const milestones: Array<[Promise<unknown>, number]> = [
     [document.fonts?.ready ?? Promise.resolve(), 25],
     [
@@ -86,7 +77,6 @@ export function runPreloader(): Promise<void> {
               '-=0.25',
             );
           }
-          // El sitio empieza a aparecer mientras el velo se desvanece
           tl.call(
             () => {
               done();

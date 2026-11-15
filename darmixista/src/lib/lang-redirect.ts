@@ -1,12 +1,3 @@
-/**
- * Detección de idioma (script en línea en el <head>, se ejecuta antes de pintar).
- *
- * - En la primera visita, un navegador en otro idioma va a la versión /en/ de la MISMA página
- *   (/ → /en/, /darmixpet/ → /en/darmixpet/).
- * - Si el visitante eligió idioma antes (localStorage), se respeta.
- * - Los buscadores y previsualizadores de enlaces nunca se redirigen: así cada idioma
- *   se indexa en su propia URL (hreflang).
- */
 export const LANG_STORAGE_KEY = 'darmixista:lang';
 
 export const LANG_REDIRECT = `(function(){try{

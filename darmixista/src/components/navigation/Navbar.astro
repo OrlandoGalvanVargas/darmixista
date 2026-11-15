@@ -21,10 +21,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <Logo class="nav-logo h-8 w-8 text-fg" />
       <span class="text-[13px] font-semibold tracking-[0.26em] uppercase">{SITE.brand}</span>
     </a>
-
-    <!-- Escritorio -->
     <nav aria-label={t.nav.label} class="hidden items-center gap-6 lg:flex xl:gap-9">
-      <ul class="flex items-center gap-5 font-mono text-[11px] tracking-[0.14em] whitespace-nowrap uppercase xl:gap-8 xl:tracking-[0.2em]">
+      <ul class="flex items-center gap-5 font-mono text-[12px] tracking-[0.14em] whitespace-nowrap uppercase xl:gap-8 xl:tracking-[0.18em]">
         {
           NAV_ITEMS.map((item, i) => (
             <li>
@@ -39,8 +37,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <span class="h-4 w-px bg-line" aria-hidden="true"></span>
       <LangSwitch lang={lang} label={t.nav.language} />
     </nav>
-
-    <!-- Móvil -->
     <div class="flex items-center gap-5 lg:hidden">
       <LangSwitch lang={lang} label={t.nav.language} />
       <button
@@ -83,14 +79,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
         }
       </ul>
     </nav>
-    <a href={SITE.cv[lang]} download class="font-mono text-[11px] tracking-[0.2em] text-accent uppercase">
-      {t.hero.cv} ↓
-    </a>
+    <a href={`mailto:${SITE.contact.email}`} class="font-mono text-[12px] tracking-[0.12em] text-accent">{SITE.contact.email}</a>
   </div>
 </header>
 
 <style>
-  /* Al pasar el cursor: el anillo se vuelve a trazar y el punto cian late */
   .nav-logo :global(.logo-front),
   .nav-logo :global(.logo-back) {
     stroke-dasharray: 1 1;

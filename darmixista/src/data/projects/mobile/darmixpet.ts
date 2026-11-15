@@ -3,12 +3,17 @@ import type { Project } from "../types";
 const project: Project = {
   order: 1,
   slug: "darmixpet",
+  audience: 'personal',
   title: "DarmixPet",
   year: "2026",
   category: { es: "Bienestar digital", en: "Digital wellbeing" },
   summary: {
-    es: "Control de tiempo de pantalla con una mascota flotante que vive sobre tus apps y te avisa cuándo parar.",
-    en: "Screen-time control with a floating pet that lives on top of your apps and tells you when to stop.",
+    es: 'Una mascota flotante que te ayuda a controlar el tiempo de uso de tus apps y te avisa cuando ya es hora de soltar el teléfono.',
+    en: 'A floating pet that helps you keep track of how long you use your apps and lets you know when it’s time to put the phone down.',
+  },
+  summaryShort: {
+    es: 'Una mascota flotante que controla el tiempo de uso de tus apps y te avisa cuando es hora de soltar el teléfono.',
+    en: 'A floating pet that tracks your app usage and lets you know when it’s time to put the phone down.',
   },
   description: {
     es: "App Android de bienestar digital que limita las apps que elijas por sesiones: tiempo máximo por sesión, enfriamiento entre sesiones y número de sesiones al día. Una mascota flotante (overlay) arrastrable reacciona a gestos, habla con voz, ofrece un menú rápido de brillo, volumen y temporizador, y bloquea la app al agotarse el tiempo. Detecta al instante la app abierta con AccessibilityService, funciona 100 % en el teléfono y avisa de nuevas versiones consultando las releases de GitHub. Tres personajes con estilo visual propio sobre una arquitectura extensible de skins.",

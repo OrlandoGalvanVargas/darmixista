@@ -1,9 +1,4 @@
 ---
-/**
- * Metadatos para buscadores y redes sociales:
- * título, descripción, URL canónica, idiomas alternos (hreflang), Open Graph, Twitter/X
- * y datos estructurados (JSON-LD) que describen a la persona y al sitio.
- */
 import { getAbsoluteLocaleUrl } from 'astro:i18n';
 import { SITE } from '../../config/site';
 import { STACK } from '../../data/stack';
@@ -11,22 +6,14 @@ import { languages, useTranslations, type Lang } from '../../i18n/ui';
 
 interface Props {
   lang: Lang;
-  /** Título de la pestaña (por defecto el del sitio) */
   title?: string;
-  /** Página que no debe aparecer en buscadores (p. ej. 404) */
   noindex?: boolean;
-  /** Ruta de la página sin idioma, con barra final (p. ej. 'darmixpet/'). Vacía = inicio */
   path?: string;
-  /** Descripción propia (por defecto la del portafolio) */
   description?: string;
-  /** Imagen para compartir (ruta en /public) y su texto alternativo */
   image?: string;
   imageAlt?: string;
-  /** Nombre del sitio para Open Graph (por defecto la marca) */
   siteName?: string;
-  /** Datos estructurados propios; si se omiten se usan los del portafolio */
   jsonLd?: Record<string, unknown>;
-  /** Íconos propios de la página */
   icons?: { svg?: string; png32: string; apple: string; manifest?: string };
 }
 const {
@@ -53,7 +40,6 @@ const ogImage = new URL(image ?? `/og/og-${lang}.png`, Astro.site).href;
 const ogAlt = imageAlt ?? t.ogAlt;
 const fullName = `${SITE.person.firstName} ${SITE.person.lastName}`;
 
-// Datos estructurados: Google los usa para entender quién eres y enlazar tus perfiles
 const portfolioJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -110,7 +96,6 @@ const jsonLd = customJsonLd ?? portfolioJsonLd;
   )
 }
 
-<!-- Íconos -->
 {
   icons ? (
     <>
@@ -129,7 +114,6 @@ const jsonLd = customJsonLd ?? portfolioJsonLd;
   )
 }
 
-<!-- Open Graph (WhatsApp, LinkedIn, Facebook, Slack, Discord…) -->
 <meta property="og:type" content={customJsonLd ? 'website' : 'profile'} />
 <meta property="og:site_name" content={siteName ?? SITE.brand} />
 <meta property="og:title" content={pageTitle} />
@@ -150,7 +134,6 @@ const jsonLd = customJsonLd ?? portfolioJsonLd;
   )
 }
 
-<!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={pageTitle} />
 <meta name="twitter:description" content={pageDescription} />

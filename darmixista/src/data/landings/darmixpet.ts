@@ -262,7 +262,7 @@ export const content: Record<Lang, DarmixPetContent> = {
     hero: {
       title:
         'Tu compañero de<br class="max-lg:hidden"> <em>tiempo de pantalla</em>',
-      lead: "Una mascota que vive sobre tus apps y te avisa cuando ya es hora de soltar el teléfono.",
+      lead: "Una mascota flotante que controla el tiempo de uso de tus apps y te avisa cuando es hora de soltar el teléfono.",
       howTo: "¿Cómo se instala?",
     },
     how: {
@@ -453,7 +453,7 @@ export const content: Record<Lang, DarmixPetContent> = {
     hero: {
       title:
         'Your <em><span class="whitespace-nowrap">screen-time</span></em><br class="max-lg:hidden"> companion',
-      lead: "A pet that lives on top of your apps and lets you know when it’s time to put the phone down.",
+      lead: "A floating pet that tracks your app usage and lets you know when it’s time to put the phone down.",
       howTo: "How do I install it?",
     },
     how: {

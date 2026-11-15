@@ -1,8 +1,3 @@
-/**
- * Contacto: envío del formulario (Web3Forms), validación, copiar correo y reloj en vivo.
- * Web3Forms: https://docs.web3forms.com — la clave es pública por diseño.
- * Si no hay clave configurada, se abre el correo del visitante con el mensaje redactado.
- */
 const ENDPOINT = 'https://api.web3forms.com/submit';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -10,7 +5,7 @@ type State = 'idle' | 'sending' | 'sent' | 'error';
 
 export function initContact(): void {
   const root = document.documentElement;
-  if (root.dataset.contactReady) return; // evita registrar eventos dos veces (recarga en caliente)
+  if (root.dataset.contactReady) return;
   root.dataset.contactReady = 'true';
 
   document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach(setupForm);
@@ -19,28 +14,18 @@ export function initContact(): void {
   setupTypingGuard();
 }
 
-/* ──────────────────────────────────────────────
-   Reglas y límites del formulario
-   Nota: en un sitio estático estos límites viven en el navegador. Frenan el abuso casual y a
-   los bots simples, pero alguien decidido puede saltarlos; Web3Forms filtra spam en su
-   servidor y, para un límite real por IP, hace falta un servidor (ver README).
-   ────────────────────────────────────────────── */
 export const LIMITS = {
   name: { min: 2, max: 80 },
   email: { max: 120 },
   message: { min: 10, max: 2000, maxLinks: 3 },
-  /** Envíos permitidos por navegador en 24 horas */
   perDay: 3,
-  /** Espera mínima entre envíos (ms) */
   cooldownMs: 60_000,
-  /** Un formulario llenado más rápido que esto es casi seguro un bot (ms) */
   minFillMs: 3_000,
 };
 
 const LOG_KEY = 'darmixista:contact-log';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const URL_RE = /(https?:\/\/|www\.)\S+/gi;
-// Caracteres de control (excepto salto de línea y tabulador) y caracteres invisibles de dirección
 const CONTROL_RE = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F‪-‮⁦-⁩]/g;
 
 interface SendLog {
@@ -50,7 +35,6 @@ interface SendLog {
 
 const clean = (value: string) => value.replace(CONTROL_RE, '').replace(/\r\n?/g, '\n').trim();
 
-/** Huella corta de un texto (para detectar el mismo mensaje enviado dos veces) */
 function hash(text: string): string {
   let h = 2166136261;
   for (let i = 0; i < text.length; i++) {
@@ -74,13 +58,9 @@ function writeLog(log: SendLog) {
   try {
     localStorage.setItem(LOG_KEY, JSON.stringify(log));
   } catch {
-    /* almacenamiento no disponible */
   }
 }
 
-/* ──────────────────────────────────────────────
-   Formulario
-   ────────────────────────────────────────────── */
 function setupForm(form: HTMLFormElement) {
   const d = form.dataset;
   const card = form.parentElement!;
@@ -88,7 +68,6 @@ function setupForm(form: HTMLFormElement) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
   const label = form.querySelector<HTMLElement>('[data-submit-label]');
   const counter = form.querySelector<HTMLElement>('[data-char-count]');
-  /** Momento en que el visitante empezó a escribir (para detectar bots) */
   let startedAt = 0;
 
   const setState = (state: State, message = '') => {
@@ -163,7 +142,6 @@ function setupForm(form: HTMLFormElement) {
   form.addEventListener('input', (e) => {
     if (!startedAt) startedAt = Date.now();
     const target = e.target as HTMLInputElement;
-    // Al corregir un campo, se limpia su error
     if (target.name && target.closest('.cf-field')?.hasAttribute('data-invalid')) showError(target.name, '');
     if (target.name === 'message') updateCounter();
     if (form.dataset.state === 'error') setState('idle');
@@ -176,11 +154,9 @@ function setupForm(form: HTMLFormElement) {
     if (!values) return;
 
     const data = new FormData(form);
-    // Bots: campo trampa marcado o formulario llenado en tiempo imposible → éxito fingido, sin enviar
     const tooFast = !startedAt || Date.now() - startedAt < LIMITS.minFillMs;
     if (data.get('botcheck') || tooFast) return showSent(false);
 
-    // Límites por navegador
     const log = readLog();
     const fingerprint = hash(`${values.email}|${values.message}`);
     if (log.lastHash === fingerprint) return setState('error', d.msgDuplicate ?? '');
@@ -191,7 +167,6 @@ function setupForm(form: HTMLFormElement) {
     const type = String(data.get('project_type') ?? '').slice(0, 20);
     const subject = `${d.subject} — ${values.name}${type ? ` (${type})` : ''}`;
 
-    // Sin clave configurada: respaldo con el correo del visitante
     if (!d.key) {
       const body = `${values.message}\n\n— ${values.name} <${values.email}>${type ? `\n${type}` : ''}`;
       window.location.href = `mailto:${d.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -250,9 +225,6 @@ function setupForm(form: HTMLFormElement) {
   });
 }
 
-/* ──────────────────────────────────────────────
-   Copiar correo
-   ────────────────────────────────────────────── */
 function setupCopy() {
   document.addEventListener('click', async (e) => {
     const btn = (e.target as Element | null)?.closest<HTMLElement>('[data-copy]');
@@ -261,7 +233,6 @@ function setupCopy() {
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      // Respaldo para navegadores sin API de portapapeles
       const area = document.createElement('textarea');
       area.value = text;
       area.style.position = 'fixed';
@@ -284,9 +255,6 @@ function setupCopy() {
   });
 }
 
-/* ──────────────────────────────────────────────
-   Reloj en vivo (zona horaria del dueño del sitio)
-   ────────────────────────────────────────────── */
 function setupClock() {
   const clocks = document.querySelectorAll<HTMLTimeElement>('[data-local-time]');
   if (!clocks.length) return;
@@ -303,7 +271,6 @@ function setupClock() {
         hour12: false,
       }),
     );
-    // Desfase horario (p. ej. GMT-6)
     const offset = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' })
       .formatToParts(new Date())
       .find((p) => p.type === 'timeZoneName')?.value;
@@ -321,10 +288,6 @@ function setupClock() {
   window.setInterval(tick, 1000);
 }
 
-/* ──────────────────────────────────────────────
-   Escribiendo en un teléfono: el teclado reduce la pantalla, así que se permite desplazar
-   la sección y se pausa la navegación por swipe hasta salir del campo.
-   ────────────────────────────────────────────── */
 function setupTypingGuard() {
   const root = document.documentElement;
   const coarse = window.matchMedia('(pointer: coarse)');
@@ -336,7 +299,6 @@ function setupTypingGuard() {
   });
   document.addEventListener('focusout', (e) => {
     if (!isField(e.target)) return;
-    // Espera un instante: si el foco pasa a otro campo, se mantiene el modo escritura
     window.setTimeout(() => {
       if (!isField(document.activeElement)) delete root.dataset.typing;
     }, 50);

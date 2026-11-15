@@ -1,10 +1,5 @@
 import type { Lang } from '../i18n/ui';
 
-/**
- * Experiencia y formación.
- * Máximo recomendado: 3 de experiencia + 2 de formación (para que quepa en una pantalla).
- * `current: true` marca el punto en cian (lo que haces actualmente).
- */
 export interface TimelineEntry {
   period: Record<Lang, string>;
   title: Record<Lang, string>;
@@ -16,11 +11,11 @@ export interface TimelineEntry {
 export const EXPERIENCE: TimelineEntry[] = [
   {
     period: { es: '2026 — Actual', en: '2026 — Present' },
-    title: { es: 'Desarrollador Full Stack', en: 'Full Stack Developer' },
-    org: 'Freelance',
+    title: { es: 'Desarrollador Full Stack y Android', en: 'Full Stack and Android Developer' },
+    org: 'Darmixista',
     description: {
-      es: 'Modernizo y automatizo procesos con soluciones web, backend y móviles.',
-      en: 'I modernize and automate processes with web, backend and mobile solutions.',
+      es: 'Diseño, construcción y mantenimiento de apps Android publicadas y sistemas web de código abierto.',
+      en: 'Design, development and maintenance of published Android apps and open-source web systems.',
     },
     current: true,
   },
@@ -48,6 +43,11 @@ export const EDUCATION: TimelineEntry[] = [
   {
     period: { es: 'Sep 2024 — May 2026', en: 'Sep 2024 — May 2026' },
     title: { es: 'Ingeniería en Desarrollo y Gestión de Software', en: 'B.Eng. in Software Development and Management' },
+    org: 'UT Tula-Tepeji',
+  },
+  {
+    period: { es: '2022 — 2024', en: '2022 — 2024' },
+    title: { es: 'TSU en Desarrollo de Software Multiplataforma', en: 'Associate Degree in Multiplatform Software Development' },
     org: 'UT Tula-Tepeji',
   },
 ];

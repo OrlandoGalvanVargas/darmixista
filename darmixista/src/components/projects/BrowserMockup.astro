@@ -1,9 +1,4 @@
 ---
-/**
- * Ventana de navegador oscura y sobria. Con `image`, al pasar el cursor la captura
- * se desplaza lentamente hacia abajo (ideal para capturas largas de toda la página).
- * Sin imagen, dibuja un panel de ejemplo con divs (sin peso extra).
- */
 interface Props {
   image?: string;
   domain?: string;
@@ -124,7 +119,6 @@ const { image, domain = 'localhost', title } = Astro.props;
     object-position: bottom;
   }
 
-  /* Panel de ejemplo (sin imagen) */
   .sk {
     display: grid;
     grid-template-columns: 18% 1fr;

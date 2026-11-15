@@ -1,9 +1,5 @@
 import * as THREE from 'three';
 
-/**
- * Perfil de la banda: rectángulo redondeado (como un anillo de bodas ancho),
- * girado alrededor del eje Y con LatheGeometry.
- */
 export function createBandGeometry(
   radius: number,
   width: number,
@@ -12,10 +8,9 @@ export function createBandGeometry(
 ): THREE.LatheGeometry {
   const hw = width / 2;
   const ht = thickness / 2;
-  const r = Math.min(ht, hw) * 0.9; // radio de las esquinas
+  const r = Math.min(ht, hw) * 0.9;
   const steps = 10;
 
-  // Esquinas en sentido antihorario (exterior-abajo → exterior-arriba → interior-arriba → interior-abajo)
   const corners = [
     { cx: radius + ht - r, cy: -hw + r, start: -Math.PI / 2 },
     { cx: radius + ht - r, cy: hw - r, start: 0 },
@@ -35,10 +30,6 @@ export function createBandGeometry(
   return new THREE.LatheGeometry(points, segments);
 }
 
-/**
- * Textura procedural de metal cepillado: vetas finas a lo largo de la circunferencia.
- * Se usa como roughnessMap, así el brillo varía sutilmente veta por veta.
- */
 export function createBrushedTexture(): THREE.CanvasTexture {
   const w = 512;
   const h = 512;
@@ -51,14 +42,12 @@ export function createBrushedTexture(): THREE.CanvasTexture {
   ctx.fillStyle = 'rgb(225,225,225)';
   ctx.fillRect(0, 0, w, h);
 
-  // Una veta por fila de píxeles
   for (let y = 0; y < h; y++) {
     const v = Math.round(175 + Math.random() * 80);
     ctx.fillStyle = `rgba(${v},${v},${v},0.6)`;
     ctx.fillRect(0, y, w, 1);
   }
 
-  // Rayas largas que dan el carácter "cepillado" (se dibujan dos veces para que la textura sea continua)
   for (let i = 0; i < 900; i++) {
     const y = Math.random() * h;
     const x = Math.random() * w;
@@ -74,6 +63,6 @@ export function createBrushedTexture(): THREE.CanvasTexture {
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(4, 1);
   texture.anisotropy = 8;
-  texture.colorSpace = THREE.NoColorSpace; // datos, no color
+  texture.colorSpace = THREE.NoColorSpace;
   return texture;
 }

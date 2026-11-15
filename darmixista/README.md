@@ -18,7 +18,7 @@ npm run dev
 
 | Qué                                                | Archivo                                                |
 | -------------------------------------------------- | ------------------------------------------------------ |
-| Nombre, correo, redes, CV, disponibilidad          | `src/config/site.ts`                                   |
+| Nombre, foto, correo, redes, CV, disponibilidad    | `src/config/site.ts`                                   |
 | Textos en español e inglés                         | `src/i18n/ui.ts`                                       |
 | Stack                                              | `src/data/stack.ts`                                    |
 | Experiencia y formación                            | `src/data/trajectory.ts`                               |
@@ -26,6 +26,7 @@ npm run dev
 | Servicios                                          | `src/data/services.ts`                                 |
 | CV en PDF                                          | `public/cv/`                                           |
 | Capturas de proyectos                              | `public/projects/`                                     |
+| Foto de «Sobre mí»                                 | `public/about/orlando.webp` (cuadrada, 720×720)        |
 | Landings de apps móviles (textos, paleta, versión) | `src/data/landings/`                                   |
 | Imágenes y videos de cada landing                  | `public/apps/<app>/`                                   |
 
@@ -42,7 +43,28 @@ Cada app móvil tiene su propia página con botón de descarga, fuera del portaf
 | `darmixista.dev/darmixnight/`    | DarmixNight (español) |
 | `darmixista.dev/en/darmixnight/` | DarmixNight (inglés)  |
 
-En el carrusel de apps, el botón **Descargar app** lleva a esa página (`links.page` en
+Las apps móviles se agrupan por `audience` en su archivo de datos: `'personal'` va en «Apps personales» y
+`'business'` en «Apps para negocios». El segundo carrusel aparece solo cuando existe al menos una app con
+`audience: 'business'`.
+
+### Textos por tamaño de pantalla
+
+Cada vista cabe en una sola pantalla sin scroll interno, así que varios textos tienen más de una versión y el
+CSS elige cuál mostrar según el ancho y el alto del navegador:
+
+| Texto                                      | Largo                                 | Medio                                                     | Corto                                |
+| ------------------------------------------ | ------------------------------------- | --------------------------------------------------------- | ------------------------------------ |
+| Hero (`hero.bio` / `hero.bioShort`)        | alturas > 620 px                      | —                                                         | alturas ≤ 620 px                     |
+| Sobre mí (`about.lead*`, `body*`)          | ≥ 768 px y > 620 px de alto           | —                                                         | teléfonos o alturas ≤ 620 px         |
+| Servicios (`description`/`medium`/`short`) | ≥ 1280 px y > 760 px de alto          | tablets 768–1279, alturas ≤ 760 o teléfonos ≥ 780 de alto | teléfonos de menos de 780 px de alto |
+| Intro de Servicios                         | ≥ 768 px o teléfonos ≥ 880 px de alto | —                                                         | oculta                               |
+| Proyectos (`summary` / `summaryShort`)     | ≥ 768 px y > 720 px de alto           | —                                                         | teléfonos o alturas ≤ 720 px         |
+| Trayectoria (descripciones)                | alturas > 820 px                      | —                                                         | se ocultan en alturas ≤ 820 px       |
+
+Al editar un texto conviene actualizar todas sus versiones en `src/i18n/ui.ts`, `src/data/services.ts` o el
+archivo del proyecto. `summaryShort` es opcional; si falta se usa `summary`.
+
+En el carrusel de apps, el botón **Ver app** lleva a esa página (`links.page` en
 `src/data/projects/mobile/<app>.ts`). Los APK **no** se guardan en este proyecto: el botón descarga el
 archivo directamente de las _GitHub Releases_ del repositorio de la app.
 

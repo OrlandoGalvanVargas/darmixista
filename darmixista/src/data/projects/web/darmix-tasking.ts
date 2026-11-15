@@ -1,14 +1,18 @@
 import type { Project } from "../types";
 
 const project: Project = {
-  order: 2,
+  order: 1,
   slug: "darmix-tasking",
   title: "Darmix Tasking",
   year: "2026",
   category: { es: "Productividad", en: "Productivity" },
   summary: {
-    es: "Gestor de proyectos y tareas: API REST en Laravel con JWT y SPA en React, con filtros, tema claro/oscuro y modo demo.",
-    en: "Project and task manager: a Laravel REST API with JWT and a React SPA, with filters, light/dark themes and a demo mode.",
+    es: 'Gestor de proyectos y tareas con un modo demo local que permite ejecutar la aplicación sin depender del servidor.',
+    en: 'A project and task manager with a local demo mode that lets the application run without depending on the server.',
+  },
+  summaryShort: {
+    es: 'Gestor de proyectos y tareas con un modo demo local que funciona sin depender del servidor.',
+    en: 'A project and task manager with a local demo mode that works without depending on the server.',
   },
   description: {
     es: "Aplicación full stack para organizar el trabajo en proyectos y tareas con estado y prioridad. La API RESTful en Laravel 12 usa autenticación JWT con refresh, Form Requests, API Resources, políticas de autorización (cada usuario solo ve lo suyo) y eager loading para evitar consultas N+1. El SPA en React 19 y TypeScript combina TanStack Query y Zustand, formularios con react-hook-form y Zod, filtros con búsqueda y paginación del lado del servidor, y un modo demo local que mantiene la interfaz usable aunque el backend no esté disponible. Todo se levanta con Docker Compose y cuenta con tests en ambas partes (Pest y Vitest).",

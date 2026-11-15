@@ -7,8 +7,12 @@ const project: Project = {
   year: "2025",
   category: { es: "Recursos Humanos", en: "Human Resources" },
   summary: {
-    es: "Plataforma de RH con acceso por roles: empleados, asistencias, evaluaciones, reclutamiento y contratos.",
-    en: "HR platform with role-based access: employees, attendance, performance reviews, recruiting and contracts.",
+    es: 'Recursos Humanos sin carpetas: expedientes, asistencias, evaluaciones y vacantes en un solo lugar, con un rol para cada quien.',
+    en: 'Human Resources without folders: records, attendance, reviews and job openings in one place, with a role for everyone.',
+  },
+  summaryShort: {
+    es: 'Expedientes, asistencias, evaluaciones y vacantes en un solo lugar, con un rol para cada quien.',
+    en: 'Records, attendance, reviews and job openings in one place, with a role for everyone.',
   },
   description: {
     es: "Sistema web para áreas de Recursos Humanos que automatiza tareas clave de la gestión del talento: expediente de empleados, registro de asistencias, evaluaciones de desempeño con plantillas e indicadores ponderados por área, vacantes y postulaciones, y contratos. El frontend en React y Vite consume una API REST con autenticación JWT, protege las rutas por sesión y controla cada módulo según el rol del usuario. Incluye un modo demo con perfiles de RH y de empleado para recorrer el sistema sin cuenta, y sigue una guía propia de lineamientos UI/UX.",

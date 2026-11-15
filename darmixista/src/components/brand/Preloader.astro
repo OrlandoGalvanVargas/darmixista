@@ -1,8 +1,4 @@
 ---
-/**
- * Pantalla de carga: cubre todo hasta que las fuentes, el script 3D y el primer
- * frame de los anillos están listos. La controla src/scripts/preloader.ts.
- */
 import Logo from './Logo.astro';
 import { SITE } from '../../config/site';
 ---
@@ -30,7 +26,6 @@ import { SITE } from '../../config/site';
 </div>
 
 <style>
-  /* Mientras carga, el anillo se traza y se borra en bucle y el punto cian late (respeta "reducir movimiento") */
   .preloader-mark :global(.logo-front),
   .preloader-mark :global(.logo-back) {
     stroke-dasharray: 1 1;

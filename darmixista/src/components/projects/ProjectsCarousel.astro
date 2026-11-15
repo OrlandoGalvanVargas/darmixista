@@ -1,9 +1,4 @@
 ---
-/**
- * Sección de proyectos en carrusel. Cada diapositiva es un paso del escenario:
- * el scroll recorre los proyectos y, al terminar el último, pasa a la siguiente sección.
- * El encabezado y la navegación no se mueven entre diapositivas.
- */
 import ProjectSlide from './ProjectSlide.astro';
 import type { Project } from '../../data/projects';
 import { useTranslations, type Lang } from '../../i18n/ui';
@@ -41,7 +36,7 @@ const total = projects.length;
         >
           {title}
         </h2>
-        <p class="font-mono text-[11px] tracking-[0.2em] text-muted" aria-live="polite">
+        <p class="font-mono text-[12px] tracking-[0.2em] text-muted" aria-live="polite">
           <span data-carousel-index class="text-fg">01</span>
           <span class="mx-1.5 text-line">/</span>{pad(total)}
         </p>
@@ -69,7 +64,6 @@ const total = projects.length;
           </button>
         </nav>
         ) : (
-          // Un solo proyecto: sin flechas, pero se conserva el espacio para que el diseño no cambie
           <div class="mt-[clamp(0.6rem,2.2vh,1.4rem)] h-10" aria-hidden="true" />
         )
       }

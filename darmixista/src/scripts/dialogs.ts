@@ -1,10 +1,5 @@
-/**
- * Paneles <dialog> de detalles. Mientras uno está abierto, el escenario no cambia de sección
- * (html[data-dialog="open"]) y el contenido del panel sí se puede desplazar.
- */
 export function initDialogs(): void {
   const root = document.documentElement;
-  // Evita registrar los eventos dos veces (p. ej. con recarga en caliente en desarrollo)
   if (root.dataset.dialogsReady) return;
   root.dataset.dialogsReady = 'true';
   let opener: HTMLElement | null = null;
@@ -16,10 +11,8 @@ export function initDialogs(): void {
       dialog.close();
       return;
     }
-    // Animación de salida: el panel vuelve a su posición oculta y luego se cierra
     dialog.dataset.closing = 'true';
     window.setTimeout(() => {
-      // Primero se cierra (ya está fuera de pantalla) y después se limpia la marca
       dialog.close();
       delete dialog.dataset.closing;
     }, 400);
@@ -32,11 +25,10 @@ export function initDialogs(): void {
       const dialog = document.getElementById(trigger.dataset.openDialog ?? '');
       if (dialog instanceof HTMLDialogElement && !dialog.open) {
         opener = trigger;
-        // Animación de entrada: se abre en su posición oculta y en el siguiente frame se desliza
         dialog.dataset.opening = 'true';
         dialog.showModal();
         root.dataset.dialog = 'open';
-        void dialog.offsetWidth; // fija el estado inicial antes de animar
+        void dialog.offsetWidth;
         requestAnimationFrame(() => delete dialog.dataset.opening);
       }
       return;
@@ -49,11 +41,9 @@ export function initDialogs(): void {
   });
 
   document.querySelectorAll<HTMLDialogElement>('dialog.project-dialog').forEach((dialog) => {
-    // Clic en el fondo oscuro (fuera del panel) cierra
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) close(dialog);
     });
-    // Escape: se anima igual que el botón
     dialog.addEventListener('cancel', (e) => {
       e.preventDefault();
       close(dialog);

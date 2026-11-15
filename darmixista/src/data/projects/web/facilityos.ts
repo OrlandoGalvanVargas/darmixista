@@ -1,14 +1,18 @@
 import type { Project } from "../types";
 
 const project: Project = {
-  order: 1,
+  order: 2,
   slug: "facilityos",
   title: "FacilityOS",
   year: "2026",
   category: { es: "Plataforma SaaS", en: "SaaS platform" },
   summary: {
-    es: "Gestión de instalaciones educativas multi-tenant por distrito y escuela, con backend en Vertical Slice y CQRS.",
-    en: "Multi-tenant facility management for school districts, with a Vertical Slice + CQRS backend.",
+    es: 'Qué pasa cuando un distrito escolar administra decenas de escuelas: cada una ve solo lo suyo, y funciona sin internet.',
+    en: 'What happens when a school district manages dozens of schools: each one sees only its own, and it works offline.',
+  },
+  summaryShort: {
+    es: 'Plataforma para distritos escolares con decenas de escuelas, donde cada una ve solo lo suyo y funciona sin internet.',
+    en: 'A platform for school districts with dozens of schools, where each one sees only its own and works offline.',
   },
   description: {
     es: "Plataforma para administrar instalaciones educativas con aislamiento por distrito y escuela. El backend en .NET sigue Vertical Slice Architecture con CQRS (MediatR), autenticación JWT con refresh tokens en cookies httpOnly. El frontend en React 19 está organizado por features, con caché offline en IndexedDB y un modo mock para la demo.",

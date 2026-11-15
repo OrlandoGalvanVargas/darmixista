@@ -1,17 +1,7 @@
 @import "tailwindcss";
 
-/* ──────────────────────────────────────────────
-   Tokens de diseño — Darmixista
-   Para cambiar la tipografía basta con editar --font-sans / --font-mono
-   (y el import correspondiente en Layout.astro).
-   ────────────────────────────────────────────── */
 @theme {
-  --color-ink: #121212;   /* fondo */
-  --color-fg: #ffffff;     /* texto principal */
-  --color-muted: #a0a0a0;  /* texto secundario */
-  --color-accent: #00e5ff; /* acento cian */
-  --color-line: #333333;   /* bordes */
-
+  --color-ink: #121212;  --color-fg: #ffffff;  --color-muted: #a0a0a0;  --color-accent: #00e5ff;  --color-line: #333333;
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
 
@@ -46,9 +36,6 @@
   }
 }
 
-/* ──────────────────────────────────────────────
-   Escenario: una sola pantalla fija, secciones apiladas
-   ────────────────────────────────────────────── */
 @layer components {
   .stage {
     position: fixed;
@@ -65,20 +52,15 @@
     will-change: transform, opacity;
   }
 
-  /* Contenedor interno de cada sección: fijo, sin desplazamiento vertical.
-     Cada sección está diseñada para caber en una pantalla. */
   .section-body {
     height: 100%;
     overflow: hidden;
     scrollbar-width: none;
   }
-  /* Escribiendo en un teléfono: el teclado reduce la pantalla, se permite desplazar */
   html[data-typing] .section-body {
     overflow-y: auto;
     overscroll-behavior: contain;
   }
-  /* Red de seguridad solo para pantallas muy bajas (teléfono en horizontal):
-     ahí sí se permite desplazar el contenido para no cortarlo */
   @media (max-height: 480px) {
     .section-body {
       overflow-y: auto;
@@ -89,7 +71,6 @@
     display: none;
   }
 
-  /* Botones */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -137,7 +118,6 @@
     transform: translateX(3px);
   }
 
-  /* Etiqueta técnica pequeña (mono) */
   .eyebrow {
     font-family: var(--font-mono);
     font-size: 11px;
@@ -146,7 +126,6 @@
     color: var(--color-muted);
   }
 
-  /* Enlaces del menú con subrayado cian animado */
   .nav-link {
     position: relative;
     color: var(--color-muted);
@@ -187,9 +166,6 @@
   }
 }
 
-/* ──────────────────────────────────────────────
-   Menú móvil (se abre con html[data-menu="open"])
-   ────────────────────────────────────────────── */
 .mobile-menu {
   opacity: 0;
   visibility: hidden;
@@ -230,9 +206,6 @@ html[data-menu="open"] .menu-btn span:last-child {
   transform: translateY(-3.5px) rotate(-45deg);
 }
 
-/* ──────────────────────────────────────────────
-   Anillos interactivos (solo en el Hero)
-   ────────────────────────────────────────────── */
 html[data-rings-hover] body {
   cursor: grab;
 }
@@ -242,9 +215,6 @@ html[data-rings-drag] body * {
   user-select: none;
 }
 
-/* ──────────────────────────────────────────────
-   Proyectos: chips, botones adaptables, controles de carrusel
-   ────────────────────────────────────────────── */
 @layer components {
   .chip {
     display: inline-flex;
@@ -258,7 +228,6 @@ html[data-rings-drag] body * {
     white-space: nowrap;
   }
 
-  /* Botones más compactos en teléfono para que quepan tres en una fila */
   @media (max-width: 767px) {
     .btn-adapt {
       height: 2.6rem;
@@ -300,7 +269,6 @@ html[data-rings-drag] body * {
     cursor: default;
   }
 
-  /* Marcas tipo minutero: la actual se alarga y se vuelve cian */
   .carousel-tick {
     position: relative;
     width: 1.1rem;
@@ -329,10 +297,6 @@ html[data-rings-drag] body * {
   }
 }
 
-/* ──────────────────────────────────────────────
-   Panel de detalles (<dialog>)
-   Escritorio: panel lateral derecho · Móvil: hoja inferior
-   ────────────────────────────────────────────── */
 .project-dialog {
   position: fixed;
   inset: 0 0 0 auto;
@@ -347,7 +311,6 @@ html[data-rings-drag] body * {
   background: rgb(20 20 20 / 0.96);
   color: var(--color-fg);
   overscroll-behavior: contain;
-  /* Estado base = fuera de pantalla. Abierto = en su lugar. Cerrando = sale y luego se cierra (JS) */
   transform: translateX(100%);
   opacity: 0;
   transition:

@@ -1,16 +1,13 @@
 import type { Lang } from '../i18n/ui';
 
-export type ServiceIconName = 'web' | 'backend' | 'mobile' | 'desktop' | 'automation' | 'consulting';
+export type ServiceIconName = 'web' | 'backend' | 'mobile' | 'automation';
 
-/**
- * Servicios. `description` se ve en escritorio; `short` (una línea) en teléfono.
- * Para agregar o quitar uno, edita esta lista. Con 6 la cuadrícula de escritorio queda en 3×2.
- */
 export interface Service {
   id: string;
   icon: ServiceIconName;
   title: Record<Lang, string>;
   description: Record<Lang, string>;
+  medium: Record<Lang, string>;
   short: Record<Lang, string>;
 }
 
@@ -20,59 +17,55 @@ export const SERVICES: Service[] = [
     icon: 'web',
     title: { es: 'Aplicaciones web', en: 'Web applications' },
     description: {
-      es: 'Plataformas y paneles a la medida, rápidos y escalables, con una experiencia cuidada en cada pantalla.',
-      en: 'Custom platforms and dashboards, fast and scalable, with a polished experience on every screen.',
+      es: 'Diseño y desarrollo de sitios web, paneles de administración, plataformas y sistemas con funciones específicas para cada proyecto.',
+      en: 'Design and development of websites, admin panels, platforms and systems with functions specific to each project.',
     },
-    short: { es: 'Plataformas y paneles a la medida', en: 'Custom platforms and dashboards' },
+    medium: {
+      es: 'Sitios web, paneles de administración, plataformas y sistemas con funciones específicas para cada proyecto.',
+      en: 'Websites, admin panels, platforms and systems with functions specific to each project.',
+    },
+    short: { es: 'Sitios, paneles y plataformas web', en: 'Websites, panels and platforms' },
   },
   {
     id: 'backend',
     icon: 'backend',
-    title: { es: 'Backend y APIs', en: 'Backend & APIs' },
+    title: { es: 'Backend y APIs', en: 'Backend and APIs' },
     description: {
-      es: 'APIs seguras y bien documentadas, con arquitectura limpia, autenticación robusta e integraciones.',
-      en: 'Secure, well-documented APIs with clean architecture, robust authentication and integrations.',
+      es: 'Desarrollo de servicios, APIs y bases de datos para gestionar información, conectar aplicaciones y procesar solicitudes.',
+      en: 'Development of services, APIs and databases to manage information, connect applications and process requests.',
     },
-    short: { es: 'APIs seguras con arquitectura limpia', en: 'Secure APIs, clean architecture' },
+    medium: {
+      es: 'Servicios, APIs y bases de datos para gestionar información, conectar aplicaciones y procesar solicitudes.',
+      en: 'Services, APIs and databases to manage information, connect applications and process requests.',
+    },
+    short: { es: 'Servicios, APIs y bases de datos', en: 'Services, APIs and databases' },
   },
   {
     id: 'mobile',
     icon: 'mobile',
-    title: { es: 'Apps móviles', en: 'Mobile apps' },
+    title: { es: 'Apps Android', en: 'Android apps' },
     description: {
-      es: 'Apps Android nativas en Kotlin: rendimiento, funciones del dispositivo y una experiencia fluida.',
-      en: 'Native Android apps in Kotlin: performance, device features and a smooth experience.',
+      es: 'Desarrollo de aplicaciones nativas para Android con funciones, interfaces e integraciones adaptadas a las características de cada proyecto.',
+      en: 'Development of native Android applications with functions, interfaces and integrations adapted to the characteristics of each project.',
     },
-    short: { es: 'Android nativo en Kotlin', en: 'Native Android in Kotlin' },
-  },
-  {
-    id: 'desktop',
-    icon: 'desktop',
-    title: { es: 'Software de escritorio', en: 'Desktop software' },
-    description: {
-      es: 'Aplicaciones de escritorio para flujos de trabajo específicos de tu operación o tu equipo.',
-      en: 'Desktop applications built around the specific workflows of your operation or team.',
+    medium: {
+      es: 'Aplicaciones nativas para Android con funciones, interfaces e integraciones adaptadas a cada proyecto.',
+      en: 'Native Android applications with functions, interfaces and integrations adapted to each project.',
     },
-    short: { es: 'Herramientas para tu operación', en: 'Tools for your operation' },
+    short: { es: 'Apps nativas para Android', en: 'Native Android apps' },
   },
   {
     id: 'automation',
     icon: 'automation',
-    title: { es: 'Automatización', en: 'Automation' },
+    title: { es: 'Automatización de procesos', en: 'Process automation' },
     description: {
-      es: 'Modernizo procesos manuales: integraciones, tareas programadas y flujos que ahorran horas.',
-      en: 'I modernize manual processes: integrations, scheduled jobs and workflows that save hours.',
+      es: 'Desarrollo de procesos automatizados para realizar tareas repetitivas, procesar información, generar reportes y conectar distintas herramientas.',
+      en: 'Development of automated processes to carry out repetitive tasks, process information, generate reports and connect different tools.',
     },
-    short: { es: 'Procesos manuales, ahora automáticos', en: 'Manual processes, now automatic' },
-  },
-  {
-    id: 'consulting',
-    icon: 'consulting',
-    title: { es: 'Consultoría', en: 'Consulting' },
-    description: {
-      es: 'Arquitectura, elección de tecnologías y planeación técnica para que tu proyecto crezca sin rehacerse.',
-      en: 'Architecture, technology choices and technical planning so your project grows without rewrites.',
+    medium: {
+      es: 'Procesos automatizados para realizar tareas repetitivas, procesar información, generar reportes y conectar herramientas.',
+      en: 'Automated processes to carry out repetitive tasks, process information, generate reports and connect tools.',
     },
-    short: { es: 'Arquitectura y planeación técnica', en: 'Architecture and technical planning' },
+    short: { es: 'Tareas repetitivas que se ejecutan solas', en: 'Repetitive tasks that run on their own' },
   },
 ];

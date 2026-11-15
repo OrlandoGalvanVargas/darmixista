@@ -1,9 +1,4 @@
 ---
-/**
- * Segundo paso de "Sobre mí" (data-nav="about").
- * Escritorio: Stack (izquierda) + Trayectoria (derecha) en una sola pantalla.
- * Móvil: solo el Stack; la Trayectoria es el paso siguiente (Trajectory.astro).
- */
 import StackList from '../about/StackList.astro';
 import Timeline from '../about/Timeline.astro';
 import { useTranslations, type Lang } from '../../i18n/ui';
@@ -24,7 +19,6 @@ const t = useTranslations(lang);
   aria-labelledby="stack-title"
 >
   <div class="section-body" data-section-body>
-    <!-- Escritorio / tablet -->
     <div
       class="mx-auto hidden h-full max-w-[1400px] flex-col justify-center px-12 pt-[4.5rem] pb-14 md:flex lg:px-20"
     >
@@ -45,7 +39,6 @@ const t = useTranslations(lang);
       </div>
     </div>
 
-    <!-- Móvil: solo stack -->
     <div class="flex h-full flex-col justify-center px-6 pt-16 pb-12 md:hidden">
       <h2 data-reveal class="text-center text-[clamp(1.8rem,7.5vw,2.4rem)] leading-none font-semibold tracking-[-0.035em]">
         {t.stack.stackTitle}
