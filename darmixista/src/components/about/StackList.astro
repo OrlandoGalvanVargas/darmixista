@@ -67,7 +67,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .pill:hover {
     border-color: var(--color-accent);
     color: var(--color-fg);
-    background: rgb(0 229 255 / 0.05);
+    background: color-mix(in srgb, var(--color-accent) 5%, transparent);
   }
   .pill--core {
     border-color: rgb(255 255 255 / 0.28);
@@ -78,7 +78,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     height: 5px;
     border-radius: 999px;
     background: var(--color-accent);
-    box-shadow: 0 0 8px rgb(0 229 255 / 0.6);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 60%, transparent);
     flex: none;
   }
 

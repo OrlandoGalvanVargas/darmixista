@@ -38,12 +38,13 @@ const TILT = 'rotate(-20 16 16)';
   <path d={`${D_OUTER} ${D_INNER}`} fill="currentColor" fill-rule="evenodd" mask={`url(#lf-${uid})`}></path>
   <g transform={TILT}>
     <path class="logo-front" d={FRONT} pathLength="1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-    <circle class="logo-dot" cx="8.8" cy="19.72" r="1.7" fill="#00E5FF"></circle>
+    <circle class="logo-dot" cx="8.8" cy="19.72" r="1.7"></circle>
   </g>
 </svg>
 
 <style>
   .logo .logo-dot {
+    fill: var(--color-accent-hi);
     transform-box: fill-box;
     transform-origin: center;
   }

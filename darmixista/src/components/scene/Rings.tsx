@@ -15,6 +15,8 @@ import {
   createBandGeometry,
   createBrushedTexture,
   createFinish,
+  createGlowMaterial,
+  createGlowTexture,
   createInlayGeometry,
   type BandProfile,
   type Finish,
@@ -35,21 +37,21 @@ const RINGS: readonly RingSpec[] = [
     profile: { radius: 1.62, ...BAND, channel: { width: 0.2, depth: 0.018 } },
     body: 'polished',
     inlay: 'black-gloss',
-    speed: 0.26,
+    speed: 0.34,
     start: 0.6,
   },
   {
     profile: { radius: 1.27, ...BAND, channel: { width: 0.22, depth: 0.016, groove: 0.03 } },
     body: 'black-gloss',
     inlay: 'gunmetal',
-    speed: -0.36,
+    speed: -0.46,
     start: 1.1,
   },
   {
     profile: { radius: 0.93, ...BAND, channel: { width: 0.05, depth: 0.014 } },
     body: 'brushed',
     inlay: 'black-gloss',
-    speed: 0.47,
+    speed: 0.6,
     start: 2.0,
   },
 ];
@@ -85,7 +87,7 @@ function heroPose(vw: number, vh: number, pxW: number, pxH: number, contentBotto
     const toWorld = vh / pxH;
     const top = contentBottom + 20;
     const bottom = pxH - HUD_SPACE;
-    const diameterPx = Math.max(130, Math.min(pxW * 0.68, bottom - top, pxH * 0.34));
+    const diameterPx = Math.max(130, Math.min(pxW * 0.82, bottom - top, pxH * 0.4));
     const centerPx = Math.max(top + diameterPx / 2, (top + bottom) / 2);
     return {
       x: 0,
@@ -162,6 +164,14 @@ export function Rings() {
     [materials],
   );
   const baseGlow = useMemo(() => allMaterials.map((m) => m.envMapIntensity), [allMaterials]);
+  const glow = useMemo(() => {
+    const floor = createGlowTexture('rgba(74,222,128,0.72)', 'rgba(34,197,94,0.28)');
+    return {
+      floorTex: floor,
+      floor: createGlowMaterial(floor, 1),
+      plane: new THREE.PlaneGeometry(1, 1),
+    };
+  }, []);
 
   useEffect(
     () => () => {
@@ -171,6 +181,9 @@ export function Rings() {
       });
       allMaterials.forEach((m) => m.dispose());
       brushed.dispose();
+      glow.floor.dispose();
+      glow.floorTex.dispose();
+      glow.plane.dispose();
     },
     [parts, allMaterials, brushed],
   );
@@ -369,6 +382,8 @@ export function Rings() {
     allMaterials.forEach((mat, n) => {
       mat.envMapIntensity = baseGlow[n] * dim;
     });
+    const lightFade = (1 - face) * THREE.MathUtils.lerp(1, 0.3, m) * state.intro;
+    glow.floor.opacity = 0.85 * lightFade;
 
     const friction = mo.dragging ? 0.6 : DRAG.friction + m * 6;
     const decay = Math.exp(-friction * dt);
@@ -403,6 +418,7 @@ export function Rings() {
 
   return (
     <group ref={placement}>
+      <mesh geometry={glow.plane} material={glow.floor} position={[0, -OUTER_DIAMETER * 0.6, 0]} scale={[OUTER_DIAMETER * 0.7, OUTER_DIAMETER * 0.11, 1]} renderOrder={-1} />
       <group ref={tilt}>
         <group ref={spin}>
           <group ref={gimbal0} rotation={[0, RINGS[0].start, 0]}>

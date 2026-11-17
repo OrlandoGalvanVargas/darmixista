@@ -72,9 +72,11 @@ const TOTAL_SECTIONS = 5;
   import { runPreloader } from '../scripts/preloader';
   import { initDialogs } from '../scripts/dialogs';
   import { initContact } from '../scripts/contact';
+  import { initButtons } from '../scripts/buttons';
 
   initNavigation();
   initDialogs();
   initContact();
+  initButtons();
   initStage({ ready: runPreloader() });
 </script>

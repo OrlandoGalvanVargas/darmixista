@@ -14,6 +14,8 @@ function Studio() {
       <Lightformer form="rect" intensity={0.9} position={[0, 0, 9]} scale={[18, 10, 1]} target={[0, 0, 0]} />
       <Lightformer form="rect" intensity={0.5} color="#0b0c0e" position={[0, -7, 0]} scale={[16, 5, 1]} target={[0, 0, 0]} />
       <Lightformer form="rect" intensity={0.6} color="#0b0c0e" position={[0, 2, -8]} scale={[18, 8, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={3} color="#22c55e" position={[0, -5.5, 1.5]} scale={[12, 1, 1]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={1.6} color="#4ade80" position={[-5.5, -1.5, 2.5]} scale={[0.8, 7, 1]} target={[0, 0, 0]} />
     </Environment>
   );
 }

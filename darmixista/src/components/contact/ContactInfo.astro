@@ -89,14 +89,14 @@ const otherLang = lang === 'es' ? 'en' : 'es';
     height: 7px;
     border-radius: 999px;
     background: var(--color-accent);
-    box-shadow: 0 0 10px rgb(0 229 255 / 0.7);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 70%, transparent);
   }
   .ci-pulse::after {
     content: '';
     position: absolute;
     inset: -4px;
     border-radius: 999px;
-    border: 1px solid rgb(0 229 255 / 0.55);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
     animation: ci-pulse 2.2s var(--ease-zen) infinite;
   }
   @keyframes ci-pulse {

@@ -26,6 +26,7 @@ const es = {
   },
   hero: {
     role: 'Desarrollo web y Android',
+    roleAccent: ['web', 'Android'],
     bio: 'Darmixista desarrolla software para web y Android, desde productos propios hasta sistemas creados para necesidades concretas.',
     bioShort: 'Software para web y Android, desde productos propios hasta sistemas creados para necesidades concretas.',
     ctaProjects: 'Ver proyectos',
@@ -111,6 +112,11 @@ const es = {
   hud: {
     sections: 'Secciones',
   },
+  menu: {
+    status: 'Disponible',
+    question: '¿Tienes un proyecto en mente?',
+    hint: 'Envíame un mensaje y lo platicamos.',
+  },
 };
 
 export type Dictionary = typeof es;
@@ -139,6 +145,7 @@ const en: Dictionary = {
   },
   hero: {
     role: 'Web and Android development',
+    roleAccent: ['Web', 'Android'],
     bio: 'Darmixista develops software for web and Android, from products of its own to systems built for specific needs.',
     bioShort: 'Software for web and Android, from products of its own to systems built for specific needs.',
     ctaProjects: 'View projects',
@@ -223,6 +230,11 @@ const en: Dictionary = {
   },
   hud: {
     sections: 'Sections',
+  },
+  menu: {
+    status: 'Available',
+    question: 'Have a project in mind?',
+    hint: 'Send me a message and let’s talk.',
   },
 };
 

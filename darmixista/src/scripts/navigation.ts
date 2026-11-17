@@ -28,6 +28,7 @@ export function initNavigation(): void {
   menu?.addEventListener('click', (e) => {
     if ((e.target as Element).closest('a')) setOpen(false);
   });
+  document.querySelector('[data-menu-backdrop]')?.addEventListener('click', () => setOpen(false));
   window.addEventListener(STAGE_CHANGE, () => setOpen(false));
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && root.dataset.menu === 'open') {

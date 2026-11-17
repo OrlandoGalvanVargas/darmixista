@@ -67,7 +67,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
   const ringsLayer = document.querySelector<HTMLElement>('[data-rings-layer]');
   const counter = document.querySelector<HTMLElement>('[data-stage-counter]');
   const total = document.querySelector<HTMLElement>('[data-stage-total]');
-  const progress = document.querySelector<HTMLElement>('[data-stage-progress]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const desktop = window.matchMedia(DESKTOP_QUERY);
   const fx = getStageFx();
@@ -418,14 +417,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     });
     if (counter) counter.textContent = String(groupList.indexOf(group) + 1).padStart(2, '0');
     if (total) total.textContent = String(groupList.length).padStart(2, '0');
-    if (progress) {
-      gsap.to(progress, {
-        scaleX: (i + 1) / steps.length,
-        duration: animate ? 0.9 : 0,
-        ease: 'power3.inOut',
-        overwrite: true,
-      });
-    }
 
     if (step.slide) syncCarousel(step, animate);
 

@@ -118,6 +118,35 @@ export function createBrushedTexture(): THREE.CanvasTexture {
   return texture;
 }
 
+export function createGlowTexture(inner: string, outer: string): THREE.CanvasTexture {
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('2D canvas no disponible');
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  g.addColorStop(0, inner);
+  g.addColorStop(0.35, outer);
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+export function createGlowMaterial(texture: THREE.Texture, opacity: number): THREE.MeshBasicMaterial {
+  return new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    opacity,
+    depthWrite: false,
+    depthTest: false,
+    toneMapped: false,
+  });
+}
+
 export type Finish = 'polished' | 'brushed' | 'gunmetal' | 'black-gloss' | 'black-matte';
 
 export function createFinish(finish: Finish, brushed: THREE.Texture): THREE.MeshPhysicalMaterial {

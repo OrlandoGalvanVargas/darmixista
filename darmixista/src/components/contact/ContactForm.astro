@@ -228,7 +228,7 @@ const id = (name: string) => `${idPrefix}-${name}`;
   .cf-chip input:checked + span {
     border-color: var(--color-accent);
     color: var(--color-fg);
-    background: rgb(0 229 255 / 0.08);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
   }
   .cf-chip input:focus-visible + span {
     outline: 1px solid var(--color-accent);
