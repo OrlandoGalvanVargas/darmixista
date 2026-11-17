@@ -112,11 +112,6 @@ const es = {
   hud: {
     sections: 'Secciones',
   },
-  menu: {
-    status: 'Disponible',
-    question: '¿Tienes un proyecto en mente?',
-    hint: 'Envíame un mensaje y lo platicamos.',
-  },
 };
 
 export type Dictionary = typeof es;
@@ -230,11 +225,6 @@ const en: Dictionary = {
   },
   hud: {
     sections: 'Sections',
-  },
-  menu: {
-    status: 'Available',
-    question: 'Have a project in mind?',
-    hint: 'Send me a message and let’s talk.',
   },
 };
 
