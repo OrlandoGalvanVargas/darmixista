@@ -607,3 +607,192 @@ html[data-rings-drag] body * {
   }
 
 }
+
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+  html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
+    cursor: text !important;
+  }
+}
+.cursor {
+  --size: 30px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-zen);
+}
+.cursor.is-visible {
+  opacity: 1;
+}
+.cursor-ring,
+.cursor-lens,
+.cursor-orbit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  border-radius: 50%;
+  transition:
+    width 0.45s var(--ease-zen),
+    height 0.45s var(--ease-zen),
+    margin 0.45s var(--ease-zen),
+    opacity 0.35s var(--ease-zen),
+    border-color 0.35s var(--ease-zen),
+    background-color 0.35s var(--ease-zen);
+}
+.cursor-ring {
+  border: 1.5px solid rgb(244 244 245 / 0.85);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.25),
+    0 0 0 1px rgb(0 0 0 / 0.25);
+}
+.cursor-orbit {
+  animation: cursor-orbit 2.8s linear infinite;
+}
+.cursor-orbit i {
+  position: absolute;
+  left: 50%;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--color-accent-hi);
+  box-shadow: 0 0 8px var(--color-accent-hi);
+}
+@keyframes cursor-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.cursor-lens {
+  overflow: hidden;
+  background: #f4f4f5;
+  opacity: 0;
+  box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.6);
+}
+.cursor-lens-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.cursor[data-state="link"] {
+  --size: 46px;
+}
+.cursor[data-state="link"] .cursor-ring {
+  border-color: var(--color-accent-hi);
+}
+.cursor[data-state="lens"] {
+  --size: 78px;
+}
+.cursor[data-state="lens"] .cursor-lens {
+  opacity: 1;
+}
+.cursor[data-state="lens"] .cursor-ring {
+  border-color: rgb(255 255 255 / 0.9);
+}
+.cursor[data-state="lens"] .cursor-orbit,
+.cursor[data-state="native"] {
+  opacity: 0;
+}
+.cursor-grab {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.3s var(--ease-zen),
+    transform 0.45s var(--ease-zen);
+}
+.cursor-arrows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  stroke: rgb(244 244 245 / 0.9);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: cursor-orbit 6s linear infinite;
+  filter: drop-shadow(0 0 4px rgb(0 0 0 / 0.6));
+}
+.cursor-hand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  stroke: var(--color-fg);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 0.2s var(--ease-zen);
+}
+.cursor-hand-closed {
+  opacity: 0;
+}
+.cursor[data-state="grab"] .cursor-grab,
+.cursor[data-state="grabbing"] .cursor-grab {
+  opacity: 1;
+  transform: none;
+}
+.cursor[data-state="grab"] :is(.cursor-ring, .cursor-orbit),
+.cursor[data-state="grabbing"] :is(.cursor-ring, .cursor-orbit) {
+  opacity: 0;
+}
+.cursor[data-state="grabbing"] .cursor-arrows {
+  stroke: var(--color-accent-hi);
+  animation-duration: 1.4s;
+}
+.cursor[data-state="grabbing"] .cursor-hand-open {
+  opacity: 0;
+}
+.cursor[data-state="grabbing"] .cursor-hand-closed {
+  opacity: 1;
+}
+.cursor[data-state="grabbing"] .cursor-grab {
+  transform: scale(0.88);
+}
+.cursor.is-touch :is(.cursor-ring, .cursor-orbit, .cursor-grab) {
+  display: none;
+}
+.cursor.is-touch {
+  --size: 96px;
+  transition: opacity 0.2s var(--ease-zen);
+}
+.cursor.is-touch[data-state="lens"] {
+  --size: 96px;
+}
+@media (pointer: coarse) {
+  [data-section] :is(p, li, span) {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+.cursor.is-down .cursor-ring {
+  width: calc(var(--size) * 0.8);
+  height: calc(var(--size) * 0.8);
+  margin: calc(var(--size) * -0.4) 0 0 calc(var(--size) * -0.4);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor-orbit,
+  .cursor-arrows {
+    animation: none;
+  }
+}

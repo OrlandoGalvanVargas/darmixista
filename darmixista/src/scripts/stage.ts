@@ -560,6 +560,10 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     'touchmove',
     (e) => {
       if (touchIgnored) return;
+      if (root.dataset.lens) {
+        touchIgnored = true;
+        return;
+      }
       const dy = touchY - e.touches[0].clientY;
       const dx = touchX - e.touches[0].clientX;
       if (Math.abs(dx) > Math.abs(dy)) {
