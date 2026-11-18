@@ -74,7 +74,7 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
   const charsOf = (el: HTMLElement): HTMLElement[] => {
     let chars = splits.get(el);
     if (!chars) {
-      chars = SplitText.create(el, { type: 'chars', charsClass: 'kc' }).chars as HTMLElement[];
+      chars = SplitText.create(el, { type: 'words,chars', wordsClass: 'kw', charsClass: 'kc' }).chars as HTMLElement[];
       splits.set(el, chars);
     }
     return chars;

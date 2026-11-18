@@ -35,9 +35,9 @@ const es = {
   about: {
     title: '¿Qué es Darmixista?',
     lead: 'Darmixista es el nombre con el que firmo lo que construyo. Comenzó como un apodo y terminó convirtiéndose en el nombre detrás de mis proyectos y de mi forma de trabajar: entender bien lo que hay detrás de un problema antes de pensar en cómo resolverlo.',
-    leadShort: 'Darmixista es el nombre con el que firmo lo que construyo. Comenzó como un apodo y terminó siendo el nombre detrás de mis proyectos y de mi forma de trabajar: entender bien un problema antes de pensar en cómo resolverlo.',
+    leadShort: 'Darmixista es el nombre con el que firmo lo que construyo. Comenzó como un apodo y terminó siendo el nombre detrás de mis proyectos y de mi forma de trabajar.',
     body: 'Soy Orlando Galvan, ingeniero en desarrollo y gestión de software. Trabajo construyendo sistemas completos, desde su estructura y funcionamiento hasta la forma en que las personas interactúan con ellos. Para mí, un buen desarrollo no termina cuando una aplicación funciona; también debe ser comprensible, mantenible y capaz de seguir siendo útil con el paso de los años.',
-    bodyShort: 'Soy Orlando Galvan, ingeniero en desarrollo y gestión de software. Construyo sistemas completos, desde su estructura hasta la forma en que las personas interactúan con ellos, pensados para seguir siendo útiles con los años.',
+    bodyShort: 'Soy Orlando Galvan, ingeniero en desarrollo y gestión de software. Construyo sistemas completos, desde su estructura hasta la forma en que las personas interactúan con ellos.',
     photoAlt: 'Orlando Galvan Vargas',
   },
   stack: {
@@ -149,9 +149,9 @@ const en: Dictionary = {
   about: {
     title: 'What is Darmixista?',
     lead: 'Darmixista is the name I sign my work with. It began as a nickname and ended up becoming the name behind my projects and my way of working: understanding what lies behind a problem before thinking about how to solve it.',
-    leadShort: 'Darmixista is the name I sign my work with. It began as a nickname and became the name behind my projects and my way of working: understanding a problem well before thinking about how to solve it.',
+    leadShort: 'Darmixista is the name I sign my work with. It began as a nickname and became the name behind my projects and my way of working.',
     body: 'I am Orlando Galvan, a software development and management engineer. I build complete systems, from their structure and inner workings to the way people interact with them. To me, good development does not end when an application works; it also has to be understandable, maintainable and able to stay useful as the years go by.',
-    bodyShort: 'I am Orlando Galvan, a software development and management engineer. I build complete systems, from their structure to the way people interact with them, meant to stay useful over the years.',
+    bodyShort: 'I am Orlando Galvan, a software development and management engineer. I build complete systems, from their structure to the way people interact with them.',
     photoAlt: 'Orlando Galvan Vargas',
   },
   stack: {

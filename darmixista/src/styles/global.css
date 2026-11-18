@@ -49,6 +49,9 @@
     overflow: hidden;
   }
 
+  .kw {
+    white-space: nowrap;
+  }
   .kc {
     will-change: transform, opacity;
   }

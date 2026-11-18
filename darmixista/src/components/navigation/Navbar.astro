@@ -18,9 +18,9 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
   <div
     class="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 md:h-[4.5rem] md:px-12 lg:px-20"
   >
-    <a href="#home" data-goto="home" class="group flex items-center gap-3" aria-label={SITE.brand}>
+    <a href="#home" data-goto="home" class="group flex items-center gap-3 max-[359px]:gap-2" aria-label={SITE.brand}>
       <Logo class="nav-logo h-8 w-8 text-fg" />
-      <span class="text-[13px] font-semibold tracking-[0.26em] uppercase">{SITE.brand}</span>
+      <span class="text-[13px] font-semibold tracking-[0.26em] uppercase max-[359px]:text-[11px] max-[359px]:tracking-[0.18em]">{SITE.brand}</span>
     </a>
     <nav aria-label={t.nav.label} class="hidden items-center gap-6 lg:flex xl:gap-9">
       <ul class="flex items-center gap-7 text-[14px] font-medium tracking-[0.01em] whitespace-nowrap xl:gap-9">
@@ -37,7 +37,7 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
       <span class="h-4 w-px bg-line" aria-hidden="true"></span>
       <LangSwitch lang={lang} label={t.nav.language} />
     </nav>
-    <div class="flex items-center gap-5 lg:hidden">
+    <div class="flex items-center gap-5 max-[359px]:gap-3 lg:hidden">
       <LangSwitch lang={lang} label={t.nav.language} />
       <button
         type="button"
