@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@property --wipe {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: -40%;
+}
+
 @theme {
   --color-ink: #080a09;
   --color-fg: #f4f4f5;
@@ -52,9 +58,6 @@
   .kw {
     white-space: nowrap;
   }
-  .kc {
-    will-change: transform, opacity;
-  }
 
   .stage-section {
     position: absolute;
@@ -88,6 +91,8 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -123,7 +128,24 @@
     pointer-events: none;
   }
   .btn:hover::after {
-    animation: btn-sheen 0.9s var(--ease-zen) forwards;
+    animation: btn-sheen 0.45s cubic-bezier(0.5, 0, 0.3, 1) forwards;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--btn-fill);
+    clip-path: polygon(-2% -2%, calc(var(--wipe) + 11px) -2%, calc(var(--wipe) - 11px) 102%, -2% 102%);
+    transition: --wipe 0.35s var(--ease-zen);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .btn:hover::before {
+      --wipe: 152%;
+      transition: --wipe 0.45s cubic-bezier(0.5, 0, 0.3, 1);
+    }
   }
   .btn.is-pressed::after {
     animation: btn-sheen 0.5s var(--ease-zen) forwards;
@@ -143,6 +165,7 @@
   }
 
   .btn-primary {
+    --btn-fill: linear-gradient(90deg, #34c46e 0%, #27b060 40%, #1c8f4b 75%, #146b38 100%);
     color: var(--color-fg);
     border: 1px solid #1b2c21;
     background: linear-gradient(90deg, #061b0f 0%, #104f2c 16%, #19733f 50%, #104f2c 84%, #061b0f 100%);
@@ -166,6 +189,7 @@
   }
 
   .btn-ghost {
+    --btn-fill: #1d201f;
     color: var(--color-fg);
     border: 1px solid #2f3130;
     background: #0c0e0d;
@@ -187,6 +211,9 @@
     .btn:hover::after,
     .btn.is-pressed::after {
       animation: none;
+    }
+    .btn::before {
+      transition: none;
     }
   }
 
