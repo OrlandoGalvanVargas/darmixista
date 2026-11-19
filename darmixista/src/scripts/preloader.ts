@@ -17,9 +17,9 @@ const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const inOut = (v: number) => (v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2);
 
 interface Dot {
-  r0: number;
+  u: number;
+  v: number;
   a0: number;
-  el: number;
   spin: number;
   phase: number;
   green: boolean;
@@ -63,7 +63,7 @@ export function runPreloader(): Promise<void> {
 
   let W = 0;
   let H = 0;
-  let cloudR = 0;
+  let wordW = 0;
   let fontPx = 0;
   let tracking = 0;
   const resize = () => {
@@ -74,21 +74,19 @@ export function runPreloader(): Promise<void> {
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    cloudR = Math.min(W * 0.36, H * 0.3);
     fontPx = Math.min(W * 0.085, 104);
     tracking = fontPx * 0.18;
+    wordW = wordWidth(ctx);
   };
-  resize();
-  window.addEventListener('resize', resize);
 
-  const count = Math.round(Math.min(6000, Math.max(3000, W * 4)));
+  const count = Math.round(Math.min(7000, Math.max(3000, window.innerWidth * 4.6)));
   const dots: Dot[] = Array.from({ length: count }, () => {
-    const r0 = Math.random() < 0.7 ? Math.pow(Math.random(), 0.55) : Math.min(1, Math.abs(gaussian()) * 0.35);
+    const edge = Math.random() < 0.12;
     return {
-      r0,
+      u: edge ? (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 0.12) : Math.random() * 2 - 1,
+      v: Math.max(-1.6, Math.min(1.6, gaussian() * 0.42)),
       a0: Math.random() * TAU,
-      el: Math.acos(2 * Math.random() - 1),
-      spin: (0.5 + Math.random() * 0.35) * (Math.random() < 0.5 ? 1 : 0.8),
+      spin: (0.6 + Math.random() * 0.9) * (Math.random() < 0.5 ? 1 : -1),
       phase: Math.random() * TAU,
       green: Math.random() < CONFIG.greenShare,
       size: Math.random() < 0.85 ? 1 : 1.6,
@@ -122,6 +120,10 @@ export function runPreloader(): Promise<void> {
     }
   };
 
+  resize();
+  window.addEventListener('resize', resize);
+  document.fonts?.ready.then(resize);
+
   const assignTargets = () => {
     const off = document.createElement('canvas');
     off.width = Math.ceil(W);
@@ -148,7 +150,7 @@ export function runPreloader(): Promise<void> {
       d.sx = d.x;
       d.sy = d.y;
       d.delay = clamp01((d.tx - left) / width) * 0.38 + Math.random() * 0.12;
-      d.curve = (Math.random() - 0.5) * cloudR * 0.9;
+      d.curve = (Math.random() - 0.5) * fontPx * 0.9;
     });
   };
 
@@ -167,10 +169,8 @@ export function runPreloader(): Promise<void> {
     const cx = W / 2;
     const cy = H / 2;
     const p = state.progress;
-    const squeeze = 1 - 0.25 * p;
-    const tilt = 0.35 + Math.sin(time * 0.4) * 0.15;
-    const tiltC = Math.cos(tilt);
-    const tiltS = Math.sin(tilt);
+    const halfW = wordW * 0.5;
+    const halfH = fontPx * (0.62 - 0.18 * p);
 
     buckets.forEach((b) => b.forEach((l) => (l.length = 0)));
 
@@ -178,18 +178,11 @@ export function runPreloader(): Promise<void> {
       let alpha: number;
       if (phase === 'cloud') {
         const a = d.a0 + time * d.spin;
-        const wob = 1 + 0.06 * Math.sin(time * 1.6 + d.phase);
-        const r = d.r0 * cloudR * squeeze * wob;
-        const se = Math.sin(d.el);
-        const px = Math.cos(a) * se;
-        const pz = Math.sin(a) * se;
-        const py = Math.cos(d.el);
-        const ty = py * tiltC - pz * tiltS;
-        const tz = py * tiltS + pz * tiltC;
-        d.x = cx + px * r + Math.sin(time * 0.9 + d.phase * 2) * 4;
-        d.y = cy + ty * r + Math.cos(time * 1.1 + d.phase) * 4;
-        const depth = 0.5 + 0.5 * tz;
-        alpha = (0.35 + 0.45 * p) * (0.35 + 0.65 * depth) * (0.7 + 0.3 * Math.sin(time * 3 + d.phase));
+        const flow = Math.sin(a) * 0.1 + Math.sin(time * 0.7 + d.phase) * 0.05;
+        const lift = Math.cos(a * 1.3 + d.phase) * 0.45;
+        d.x = cx + halfW * (d.u + flow) + Math.sin(time * 2.3 + d.phase * 3) * 3;
+        d.y = cy + halfH * (d.v + lift) + Math.cos(time * 2.1 + d.phase * 2) * 3;
+        alpha = (0.6 + 0.35 * p) * (0.65 + 0.35 * Math.sin(time * 3 + d.phase));
       } else if (phase === 'morph') {
         const m = inOut(clamp01((state.morph - d.delay) / 0.5));
         const arc = Math.sin(Math.PI * m) * d.curve;
