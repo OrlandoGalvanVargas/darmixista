@@ -1,87 +1,91 @@
 ---
 import { SITE } from '../../config/site';
 import { useTranslations, type Lang } from '../../i18n/ui';
+import HeroName from './HeroName.astro';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const accentWords = new Set(t.hero.roleAccent.map((w) => w.toLowerCase()));
-const roleParts = t.hero.role.split(/(\s+)/).map((word) => ({ word, accent: accentWords.has(word.toLowerCase()) }));
+const seal = t.hero.seal.toUpperCase();
+const arrow = 'M5 12h14M13 6l6 6-6 6';
+const arrowUp = 'M7 17 17 7M9 7h8v8';
 ---
+
 <section id="home" class="stage-section" data-section data-nav="home" data-rings="hero" aria-labelledby="home-title">
-  <div class="section-body" data-section-body>
-    <div
-      class="mx-auto grid h-full max-w-[1400px] grid-cols-1 content-start px-6 pt-[max(5.5rem,13vh)] md:grid-cols-12 md:content-center md:px-12 md:pt-16 md:pb-[6vh] lg:px-20"
-    >
-      <div data-hero-content class="flex flex-col items-center text-center md:col-span-7 md:items-start md:text-left lg:col-span-6">
-        <h1
-          id="home-title"
-          data-reveal
-          class="text-[clamp(2.2rem,min(5.2vw,9.5vh),5.25rem)] leading-[0.98] font-semibold tracking-[-0.03em] uppercase"
-        >
-          <span class="hero-title-line block whitespace-nowrap">{SITE.person.firstName}</span>
-          <span class="hero-title-line block whitespace-nowrap">{SITE.person.lastName}</span>
-        </h1>
+  <div class="hero-frame" data-section-body>
+    <div class="hero-geo">
+      <h1 id="home-title" class="sr-only">{SITE.person.firstName} {SITE.person.lastName} — {t.hero.role}</h1>
 
-        <p
-          data-reveal
-          class="mt-[clamp(0.5rem,1.8vh,1rem)] text-[clamp(1.05rem,min(1.8vw,3.2vh),1.75rem)] font-normal tracking-tight text-fg/90"
-        >
-          {roleParts.map((p) => (p.accent ? <span class="text-accent-hi">{p.word}</span> : p.word))}
-        </p>
+      <p class="hero-hello" data-hero-hello aria-hidden="true">
+        {
+          t.hero.hello.split(' ').map((word) => (
+            <span class="hhw">
+              {[...word].map((c) => (
+                <span class="hhc">{c}</span>
+              ))}
+            </span>
+          ))
+        }
+      </p>
 
-
-        <p
-          data-reveal
-          class="hero-bio-long mt-[clamp(0.9rem,2.6vh,1.6rem)] max-w-[34rem] text-[clamp(0.95rem,2.3vh,1.15rem)] leading-relaxed text-muted"
-        >
-          {t.hero.bio}
-        </p>
-        <p
-          data-reveal
-          class="hero-bio-short mt-[clamp(0.9rem,2.6vh,1.6rem)] max-w-[30rem] text-[clamp(0.92rem,2.1vh,1.05rem)] leading-relaxed text-muted"
-        >
-          {t.hero.bioShort}
-        </p>
-
-        <div
-          data-reveal
-          class="hero-ctas mt-[clamp(1.25rem,4.5vh,2.5rem)] flex w-full flex-col gap-3 sm:w-auto sm:flex-row"
-        >
-          <a href="#projects" data-goto="projects" class="btn btn-primary">
-            {t.hero.ctaProjects}
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </a>
-          <a href="#contact" data-goto="contact" class="btn btn-ghost">{t.hero.ctaContact}</a>
-        </div>
+      <div class="hero-outline" aria-hidden="true">
+        <HeroName variant="outline" />
       </div>
+
+      <p class="hero-role" data-hero-role aria-hidden="true">{t.hero.role}</p>
+
+      <a href="#projects" data-goto="projects" class="hero-cta hero-cta-projects" data-hero-cta>
+        <span class="hero-cta-dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d={arrow} /></svg>
+          <svg viewBox="0 0 24 24" fill="none"><path d={arrow} /></svg>
+        </span>
+        <span class="hero-cta-body">
+          <span class="hero-cta-kicker" aria-hidden="true">{t.hero.projectsKicker}</span>
+          <span class="hero-cta-label">{t.hero.ctaProjects}</span>
+          <span class="hero-cta-bar" aria-hidden="true"><i></i></span>
+        </span>
+      </a>
+
+      <a href="#contact" data-goto="contact" class="hero-cta hero-cta-contact" data-hero-cta>
+        <span class="hero-cta-dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d={arrowUp} /></svg>
+          <svg viewBox="0 0 24 24" fill="none"><path d={arrowUp} /></svg>
+        </span>
+        <span class="hero-cta-body">
+          <span class="hero-cta-kicker" aria-hidden="true">{t.hero.contactKicker}</span>
+          <span class="hero-cta-label">{t.hero.ctaContact}</span>
+          <span class="hero-cta-bar" aria-hidden="true"><i></i></span>
+        </span>
+      </a>
+
+      <a href="#about" data-goto="about" class="hero-seal" data-hero-seal aria-label={t.hero.next}>
+        <svg class="hero-seal-ring" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <path id="hero-seal-path" d="M50 50m-31 0a31 31 0 1 1 62 0a31 31 0 1 1-62 0" />
+          </defs>
+          <text text-anchor="middle">
+            <textPath href="#hero-seal-path" startOffset="25%" textLength="70" lengthAdjust="spacing">{seal}</textPath>
+          </text>
+          <text text-anchor="middle">
+            <textPath href="#hero-seal-path" startOffset="75%" textLength="70" lengthAdjust="spacing">{seal}</textPath>
+          </text>
+          <circle cx="15.8" cy="50" r="1.15" />
+          <circle cx="84.2" cy="50" r="1.15" />
+        </svg>
+        <span class="hero-seal-core" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+        </span>
+      </a>
+
+      <a href="#about" data-goto="about" class="hero-scroll" data-hero-scroll aria-label={t.hero.next}>
+        <span class="hero-mouse" aria-hidden="true"><i></i></span>
+        <span class="hero-chevrons" aria-hidden="true">
+          <svg viewBox="0 0 24 14" fill="none"><path d="m6 3 6 6 6-6" /></svg>
+          <svg viewBox="0 0 24 14" fill="none"><path d="m6 3 6 6 6-6" /></svg>
+        </span>
+      </a>
     </div>
   </div>
 </section>
-
-<style>
-  @media (min-width: 350px) and (max-width: 639px) {
-    .hero-ctas {
-      flex-direction: row;
-      justify-content: center;
-    }
-    .hero-ctas .btn {
-      flex: 1 1 0;
-      padding-inline: 1rem;
-    }
-  }
-
-  .hero-bio-short {
-    display: none;
-  }
-  @media (max-height: 620px) {
-    .hero-bio-long {
-      display: none;
-    }
-    .hero-bio-short {
-      display: block;
-    }
-  }
-</style>

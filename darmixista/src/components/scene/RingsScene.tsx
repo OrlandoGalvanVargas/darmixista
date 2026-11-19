@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { SCENE_READY, SITE_LOADED, isSiteLoaded } from '../../lib/stage-events';
 import { Rings } from './Rings';
 
@@ -30,6 +30,25 @@ function NoWebGL() {
 
 export default function RingsScene() {
   const [visible, setVisible] = useState(isSiteLoaded);
+  const [epoch, setEpoch] = useState(0);
+  const lost = useRef(false);
+
+  const remount = useCallback(() => {
+    if (!lost.current || document.visibilityState !== 'visible') return;
+    lost.current = false;
+    setEpoch((n) => n + 1);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('visibilitychange', remount);
+    window.addEventListener('pageshow', remount);
+    window.addEventListener('focus', remount);
+    return () => {
+      document.removeEventListener('visibilitychange', remount);
+      window.removeEventListener('pageshow', remount);
+      window.removeEventListener('focus', remount);
+    };
+  }, [remount]);
 
   useEffect(() => {
     if (visible) return;
@@ -45,11 +64,22 @@ export default function RingsScene() {
       aria-hidden="true"
     >
       <Canvas
+        key={epoch}
         dpr={[1, 1.75]}
         camera={{ position: [0, 0, 9], fov: 35 }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
           gl.toneMappingExposure = 1.1;
+          const canvas = gl.domElement;
+          canvas.addEventListener(
+            'webglcontextlost',
+            (e) => {
+              e.preventDefault();
+              lost.current = true;
+              remount();
+            },
+            { once: true },
+          );
         }}
         fallback={<NoWebGL />}
       >

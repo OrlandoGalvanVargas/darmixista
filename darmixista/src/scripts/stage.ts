@@ -65,8 +65,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
 
   const root = document.documentElement;
   const ringsLayer = document.querySelector<HTMLElement>('[data-rings-layer]');
-  const counter = document.querySelector<HTMLElement>('[data-stage-counter]');
-  const total = document.querySelector<HTMLElement>('[data-stage-total]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const desktop = window.matchMedia(DESKTOP_QUERY);
   const fx = getStageFx();
@@ -124,7 +122,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
   const poseOf = (i: number): RingPose =>
     steps[i].section.dataset.rings === 'background' ? 'background' : 'hero';
   const groupOf = (i: number) => steps[i].section.dataset.nav ?? steps[i].section.id;
-  const groups = () => [...new Set(steps.map((_, i) => groupOf(i)))];
 
   const nodes = (i: number, sel: string) => {
     const { section, slide } = steps[i];
@@ -404,7 +401,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
     current = i;
     const step = steps[i];
     const group = groupOf(i);
-    const groupList = groups();
     root.dataset.currentSection = step.id;
     root.dataset.rings = poseOf(i);
     allSections.forEach((s) => {
@@ -415,8 +411,6 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       if (el.dataset.navItem === group) el.setAttribute('aria-current', 'true');
       else el.removeAttribute('aria-current');
     });
-    if (counter) counter.textContent = String(groupList.indexOf(group) + 1).padStart(2, '0');
-    if (total) total.textContent = String(groupList.length).padStart(2, '0');
 
     if (step.slide) syncCarousel(step, animate);
 

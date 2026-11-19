@@ -57,8 +57,6 @@ const RINGS: readonly RingSpec[] = [
 ];
 
 const OUTER_DIAMETER = (RINGS[0].profile.radius + BAND.thickness) * 2;
-const CONTAINER_MAX = 1400;
-const MOBILE_BP = 768;
 
 const DRAG = {
   impulse: 0.014,
@@ -69,35 +67,35 @@ const DRAG = {
 
 const BASE_TILT = { x: 0.32, y: -0.25, z: 0.38 };
 
+const HOLD = { spin: 2.4, tumbleX: 0.9, tumbleY: 1.4 };
+
 interface Pose {
   x: number;
   y: number;
   s: number;
 }
 
-const HUD_SPACE = 48;
 const PORTAL_MARGIN = 1.12;
 
 const nearestFlat = (angle: number) => Math.round(angle / Math.PI) * Math.PI;
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
-function heroPose(vw: number, vh: number, pxW: number, pxH: number, contentBottom: number): Pose {
-  if (pxW < MOBILE_BP) {
-    const toWorld = vh / pxH;
-    const top = contentBottom + 20;
-    const bottom = pxH - HUD_SPACE;
-    const diameterPx = Math.max(130, Math.min(pxW * 0.82, bottom - top, pxH * 0.4));
-    const centerPx = Math.max(top + diameterPx / 2, (top + bottom) / 2);
-    return {
-      x: 0,
-      y: (pxH / 2 - centerPx) * toWorld,
-      s: (diameterPx * toWorld) / OUTER_DIAMETER,
-    };
+const HERO_STACK_QUERY = '(max-aspect-ratio: 20/23) and (max-width: 1099px)';
+const SHORT_HEIGHT = 520;
+
+function heroPose(vw: number, vh: number, pxW: number, pxH: number, stacked: boolean): Pose {
+  const toWorld = vh / pxH;
+  let diameterPx = Math.min(pxH * 0.56, pxW * 0.4);
+  let centerPx = pxH * 0.47;
+  if (stacked) {
+    diameterPx = Math.min(pxW * 0.78, pxH * 0.4);
+    centerPx = pxH * 0.44;
+  } else if (pxH < SHORT_HEIGHT) {
+    diameterPx = Math.min(pxH * 0.46, pxW * 0.4);
+    centerPx = pxH * 0.5;
   }
-  const containerRatio = Math.min(pxW, CONTAINER_MAX) / pxW;
-  const diameter = Math.min(vh * 0.64, vw * containerRatio * 0.42);
-  return { x: vw * containerRatio * 0.25, y: 0, s: diameter / OUTER_DIAMETER };
+  return { x: 0, y: (pxH / 2 - centerPx) * toWorld, s: (diameterPx * toWorld) / OUTER_DIAMETER };
 }
 
 function backgroundPose(vw: number, vh: number): Pose {
@@ -130,9 +128,9 @@ export function Rings() {
 
   const anim = useRef({ mix: readCurrentPose() === 'background' ? 1 : 0, intro: 0 });
   const pointer = useRef({ x: 0, y: 0, px: -1, py: -1 });
-  const heroBottom = useRef(0);
+  const stacked = useRef(false);
   const screenCircle = useRef({ cx: 0, cy: 0, r: 0 });
-  const motion = useRef({ vx: 0, vy: 0, hover: 0, hovered: false, dragging: false, lastX: 0, lastY: 0 });
+  const motion = useRef({ vx: 0, vy: 0, hover: 0, press: 0, hovered: false, dragging: false, lastX: 0, lastY: 0 });
   const announcedReady = useRef(false);
   const fx = useRef(getStageFx());
   const acc = useRef({ g0: RINGS[0].start, g1: RINGS[1].start, g2: RINGS[2].start, sx: 0, sy: 0, tx: BASE_TILT.x, ty: BASE_TILT.y });
@@ -207,25 +205,19 @@ export function Rings() {
     };
     window.addEventListener(STAGE_CHANGE, onChange);
 
-    const heroContent = document.querySelector<HTMLElement>('[data-hero-content]');
-    const measure = () => {
-      if (!heroContent) return;
-      const section = heroContent.closest<HTMLElement>('[data-section]');
-      heroBottom.current = heroContent.offsetTop + heroContent.offsetHeight + (section?.offsetTop ?? 0);
+    const stackQuery = window.matchMedia(HERO_STACK_QUERY);
+    const syncStack = () => {
+      stacked.current = stackQuery.matches;
     };
-    measure();
-    const resizeObserver = new ResizeObserver(measure);
-    if (heroContent) resizeObserver.observe(heroContent);
-    window.addEventListener('resize', measure);
-    document.fonts?.ready.then(measure);
+    syncStack();
+    stackQuery.addEventListener('change', syncStack);
 
     return () => {
       intro?.kill();
       gsap.killTweensOf(state);
       window.removeEventListener(SITE_LOADED, startIntro);
       window.removeEventListener(STAGE_CHANGE, onChange);
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', measure);
+      stackQuery.removeEventListener('change', syncStack);
     };
   }, [reducedMotion]);
 
@@ -341,7 +333,7 @@ export function Rings() {
     const g = [gimbal0.current, gimbal1.current, gimbal2.current];
     if (!placement.current || !tilt.current || !spin.current || g.some((x) => !x)) return;
 
-    const a = heroPose(viewport.width, viewport.height, size.width, size.height, heroBottom.current);
+    const a = heroPose(viewport.width, viewport.height, size.width, size.height, stacked.current);
     const b = backgroundPose(viewport.width, viewport.height);
     const m = state.mix;
     const f = fx.current;
@@ -393,8 +385,12 @@ export function Rings() {
     r.sx += mo.vx * dt;
     r.sy += mo.vy * dt;
 
+    mo.press = THREE.MathUtils.damp(mo.press, mo.dragging && !reducedMotion ? 1 : 0, mo.dragging ? 2.2 : 1.4, dt);
+    r.sx += HOLD.tumbleX * mo.press * dt;
+    r.sy += HOLD.tumbleY * mo.press * dt;
     const freeSpin = Math.min(Math.hypot(mo.vx, mo.vy) * DRAG.boost, 3);
-    const speed = (reducedMotion ? 0.25 : 1) * (1 - 0.4 * m) * (1 + freeSpin + 0.25 * mo.hover);
+    const speed =
+      (reducedMotion ? 0.25 : 1) * (1 - 0.4 * m) * (1 + freeSpin + 0.25 * mo.hover + HOLD.spin * mo.press);
     r.g0 += RINGS[0].speed * dt * speed;
     r.g1 += RINGS[1].speed * dt * speed;
     r.g2 += RINGS[2].speed * dt * speed;

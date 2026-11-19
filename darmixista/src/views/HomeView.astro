@@ -2,8 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/navigation/Navbar.astro';
 import Preloader from '../components/brand/Preloader.astro';
-import StageHud from '../components/navigation/StageHud.astro';
+import '@fontsource/instrument-serif/400-italic.css';
 import Hero from '../components/sections/Hero.astro';
+import HeroName from '../components/sections/HeroName.astro';
 import About from '../components/sections/About.astro';
 import Stack from '../components/sections/Stack.astro';
 import Trajectory from '../components/sections/Trajectory.astro';
@@ -23,11 +24,16 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const TOTAL_SECTIONS = 5;
 ---
 
 <Layout lang={lang}>
   <Preloader />
+
+  <div class="hero-backdrop" data-hero-backdrop aria-hidden="true">
+    <div class="hero-geo">
+      <HeroName variant="fill" />
+    </div>
+  </div>
 
   <div data-rings-layer class="pointer-events-none fixed inset-0 z-0">
     <RingsScene client:only="react" />
@@ -48,7 +54,6 @@ const TOTAL_SECTIONS = 5;
     <ContactFormStep lang={lang} />
   </main>
 
-  <StageHud lang={lang} total={TOTAL_SECTIONS} />
 
   <ProjectDialogs
     lang={lang}
@@ -60,7 +65,7 @@ const TOTAL_SECTIONS = 5;
 
   <noscript>
     <style>
-      .stage-section:first-of-type { opacity: 1; visibility: visible; }
+      .stage-section:first-of-type, .hero-backdrop { opacity: 1; visibility: visible; }
       [data-preloader] { display: none !important; }
     </style>
   </noscript>
@@ -74,11 +79,13 @@ const TOTAL_SECTIONS = 5;
   import { initContact } from '../scripts/contact';
   import { initButtons } from '../scripts/buttons';
   import { initCursor } from '../scripts/cursor';
+  import { initHero } from '../scripts/hero';
 
   initNavigation();
   initDialogs();
   initContact();
   initButtons();
   initCursor();
+  initHero();
   initStage({ ready: runPreloader() });
 </script>

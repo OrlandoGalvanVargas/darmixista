@@ -1,0 +1,21 @@
+---
+import { SITE } from '../../config/site';
+
+interface Props {
+  variant: 'fill' | 'outline';
+}
+const { variant } = Astro.props;
+const lines = [SITE.person.firstName, SITE.person.lastName.split(' ')[0]].map((w) => [...w.toUpperCase()]);
+---
+
+<div class:list={['hero-name', `hero-name-${variant}`]} data-hero-name={variant} aria-hidden="true">
+  {
+    lines.map((chars) => (
+      <span class="hn-line">
+        {chars.map((c) => (
+          <span class="hc">{c}</span>
+        ))}
+      </span>
+    ))
+  }
+</div>

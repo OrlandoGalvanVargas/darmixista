@@ -4,11 +4,11 @@ export const defaultLang: Lang = 'es';
 
 const es = {
   meta: {
-    title: 'Darmixista — Desarrollo web y Android | Orlando Galvan Vargas',
+    title: 'Orlando Galvan Vargas — Ingeniero de software | Darmixista',
     description:
-      'Darmixista desarrolla software para web y Android desde México, desde productos propios hasta sistemas creados para necesidades concretas. Proyecto de Orlando Galvan Vargas.',
-    ogAlt: 'Darmixista — Desarrollo web y Android por Orlando Galvan Vargas',
-    jobTitle: 'Desarrollador Full Stack y Android',
+      'Portafolio de Orlando Galvan Vargas, ingeniero de software en México. Darmixista es el sello con el que firmo las aplicaciones web y Android que construyo.',
+    ogAlt: 'Orlando Galvan Vargas, ingeniero de software — Darmixista',
+    jobTitle: 'Ingeniero de software',
     notFoundTitle: 'Página no encontrada',
     notFoundBody: 'La página que buscas no existe o cambió de lugar.',
     notFoundCta: 'Volver al inicio',
@@ -22,15 +22,29 @@ const es = {
     contact: 'Contacto',
     openMenu: 'Abrir menú',
     closeMenu: 'Cerrar menú',
+    menu: 'Menú',
+    close: 'Cerrar',
     language: 'Idioma',
+    switchTo: 'Ver en inglés',
+    hints: {
+      home: 'bienvenida',
+      about: 'quién soy',
+      projects: 'lo que construyo',
+      services: 'en qué ayudo',
+      contact: 'hablemos',
+    },
+    ideaTitle: '¿Tienes una idea?',
+    ideaText: 'Cuéntamela por aquí.',
   },
   hero: {
-    role: 'Desarrollo web y Android',
-    roleAccent: ['web', 'Android'],
-    bio: 'Darmixista desarrolla software para web y Android, desde productos propios hasta sistemas creados para necesidades concretas.',
-    bioShort: 'Software para web y Android, desde productos propios hasta sistemas creados para necesidades concretas.',
+    hello: 'Hola, soy',
+    role: 'Ingeniero de software',
+    projectsKicker: 'Explora',
     ctaProjects: 'Ver proyectos',
+    contactKicker: 'Hablemos',
     ctaContact: 'Contacto',
+    seal: 'Darmixista',
+    next: 'Ir a Sobre mí',
   },
   about: {
     title: '¿Qué es Darmixista?',
@@ -109,20 +123,17 @@ const es = {
   footer: {
     rights: 'Todos los derechos reservados.',
   },
-  hud: {
-    sections: 'Secciones',
-  },
 };
 
 export type Dictionary = typeof es;
 
 const en: Dictionary = {
   meta: {
-    title: 'Darmixista — Web and Android development | Orlando Galvan Vargas',
+    title: 'Orlando Galvan Vargas — Software engineer | Darmixista',
     description:
-      'Darmixista develops software for web and Android from Mexico, from products of its own to systems built for specific needs. A project by Orlando Galvan Vargas.',
-    ogAlt: 'Darmixista — Web and Android development by Orlando Galvan Vargas',
-    jobTitle: 'Full Stack & Android Developer',
+      'Portfolio of Orlando Galvan Vargas, a software engineer in Mexico. Darmixista is the name I sign the web and Android apps I build with.',
+    ogAlt: 'Orlando Galvan Vargas, software engineer — Darmixista',
+    jobTitle: 'Software engineer',
     notFoundTitle: 'Page not found',
     notFoundBody: "The page you're looking for doesn't exist or has moved.",
     notFoundCta: 'Back to home',
@@ -136,15 +147,29 @@ const en: Dictionary = {
     contact: 'Contact',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
+    menu: 'Menu',
+    close: 'Close',
     language: 'Language',
+    switchTo: 'View in Spanish',
+    hints: {
+      home: 'welcome',
+      about: 'who I am',
+      projects: 'what I build',
+      services: 'how I help',
+      contact: "let's talk",
+    },
+    ideaTitle: 'Got an idea?',
+    ideaText: 'Tell me about it here.',
   },
   hero: {
-    role: 'Web and Android development',
-    roleAccent: ['Web', 'Android'],
-    bio: 'Darmixista develops software for web and Android, from products of its own to systems built for specific needs.',
-    bioShort: 'Software for web and Android, from products of its own to systems built for specific needs.',
+    hello: "Hi, I'm",
+    role: 'Software engineer',
+    projectsKicker: 'Explore',
     ctaProjects: 'View projects',
+    contactKicker: "Let's talk",
     ctaContact: 'Contact',
+    seal: 'Darmixista',
+    next: 'Go to About',
   },
   about: {
     title: 'What is Darmixista?',
@@ -222,9 +247,6 @@ const en: Dictionary = {
   },
   footer: {
     rights: 'All rights reserved.',
-  },
-  hud: {
-    sections: 'Sections',
   },
 };
 
