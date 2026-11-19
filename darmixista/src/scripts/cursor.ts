@@ -1,10 +1,10 @@
 import { gsap } from 'gsap';
 import { STAGE_CHANGE } from '../lib/stage-events';
 
-const LENS_SCALE = 1.14;
+const LENS_SCALE = 1.18;
 const TOUCH_HOLD_MS = 180;
 const TOUCH_SLOP = 10;
-const TOUCH_LIFT = 78;
+const TOUCH_LIFT = 70;
 const TEXT_TAGS = 'p, li, dd, span, small';
 const INTERACTIVE = 'a, button, [role="button"], [role="tab"], summary, label';
 const NATIVE = 'input, textarea, select, [contenteditable="true"]';
@@ -40,14 +40,14 @@ export function initCursor(): void {
   const cursor = document.createElement('div');
   cursor.className = 'cursor';
   cursor.setAttribute('aria-hidden', 'true');
-  cursor.innerHTML = `<span class="cursor-lens"><span class="cursor-lens-content"></span></span><span class="cursor-ring"></span><span class="cursor-orbit"><i></i></span><span class="cursor-grab"><svg class="cursor-arrows" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="25" stroke-dasharray="50 28.5" /><path d="M49 23.5 53 28.5 57 23.5" transform="rotate(114.6 28 28) translate(-4 0)" /><path d="M49 23.5 53 28.5 57 23.5" transform="rotate(294.6 28 28) translate(-4 0)" /></svg><svg class="cursor-hand cursor-hand-open" viewBox="0 0 24 24" fill="none">${HAND_OPEN}</svg><svg class="cursor-hand cursor-hand-closed" viewBox="0 0 24 24" fill="none">${HAND_CLOSED}</svg></span>`;
+  cursor.innerHTML = `<span class="cursor-lens"><span class="cursor-lens-content"></span></span><span class="cursor-ring"></span><span class="cursor-dot"></span><span class="cursor-grab"><svg class="cursor-track" viewBox="0 0 56 56" fill="none"><ellipse cx="28" cy="28" rx="24" ry="9" transform="rotate(-18 28 28)" /></svg><span class="cursor-disc"></span><svg class="cursor-track cursor-track-front" viewBox="0 0 56 56" fill="none"><path d="M5.17 35.42A24 9 -18 0 0 50.83 20.58" /></svg><svg class="cursor-hand cursor-hand-open" viewBox="0 0 24 24" fill="none">${HAND_OPEN}</svg><svg class="cursor-hand cursor-hand-closed" viewBox="0 0 24 24" fill="none">${HAND_CLOSED}</svg><span class="cursor-sat"></span></span>`;
   document.body.appendChild(cursor);
   if (fine) root.classList.add('has-cursor');
   else cursor.classList.add('is-touch');
 
   const lens = cursor.querySelector<HTMLElement>('.cursor-lens-content')!;
-  const xTo = gsap.quickTo(cursor, 'x', { duration: 0.28, ease: 'power3.out' });
-  const yTo = gsap.quickTo(cursor, 'y', { duration: 0.28, ease: 'power3.out' });
+  const xTo = gsap.quickTo(cursor, 'x', { duration: 0.14, ease: 'power3.out' });
+  const yTo = gsap.quickTo(cursor, 'y', { duration: 0.14, ease: 'power3.out' });
 
   let target: HTMLElement | null = null;
   let clone: HTMLElement | null = null;
@@ -163,10 +163,27 @@ export function initCursor(): void {
     document.addEventListener('pointerover', (e) => {
       if (e.pointerType === 'mouse') resolve(e.target as Element);
     });
+    let downAt = 0;
+    let releaseTimer = 0;
     document.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'mouse') cursor.classList.add('is-down');
+      if (e.pointerType !== 'mouse') return;
+      clearTimeout(releaseTimer);
+      downAt = performance.now();
+      cursor.classList.add('is-down');
     });
-    document.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
+    const release = () => {
+      clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(
+        () => cursor.classList.remove('is-down'),
+        Math.max(0, 170 - (performance.now() - downAt)),
+      );
+    };
+    document.addEventListener('pointerup', release);
+    window.addEventListener('blur', release);
+    window.addEventListener('contextmenu', (e) => {
+      if (cursor.dataset.state === 'lens') e.preventDefault();
+      else release();
+    });
     root.addEventListener('pointerleave', () => {
       shown = false;
       cursor.classList.remove('is-visible');
