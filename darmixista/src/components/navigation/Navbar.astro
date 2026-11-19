@@ -18,8 +18,13 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
   <div
     class="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6 md:h-[4.5rem] md:px-12 lg:px-20"
   >
-    <a href="#home" data-goto="home" class="group flex items-center" aria-label={SITE.brand}>
-      <Logo class="nav-logo h-8 w-8 text-fg" />
+    <a href="#home" data-goto="home" class="group nav-brand" aria-label={SITE.brand}>
+      <span class="wordmark" aria-hidden="true">
+        {[...SITE.brand].map((c) => (
+          <span class:list={['wm', c.toLowerCase() === 'x' && 'wm-x']}>{c}</span>
+        ))}
+      </span>
+      <Logo class="nav-logo h-[24px] w-[39px]" />
     </a>
     <nav aria-label={t.nav.label} class="hidden items-center gap-9 lg:flex xl:gap-11">
       <ul class="flex items-center gap-8 text-[14px] font-medium tracking-[0.01em] whitespace-nowrap xl:gap-10">
@@ -123,34 +128,94 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
 </header>
 
 <style>
-  .nav-logo :global(.logo-front),
-  .nav-logo :global(.logo-back) {
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wordmark {
+    display: inline-flex;
+    gap: 0.06em;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .wordmark {
+      font-size: 17px;
+    }
+  }
+  .wm {
+    display: inline-block;
+    transition:
+      transform 0.5s var(--ease-zen),
+      color 0.4s var(--ease-zen);
+  }
+  .wm-x {
+    color: var(--color-accent-hi);
+  }
+  @media (hover: hover) {
+    .group:hover .wm,
+    .group:focus-visible .wm {
+      transform: translateY(-3px);
+      color: var(--color-accent-hi);
+    }
+    .group:hover .wm-x,
+    .group:focus-visible .wm-x {
+      color: var(--color-fg);
+    }
+    .group:hover .wm:nth-child(1) { transition-delay: 0s; }
+    .group:hover .wm:nth-child(2) { transition-delay: 0.025s; }
+    .group:hover .wm:nth-child(3) { transition-delay: 0.05s; }
+    .group:hover .wm:nth-child(4) { transition-delay: 0.075s; }
+    .group:hover .wm:nth-child(5) { transition-delay: 0.1s; }
+    .group:hover .wm:nth-child(6) { transition-delay: 0.125s; }
+    .group:hover .wm:nth-child(7) { transition-delay: 0.15s; }
+    .group:hover .wm:nth-child(8) { transition-delay: 0.175s; }
+    .group:hover .wm:nth-child(9) { transition-delay: 0.2s; }
+    .group:hover .wm:nth-child(10) { transition-delay: 0.225s; }
+  }
+  .group:active .wm {
+    transform: translateY(-3px);
+    color: var(--color-accent-hi);
+  }
+  .group:active .wm-x {
+    color: var(--color-fg);
+  }
+
+  .nav-brand :global(.nav-logo) {
+    display: none;
+  }
+  @media (max-width: 339px) {
+    .wordmark {
+      display: none;
+    }
+    .nav-brand :global(.nav-logo) {
+      display: block;
+    }
+  }
+  .nav-logo :global(.logo-green) {
     stroke-dasharray: 1 1;
     stroke-dashoffset: 0;
   }
-  .group:hover .nav-logo :global(.logo-front),
-  .group:focus-visible .nav-logo :global(.logo-front) {
-    animation: nav-ring-draw 0.9s var(--ease-zen) both;
+  @media (hover: hover) {
+    .group:hover .nav-logo :global(.logo-green) {
+      animation: nav-logo-draw 0.9s var(--ease-zen) both;
+    }
   }
-  .group:hover .nav-logo :global(.logo-back),
-  .group:focus-visible .nav-logo :global(.logo-back) {
-    animation: nav-ring-draw 0.9s var(--ease-zen) 0.12s both;
-  }
-  .nav-logo :global(.logo-dot) {
-    transition: scale 0.5s var(--ease-zen);
-  }
-  .group:hover .nav-logo :global(.logo-dot),
-  .group:focus-visible .nav-logo :global(.logo-dot) {
-    scale: 1.35;
-  }
-  @keyframes nav-ring-draw {
+  @keyframes nav-logo-draw {
     from {
       stroke-dashoffset: 1;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .group:hover .nav-logo :global(.logo-front),
-    .group:hover .nav-logo :global(.logo-back) {
+    .group:hover .wm {
+      transform: none;
+    }
+    .group:hover .nav-logo :global(.logo-green) {
       animation: none;
     }
   }

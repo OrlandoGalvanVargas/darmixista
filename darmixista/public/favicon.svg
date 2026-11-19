@@ -1,12 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <defs>
-    <mask id="b" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32"><rect width="32" height="32" fill="#fff"/><path d="M9 5H15A8.5 11 0 0 1 15 27H9Z" fill="#000" stroke="#000" stroke-width="2.2" stroke-linejoin="round"/></mask>
-    <mask id="f" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32"><rect width="32" height="32" fill="#fff"/><path d="M1.6 16A14.4 4.3 0 0 0 30.4 16" transform="rotate(-20 16 16)" stroke="#000" stroke-width="3.4"/></mask>
-  </defs>
-  <rect width="32" height="32" rx="7" fill="#080A09"/>
-  <g transform="translate(16 16) scale(.84) translate(-16 -16)">
-    <g mask="url(#b)"><path d="M1.6 16A14.4 4.3 0 0 1 30.4 16" transform="rotate(-20 16 16)" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".45"/></g>
-    <path d="M9 5H15A8.5 11 0 0 1 15 27H9Z M12.6 8.6H15A5 7.4 0 0 1 15 23.4H12.6Z" fill="#fff" fill-rule="evenodd" mask="url(#f)"/>
-    <g transform="rotate(-20 16 16)"><path d="M1.6 16A14.4 4.3 0 0 0 30.4 16" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="8.8" cy="19.72" r="1.8" fill="#4ADE80"/></g>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#080A09"/><svg x="3" y="7.4" width="26" height="17.2" viewBox="2 4 100 62" fill="none"><defs><clipPath id="f-c"><rect x="0" y="6" width="104" height="58"/></clipPath><linearGradient id="f-w" x1="0" y1="6" x2="0" y2="64" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fbfbfb"/><stop offset="1" stop-color="#c9cdcb"/></linearGradient><linearGradient id="f-g" x1="8" y1="64" x2="96" y2="4" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#15803d"/><stop offset=".5" stop-color="#22c55e"/><stop offset="1" stop-color="#86efac"/></linearGradient></defs><g clip-path="url(#f-c)" stroke-linejoin="miter" stroke-miterlimit="8"><path d="M5 12.5H31Q41 12.5 48 19.5L104 75.5" stroke="url(#f-w)" stroke-width="13"/><polygon points="5,12.5 18,12.5 18,42 13,47 5,47" fill="url(#f-w)"/><path d="M5 57.5H29Q39 57.5 46 50.5L102 -5.5" stroke="#080a09" stroke-width="18"/><path d="M5 57.5H29Q39 57.5 46 50.5L102 -5.5" stroke="url(#f-g)" stroke-width="13"/></g></svg></svg>

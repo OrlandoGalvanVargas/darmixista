@@ -47,6 +47,17 @@ Las apps móviles se agrupan por `audience` en su archivo de datos: `'personal'`
 `'business'` en «Apps para negocios». El segundo carrusel aparece solo cuando existe al menos una app con
 `audience: 'business'`.
 
+### Inicio
+
+El nombre grande vive en dos capas: el relleno (`HeroName variant="fill"`) está detrás del canvas de los anillos
+y el contorno (`variant="outline"`) encima, visible solo en la zona de los anillos. Las posiciones de "Hola, soy",
+el título, los botones y el sello se calculan con unidades de contenedor a partir del diámetro y centro de los
+anillos (`--ring-d`, `--ring-cy`), que deben coincidir con `heroPose` en `Rings.tsx`. Con mouse se muestra el
+icono de scroll; en táctil, el sello Darmixista. La animación de entrada vive en `src/scripts/hero.ts`.
+
+El logo (D + X) se genera en `src/components/brand/Logo.astro`; `favicon.svg`, los iconos de `public/icons` y las
+imágenes de `public/og` usan el mismo trazo.
+
 ### Textos por tamaño de pantalla
 
 Cada vista cabe en una sola pantalla sin scroll interno, así que varios textos tienen más de una versión y el
@@ -54,7 +65,6 @@ CSS elige cuál mostrar según el ancho y el alto del navegador:
 
 | Texto                                      | Largo                                 | Medio                                                     | Corto                                |
 | ------------------------------------------ | ------------------------------------- | --------------------------------------------------------- | ------------------------------------ |
-| Hero (`hero.bio` / `hero.bioShort`)        | alturas > 620 px                      | —                                                         | alturas ≤ 620 px                     |
 | Sobre mí (`about.lead*`, `body*`)          | ≥ 768 px y > 620 px de alto           | —                                                         | teléfonos o alturas ≤ 620 px         |
 | Servicios (`description`/`medium`/`short`) | ≥ 1280 px y > 760 px de alto          | tablets 768–1279, alturas ≤ 760 o teléfonos ≥ 780 de alto | teléfonos de menos de 780 px de alto |
 | Intro de Servicios                         | ≥ 768 px o teléfonos ≥ 880 px de alto | —                                                         | oculta                               |
