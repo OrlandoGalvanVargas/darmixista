@@ -43,17 +43,16 @@ const t = useTranslations(lang);
 
   <main data-stage class="stage z-10">
     <Hero lang={lang} />
-    <About lang={lang} />
-    <Stack lang={lang} />
-    <Trajectory lang={lang} />
     <ProjectsCarousel id="projects" kind="web" title={t.projects.webTitle} projects={WEB_PROJECTS} lang={lang} />
     <ProjectsCarousel id="apps" kind="mobile" title={t.projects.mobileTitle} projects={PERSONAL_APPS} lang={lang} />
     {BUSINESS_APPS.length > 0 && <ProjectsCarousel id="business-apps" kind="mobile" title={t.projects.businessTitle} projects={BUSINESS_APPS} lang={lang} />}
+    <About lang={lang} />
+    <Stack lang={lang} />
+    <Trajectory lang={lang} />
     <Services lang={lang} />
     <Contact lang={lang} />
     <ContactFormStep lang={lang} />
   </main>
-
 
   <ProjectDialogs
     lang={lang}

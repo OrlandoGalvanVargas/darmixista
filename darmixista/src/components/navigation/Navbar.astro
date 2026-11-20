@@ -21,10 +21,10 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
     <a href="#home" data-goto="home" class="group nav-brand" aria-label={SITE.brand}>
       <span class="wordmark" aria-hidden="true">
         {[...SITE.brand].map((c) => (
-          <span class:list={['wm', c.toLowerCase() === 'x' && 'wm-x']}>{c}</span>
+          <span class="wm">{c}</span>
         ))}
       </span>
-      <Logo class="nav-logo h-[24px] w-[39px]" />
+      <Logo class="nav-logo h-8 w-8" />
     </a>
     <nav aria-label={t.nav.label} class="hidden items-center gap-9 lg:flex xl:gap-11">
       <ul class="flex items-center gap-8 text-[14px] font-medium tracking-[0.01em] whitespace-nowrap xl:gap-10">
@@ -61,7 +61,8 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
   </div>
 
   <div id="mobile-menu" data-mobile-menu class="menu-overlay lg:hidden">
-    <span class="menu-rim" data-menu-rim aria-hidden="true"></span>
+    <span class="menu-slats" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    <span class="menu-glow" aria-hidden="true"></span>
     <span class="menu-seal" aria-hidden="true">
       <svg class="menu-seal-svg" viewBox="0 0 100 100">
         <defs>
@@ -135,17 +136,17 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
   }
   .wordmark {
     display: inline-flex;
-    gap: 0.06em;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    margin-right: -0.24em;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
     line-height: 1;
     text-transform: uppercase;
     color: var(--color-fg);
   }
   @media (min-width: 768px) {
     .wordmark {
-      font-size: 17px;
+      font-size: 15px;
     }
   }
   .wm {
@@ -154,18 +155,11 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
       transform 0.5s var(--ease-zen),
       color 0.4s var(--ease-zen);
   }
-  .wm-x {
-    color: var(--color-accent-hi);
-  }
   @media (hover: hover) {
     .group:hover .wm,
     .group:focus-visible .wm {
       transform: translateY(-3px);
       color: var(--color-accent-hi);
-    }
-    .group:hover .wm-x,
-    .group:focus-visible .wm-x {
-      color: var(--color-fg);
     }
     .group:hover .wm:nth-child(1) { transition-delay: 0s; }
     .group:hover .wm:nth-child(2) { transition-delay: 0.025s; }
@@ -178,12 +172,10 @@ const linkedin = SITE.socials.find((x) => x.id === 'linkedin');
     .group:hover .wm:nth-child(9) { transition-delay: 0.2s; }
     .group:hover .wm:nth-child(10) { transition-delay: 0.225s; }
   }
-  .group:active .wm {
-    transform: translateY(-3px);
-    color: var(--color-accent-hi);
-  }
-  .group:active .wm-x {
+  .nav-brand.is-pulsing .wm {
+    transform: none;
     color: var(--color-fg);
+    transition-delay: 0s;
   }
 
   .nav-brand :global(.nav-logo) {

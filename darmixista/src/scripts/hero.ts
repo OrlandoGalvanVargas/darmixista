@@ -5,11 +5,11 @@ import { SITE_LOADED, STAGE_CHANGE, isSiteLoaded } from '../lib/stage-events';
 gsap.registerPlugin(ScrambleTextPlugin);
 
 const INTRO = {
-  name: { duration: 1.4, each: 0.05 },
-  hello: { at: 0.3, duration: 0.9, each: 0.055, wave: 0.045 },
-  role: { at: 0.6, duration: 1.2 },
-  ctas: { at: 0.8 },
-  seal: { at: 1, duration: 1.3 },
+  name: { rest: 0.75, load: 0.32, snap: 0.42, crack: 0.2, whip: 0.95, lag: 0.08, angle: 82, depth: 4.2, pull: 0.3, lift: 0.05 },
+  hello: { at: 0.5, duration: 0.9, each: 0.055, shineDelay: 0.1, shine: 1.3 },
+  role: { at: 0.8, duration: 1.2 },
+  ctas: { at: 0.95 },
+  seal: { at: 1.1, duration: 1.3 },
   revisitSpeed: 1.5,
   revisitDelay: 0.2,
 };
@@ -93,6 +93,29 @@ export function initHero(): void {
   });
 
   let intro: gsap.core.Timeline | null = null;
+  let sheen: gsap.core.Tween | null = null;
+
+  const shine = () => {
+    if (!hello || !helloChars.length) return;
+    sheen?.kill();
+    const lefts = helloChars.map((c) => c.offsetLeft);
+    const start = Math.min(...lefts);
+    const end = Math.max(...helloChars.map((c) => c.offsetLeft + c.offsetWidth));
+    const width = end - start;
+    helloChars.forEach((c, i) => c.style.setProperty('--ox', `${lefts[i] - start}px`));
+    hello.style.setProperty('--hw', `${width}px`);
+    hello.classList.add('is-shine');
+    sheen = gsap.fromTo(
+      hello,
+      { '--sx': `${-width * 0.75}px` },
+      {
+        '--sx': `${width * 0.75}px`,
+        duration: INTRO.hello.shine,
+        ease: 'sine.inOut',
+        onComplete: () => hello.classList.remove('is-shine'),
+      },
+    );
+  };
   let measured = false;
   let active = false;
   let movers: { y: gsap.QuickToFunc; s: gsap.QuickToFunc }[] = [];
@@ -108,8 +131,10 @@ export function initHero(): void {
 
   const hide = () => {
     intro?.kill();
-    gsap.set(chars, { yPercent: 110, autoAlpha: 0 });
+    gsap.set(chars, { autoAlpha: 0, x: 0, y: 0, z: 0, rotationY: 0, scaleY: 1 });
     if (hello) gsap.set(hello, { autoAlpha: 1, y: 0 });
+    sheen?.kill();
+    hello?.classList.remove('is-shine');
     gsap.set(helloChars, { autoAlpha: 0, rotationX: -100, yPercent: 40, filter: 'blur(8px)', color: '#5af08f', textShadow: '0 0 18px rgba(90,240,143,0.9)' });
     if (role) gsap.set(role, { autoAlpha: 0 });
     ctas.forEach((cta) => {
@@ -128,20 +153,40 @@ export function initHero(): void {
     intro = tl;
     if (revisit) tl.timeScale(INTRO.revisitSpeed);
 
-    [outline, fill].forEach((set) => {
-      if (!set.length) return;
-      tl.to(
-        set,
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-          duration: INTRO.name.duration,
-          ease: 'expo.out',
-          stagger: { each: INTRO.name.each, from: 'center' },
-        },
-        0,
-      );
-    });
+    if (outline.length) {
+      const g = INTRO.name;
+      gsap.set(chars, { x: 0, y: 0, z: 0, rotationY: 0, rotation: 0, scaleX: 1, scaleY: 1, transformOrigin: '50% 50%' });
+      const nameBox = (outline[0].closest('.hero-name') ?? outline[0]).getBoundingClientRect();
+      const offsets = outline.map((c) => {
+        const r = c.getBoundingClientRect();
+        return r.left + r.width / 2 - (nameBox.left + nameBox.width / 2);
+      });
+      const span = Math.max(...offsets.map(Math.abs)) || 1;
+      const font = parseFloat(getComputedStyle(outline[0]).fontSize) || 100;
+      const pairs = outline.map((c, i) => [c, fill[i]].filter(Boolean) as HTMLElement[]);
+      pairs.forEach((pair, i) => {
+        const dx = offsets[i];
+        const far = Math.abs(dx) / span;
+        const side = Math.sign(dx);
+        const curl = Math.pow(far, 1.6);
+        const bend = { v: g.rest };
+        const draw = () => {
+          const v = bend.v;
+          gsap.set(pair, {
+            rotationY: -side * v * curl * g.angle,
+            z: -v * curl * font * g.depth,
+            x: -dx * Math.abs(v) * curl * g.pull,
+            y: -v * curl * font * g.lift,
+          });
+        };
+        draw();
+        tl.to(pair, { autoAlpha: 1, duration: 0.2, ease: 'power1.out' }, 0)
+          .to(bend, { v: 1, duration: g.load, ease: 'power2.in', onUpdate: draw }, 0)
+          .to(bend, { v: -g.snap, duration: g.crack, ease: 'power3.out', onUpdate: draw }, g.load + far * g.lag)
+          .to(bend, { v: 0, duration: g.whip, ease: 'elastic.out(1.1, 0.35)', onUpdate: draw }, g.load + far * g.lag + g.crack);
+      });
+      tl.set(chars, { clearProps: 'transformOrigin' });
+    }
     if (helloChars.length) {
       const h = INTRO.hello;
       tl.to(
@@ -162,12 +207,8 @@ export function initHero(): void {
           { color: '#c4c8c6', textShadow: '0 0 0px rgba(90,240,143,0)', duration: 0.9, stagger: h.each, ease: 'power2.out' },
           h.at + 0.35,
         )
-        .to(
-          helloChars,
-          { yPercent: -22, duration: 0.28, stagger: h.wave, ease: 'sine.out', yoyo: true, repeat: 1 },
-          h.at + h.duration + helloChars.length * h.each,
-        )
-        .set(helloChars, { clearProps: 'filter,textShadow,color' });
+        .set(helloChars, { clearProps: 'filter,textShadow,color' }, h.at + 0.35 + 0.9 + helloChars.length * h.each)
+        .call(() => shine(), undefined, h.at + h.duration + helloChars.length * h.each + h.shineDelay);
     }
     if (role) {
       tl.set(role, { autoAlpha: 1 }, INTRO.role.at).fromTo(
@@ -198,7 +239,7 @@ export function initHero(): void {
 
   const showAll = () => {
     intro?.kill();
-    gsap.set(chars, { yPercent: 0, autoAlpha: 1 });
+    gsap.set(chars, { autoAlpha: 1, clearProps: 'transform' });
     gsap.set([hello, role, ...nexts].filter(Boolean), { autoAlpha: 1, y: 0, scale: 1, rotation: 0 });
     gsap.set(helloChars, { clearProps: 'all' });
     ctas.forEach((cta) => {

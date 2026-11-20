@@ -300,23 +300,47 @@
   z-index: -1;
   visibility: hidden;
   overflow: hidden;
+}
+.menu-slats {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.menu-slats i {
+  position: relative;
+  flex: 1;
+  margin-bottom: -1px;
+  background: #080a09;
+  transform: scaleY(0);
+  transform-origin: 50% 0%;
+}
+.menu-slats i::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(90 240 143 / 0.55), transparent);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-zen);
+}
+.menu-overlay.is-moving .menu-slats i::after {
+  opacity: 1;
+}
+.menu-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
   background:
     radial-gradient(120% 55% at 100% 0%, rgb(34 197 94 / 0.1), transparent 62%),
-    radial-gradient(90% 45% at 0% 100%, rgb(34 197 94 / 0.08), transparent 62%),
-    #080a09;
-  clip-path: circle(0px at var(--mx, 100%) var(--my, 0%));
+    radial-gradient(90% 45% at 0% 100%, rgb(34 197 94 / 0.08), transparent 62%);
 }
-.menu-rim {
-  position: absolute;
-  left: var(--mx, 100%);
-  top: var(--my, 0%);
-  width: calc(var(--mr, 1000px) * 2);
-  height: calc(var(--mr, 1000px) * 2);
-  margin: calc(var(--mr, 1000px) * -1) 0 0 calc(var(--mr, 1000px) * -1);
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(circle closest-side, transparent 0 calc(100% - 70px), rgb(34 197 94 / 0.14) calc(100% - 34px), rgb(74 222 128 / 0.55) calc(100% - 10px), rgb(180 255 208 / 0.95) calc(100% - 2px), transparent 100%);
-  opacity: 0;
+.menu-row {
+  perspective: 600px;
 }
 .menu-seal {
   position: absolute;
@@ -1151,9 +1175,11 @@ html[data-rings-drag] body * {
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+  perspective: 1100px;
 }
 .hn-line {
   display: inline-block;
+  transform-style: preserve-3d;
 }
 .hn-line + .hn-line {
   margin-left: 0.24em;
@@ -1213,6 +1239,25 @@ html[data-rings-drag] body * {
   display: inline-block;
   transform-origin: 50% 100%;
   will-change: transform;
+}
+.hero-hello.is-shine .hhc {
+  color: transparent;
+  background-color: #b8bcba;
+  background-image: linear-gradient(
+    105deg,
+    transparent 0 30%,
+    #e8ebea 38%,
+    #ffffff 45%,
+    #8ff5b5 50%,
+    #ffffff 55%,
+    #e8ebea 62%,
+    transparent 70% 100%
+  );
+  background-size: var(--hw, 200px) 100%;
+  background-repeat: no-repeat;
+  background-position: calc(var(--sx, -200px) - var(--ox, 0px)) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 .hero-role {
   position: absolute;
