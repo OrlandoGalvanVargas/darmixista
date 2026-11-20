@@ -5,8 +5,8 @@ import { SITE_LOADED, STAGE_CHANGE, isSiteLoaded } from '../lib/stage-events';
 gsap.registerPlugin(ScrambleTextPlugin);
 
 const INTRO = {
-  name: { rest: 0.75, load: 0.32, snap: 0.42, crack: 0.2, whip: 0.95, lag: 0.08, angle: 82, depth: 4.2, pull: 0.3, lift: 0.05 },
-  hello: { at: 0.5, duration: 0.9, each: 0.055, shineDelay: 0.1, shine: 1.3 },
+  name: { rest: 0.75, load: 0.32, snap: 0.42, crack: 0.2, whip: 0.95, lag: 0.08, angle: 82, depth: 4.2, pull: 0.3, lift: 0.05, shineAt: 1.55, shine: 1.4 },
+  hello: { at: 0.5, duration: 0.7, each: 0.055 },
   role: { at: 0.8, duration: 1.2 },
   ctas: { at: 0.95 },
   seal: { at: 1.1, duration: 1.3 },
@@ -95,24 +95,26 @@ export function initHero(): void {
   let intro: gsap.core.Timeline | null = null;
   let sheen: gsap.core.Tween | null = null;
 
+  const nameFill = fill[0]?.closest<HTMLElement>('.hero-name') ?? null;
   const shine = () => {
-    if (!hello || !helloChars.length) return;
+    if (!nameFill || !fill.length) return;
     sheen?.kill();
-    const lefts = helloChars.map((c) => c.offsetLeft);
-    const start = Math.min(...lefts);
-    const end = Math.max(...helloChars.map((c) => c.offsetLeft + c.offsetWidth));
-    const width = end - start;
-    helloChars.forEach((c, i) => c.style.setProperty('--ox', `${lefts[i] - start}px`));
-    hello.style.setProperty('--hw', `${width}px`);
-    hello.classList.add('is-shine');
+    gsap.set(fill, { clearProps: 'transform' });
+    const box = nameFill.getBoundingClientRect();
+    const rects = fill.map((c) => c.getBoundingClientRect());
+    const start = Math.min(...rects.map((r) => r.left)) - box.left;
+    const width = Math.max(...rects.map((r) => r.right)) - box.left - start;
+    fill.forEach((c, i) => c.style.setProperty('--ox', `${rects[i].left - box.left - start}px`));
+    nameFill.style.setProperty('--hw', `${width}px`);
+    nameFill.classList.add('is-shine');
     sheen = gsap.fromTo(
-      hello,
-      { '--sx': `${-width * 0.75}px` },
+      nameFill,
+      { '--sx': `${-width * 0.8}px` },
       {
-        '--sx': `${width * 0.75}px`,
-        duration: INTRO.hello.shine,
+        '--sx': `${width * 0.8}px`,
+        duration: INTRO.name.shine,
         ease: 'sine.inOut',
-        onComplete: () => hello.classList.remove('is-shine'),
+        onComplete: () => nameFill.classList.remove('is-shine'),
       },
     );
   };
@@ -134,8 +136,8 @@ export function initHero(): void {
     gsap.set(chars, { autoAlpha: 0, x: 0, y: 0, z: 0, rotationY: 0, scaleY: 1 });
     if (hello) gsap.set(hello, { autoAlpha: 1, y: 0 });
     sheen?.kill();
-    hello?.classList.remove('is-shine');
-    gsap.set(helloChars, { autoAlpha: 0, rotationX: -100, yPercent: 40, filter: 'blur(8px)', color: '#5af08f', textShadow: '0 0 18px rgba(90,240,143,0.9)' });
+    nameFill?.classList.remove('is-shine');
+    gsap.set(helloChars, { autoAlpha: 0, filter: 'blur(6px)', color: '#5af08f', textShadow: '0 0 18px rgba(90,240,143,0.9)' });
     if (role) gsap.set(role, { autoAlpha: 0 });
     ctas.forEach((cta) => {
       const { dot, text, bar } = ctaParts(cta);
@@ -186,6 +188,7 @@ export function initHero(): void {
           .to(bend, { v: 0, duration: g.whip, ease: 'elastic.out(1.1, 0.35)', onUpdate: draw }, g.load + far * g.lag + g.crack);
       });
       tl.set(chars, { clearProps: 'transformOrigin' });
+      tl.call(() => shine(), undefined, g.shineAt);
     }
     if (helloChars.length) {
       const h = INTRO.hello;
@@ -193,12 +196,10 @@ export function initHero(): void {
         helloChars,
         {
           autoAlpha: 1,
-          rotationX: 0,
-          yPercent: 0,
           filter: 'blur(0px)',
           duration: h.duration,
           stagger: h.each,
-          ease: 'back.out(2.2)',
+          ease: 'power2.out',
         },
         h.at,
       )
@@ -207,8 +208,7 @@ export function initHero(): void {
           { color: '#c4c8c6', textShadow: '0 0 0px rgba(90,240,143,0)', duration: 0.9, stagger: h.each, ease: 'power2.out' },
           h.at + 0.35,
         )
-        .set(helloChars, { clearProps: 'filter,textShadow,color' }, h.at + 0.35 + 0.9 + helloChars.length * h.each)
-        .call(() => shine(), undefined, h.at + h.duration + helloChars.length * h.each + h.shineDelay);
+        .set(helloChars, { clearProps: 'filter,textShadow,color' }, h.at + 0.35 + 0.9 + helloChars.length * h.each);
     }
     if (role) {
       tl.set(role, { autoAlpha: 1 }, INTRO.role.at).fromTo(

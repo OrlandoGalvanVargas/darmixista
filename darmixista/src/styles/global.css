@@ -1202,6 +1202,18 @@ html[data-rings-drag] body * {
   background-clip: text;
   color: transparent;
 }
+.hero-name-fill.is-shine .hc {
+  background-image:
+    linear-gradient(105deg, transparent 0 34%, rgb(255 255 255 / 0.85) 43%, #ffffff 47%, #8ff5b5 50%, #ffffff 53%, rgb(255 255 255 / 0.85) 57%, transparent 66% 100%),
+    linear-gradient(180deg, #f6f6f7 12%, #9ea3a0 96%);
+  background-size:
+    var(--hw, 600px) 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    calc(var(--sx, -600px) - var(--ox, 0px)) 0,
+    0 0;
+}
 .hero-outline {
   position: absolute;
   inset: 0;
@@ -1240,25 +1252,7 @@ html[data-rings-drag] body * {
   transform-origin: 50% 100%;
   will-change: transform;
 }
-.hero-hello.is-shine .hhc {
-  color: transparent;
-  background-color: #b8bcba;
-  background-image: linear-gradient(
-    105deg,
-    transparent 0 30%,
-    #e8ebea 38%,
-    #ffffff 45%,
-    #8ff5b5 50%,
-    #ffffff 55%,
-    #e8ebea 62%,
-    transparent 70% 100%
-  );
-  background-size: var(--hw, 200px) 100%;
-  background-repeat: no-repeat;
-  background-position: calc(var(--sx, -200px) - var(--ox, 0px)) 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-}
+
 .hero-role {
   position: absolute;
   left: 0;
