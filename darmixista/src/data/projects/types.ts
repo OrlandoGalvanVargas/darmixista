@@ -19,6 +19,8 @@ export interface Project {
     page?: string;
   };
   image?: string;
+  cover?: string;
+  shots?: string[];
   domain?: string;
   inProgress?: boolean;
   audience?: 'personal' | 'business';

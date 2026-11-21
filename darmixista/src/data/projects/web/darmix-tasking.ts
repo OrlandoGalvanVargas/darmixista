@@ -3,6 +3,8 @@ import type { Project } from "../types";
 const project: Project = {
   order: 1,
   slug: "darmix-tasking",
+  cover: "/projects/shots/darmix-tasking/cover.webp",
+  shots: ["/projects/shots/darmix-tasking/01.webp", "/projects/shots/darmix-tasking/02.webp", "/projects/shots/darmix-tasking/03.webp", "/projects/shots/darmix-tasking/04.webp"],
   title: "Darmix Tasking",
   year: "2026",
   category: { es: "Productividad", en: "Productivity" },

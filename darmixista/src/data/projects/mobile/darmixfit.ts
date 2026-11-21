@@ -3,6 +3,8 @@ import type { Project } from '../types';
 const project: Project = {
   order: 2,
   slug: 'darmixfit',
+  cover: '/projects/shots/darmixfit/cover.webp',
+  shots: ['/projects/shots/darmixfit/01.webp', '/projects/shots/darmixfit/02.webp', '/projects/shots/darmixfit/03.webp', '/projects/shots/darmixfit/04.webp'],
   audience: 'personal',
   title: 'DarmixFit',
   year: '2026',

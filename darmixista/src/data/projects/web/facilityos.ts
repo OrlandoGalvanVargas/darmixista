@@ -3,6 +3,8 @@ import type { Project } from "../types";
 const project: Project = {
   order: 2,
   slug: "facilityos",
+  cover: "/projects/shots/facilityos/cover.webp",
+  shots: ["/projects/shots/facilityos/01.webp", "/projects/shots/facilityos/02.webp", "/projects/shots/facilityos/03.webp", "/projects/shots/facilityos/04.webp"],
   title: "FacilityOS",
   year: "2026",
   category: { es: "Plataforma SaaS", en: "SaaS platform" },

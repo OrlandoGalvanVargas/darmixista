@@ -8,13 +8,10 @@ import HeroName from '../components/sections/HeroName.astro';
 import About from '../components/sections/About.astro';
 import Stack from '../components/sections/Stack.astro';
 import Trajectory from '../components/sections/Trajectory.astro';
-import ProjectsCarousel from '../components/projects/ProjectsCarousel.astro';
-import ProjectDialogs from '../components/projects/ProjectDialogs.astro';
+import Projects from '../components/projects/Projects.astro';
 import Services from '../components/sections/Services.astro';
 import Contact from '../components/sections/Contact.astro';
 import ContactFormStep from '../components/sections/ContactFormStep.astro';
-import { BUSINESS_APPS, MOBILE_PROJECTS, PERSONAL_APPS, WEB_PROJECTS } from '../data/projects';
-import { useTranslations } from '../i18n/ui';
 import RingsScene from '../components/scene/RingsScene';
 import type { Lang } from '../i18n/ui';
 
@@ -22,7 +19,6 @@ interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
-const t = useTranslations(lang);
 
 ---
 
@@ -43,9 +39,7 @@ const t = useTranslations(lang);
 
   <main data-stage class="stage z-10">
     <Hero lang={lang} />
-    <ProjectsCarousel id="projects" kind="web" title={t.projects.webTitle} projects={WEB_PROJECTS} lang={lang} />
-    <ProjectsCarousel id="apps" kind="mobile" title={t.projects.mobileTitle} projects={PERSONAL_APPS} lang={lang} />
-    {BUSINESS_APPS.length > 0 && <ProjectsCarousel id="business-apps" kind="mobile" title={t.projects.businessTitle} projects={BUSINESS_APPS} lang={lang} />}
+    <Projects lang={lang} />
     <About lang={lang} />
     <Stack lang={lang} />
     <Trajectory lang={lang} />
@@ -53,14 +47,6 @@ const t = useTranslations(lang);
     <Contact lang={lang} />
     <ContactFormStep lang={lang} />
   </main>
-
-  <ProjectDialogs
-    lang={lang}
-    projects={[
-      ...WEB_PROJECTS.map((project) => ({ project, kind: 'web' as const })),
-      ...MOBILE_PROJECTS.map((project) => ({ project, kind: 'mobile' as const })),
-    ]}
-  />
 
   <noscript>
     <style>
@@ -74,14 +60,14 @@ const t = useTranslations(lang);
   import { initStage } from '../scripts/stage';
   import { initNavigation } from '../scripts/navigation';
   import { runPreloader } from '../scripts/preloader';
-  import { initDialogs } from '../scripts/dialogs';
+  import { initProjects } from '../scripts/projects';
   import { initContact } from '../scripts/contact';
   import { initButtons } from '../scripts/buttons';
   import { initCursor } from '../scripts/cursor';
   import { initHero } from '../scripts/hero';
 
   initNavigation();
-  initDialogs();
+  initProjects();
   initContact();
   initButtons();
   initCursor();

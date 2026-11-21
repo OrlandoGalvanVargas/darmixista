@@ -3,6 +3,8 @@ import type { Project } from "../types";
 const project: Project = {
   order: 1,
   slug: "darmixpet",
+  cover: "/projects/shots/darmixpet/cover.webp",
+  shots: ["/projects/shots/darmixpet/01.webp", "/projects/shots/darmixpet/02.webp", "/projects/shots/darmixpet/03.webp", "/projects/shots/darmixpet/04.webp"],
   audience: 'personal',
   title: "DarmixPet",
   year: "2026",

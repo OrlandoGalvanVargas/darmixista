@@ -3,6 +3,8 @@ import type { Project } from "../types";
 const project: Project = {
   order: 3,
   slug: "rh-plus",
+  cover: "/projects/shots/rh-plus/cover.webp",
+  shots: ["/projects/shots/rh-plus/01.webp", "/projects/shots/rh-plus/02.webp", "/projects/shots/rh-plus/03.webp", "/projects/shots/rh-plus/04.webp"],
   title: "RH Plus",
   year: "2025",
   category: { es: "Recursos Humanos", en: "Human Resources" },

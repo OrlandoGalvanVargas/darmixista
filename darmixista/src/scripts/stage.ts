@@ -529,6 +529,7 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       const horizontal = Math.abs(wheelAccumX) > Math.abs(wheelAccumY) && !e.shiftKey;
       const value = horizontal ? wheelAccumX : wheelAccumY;
       if (Math.abs(value) < MOTION.wheelThreshold) return;
+      if (horizontal && !steps[current].slide) return;
       wheelAccumX = 0;
       wheelAccumY = 0;
       request(value > 0 ? 1 : -1, gesture, horizontal && !!steps[current].slide);
@@ -546,7 +547,7 @@ export function initStage({ ready = Promise.resolve() }: StageOptions = {}): voi
       touchY = e.touches[0].clientY;
       touchX = e.touches[0].clientX;
       const target = e.target as Element | null;
-      touchIgnored = e.touches.length > 1 || !!target?.closest('[data-mobile-menu], dialog');
+      touchIgnored = e.touches.length > 1 || !!target?.closest('[data-mobile-menu], dialog, [data-vinyl-modal]');
     },
     { passive: true },
   );
