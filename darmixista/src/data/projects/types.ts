@@ -7,6 +7,7 @@ export interface Project {
   slug: string;
   title: string;
   year: string;
+  accent?: string;
   category: I18n;
   summary: I18n;
   summaryShort?: I18n;

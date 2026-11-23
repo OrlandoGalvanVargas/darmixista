@@ -8,6 +8,7 @@ const project: Project = {
   audience: 'personal',
   title: "DarmixPet",
   year: "2026",
+  accent: "#4f8bff",
   category: { es: "Bienestar digital", en: "Digital wellbeing" },
   summary: {
     es: 'Una mascota flotante que te ayuda a controlar el tiempo de uso de tus apps y te avisa cuando ya es hora de soltar el teléfono.',

@@ -7,6 +7,7 @@ const project: Project = {
   shots: ["/projects/shots/darmix-tasking/01.webp", "/projects/shots/darmix-tasking/02.webp", "/projects/shots/darmix-tasking/03.webp", "/projects/shots/darmix-tasking/04.webp"],
   title: "Darmix Tasking",
   year: "2026",
+  accent: "#5fae7c",
   category: { es: "Productividad", en: "Productivity" },
   summary: {
     es: 'Gestor de proyectos y tareas con un modo demo local que permite ejecutar la aplicación sin depender del servidor.',

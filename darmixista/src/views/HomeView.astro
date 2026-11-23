@@ -1,76 +1,108 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Navbar from '../components/navigation/Navbar.astro';
-import Preloader from '../components/brand/Preloader.astro';
 import '@fontsource/instrument-serif/400-italic.css';
-import Hero from '../components/sections/Hero.astro';
-import HeroName from '../components/sections/HeroName.astro';
-import About from '../components/sections/About.astro';
-import Stack from '../components/sections/Stack.astro';
-import Trajectory from '../components/sections/Trajectory.astro';
-import Projects from '../components/projects/Projects.astro';
-import Services from '../components/sections/Services.astro';
-import Contact from '../components/sections/Contact.astro';
-import ContactFormStep from '../components/sections/ContactFormStep.astro';
-import RingsScene from '../components/scene/RingsScene';
-import type { Lang } from '../i18n/ui';
+import Layout from '../layouts/Layout.astro';
+import { logoMark } from '../lib/logo-mark';
+import { languages, useTranslations, type Lang } from '../i18n/ui';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
+const t = useTranslations(lang);
+const other: Lang = lang === 'es' ? 'en' : 'es';
+const otherHref = other === 'es' ? '/' : '/en/';
 
+const shots = [
+  { key: 'projects', label: t.nav.projects, hash: t.desk.hash.projects },
+  { key: 'about', label: t.nav.about, hash: t.desk.hash.about },
+  { key: 'contact', label: t.nav.contact, hash: t.desk.hash.contact },
+] as const;
+
+const config = {
+  lang,
+  hashes: { home: '', projects: t.desk.hash.projects, about: t.desk.hash.about, contact: t.desk.hash.contact },
+  screen: t.desk.screen,
+};
+const json = JSON.stringify(config).replace(/</g, '\\u003c');
+const navMark = logoMark({ id: 'nav', bg: '#0b0b0c' });
+const loadMark = logoMark({ id: 'load', bg: '#0b0b0c', glow: true });
 ---
 
 <Layout lang={lang}>
-  <Preloader />
+  <div class="desk" data-desk data-shot="home" data-menu="closed">
+    <div class="desk-canvas" data-desk-canvas></div>
+    <div class="desk-shade" aria-hidden="true"></div>
 
-  <div class="hero-backdrop" data-hero-backdrop aria-hidden="true">
-    <div class="hero-geo">
-      <HeroName variant="fill" />
+    <header class="desk-nav">
+      <a href={lang === 'es' ? '/' : '/en/'} class="desk-brand" data-shot-link="home" aria-label={`Darmixista — ${t.desk.home}`}>
+        <svg viewBox="8 4 64 56" fill="none" aria-hidden="true" set:html={navMark} />
+        <span>DARMIXISTA</span>
+      </a>
+      <nav class="desk-links" aria-label={t.nav.label}>
+        {
+          shots.map((s) => (
+            <a href={`#${s.hash}`} class="desk-link" data-shot-link={s.key} aria-current="false">
+              {s.label}
+            </a>
+          ))
+        }
+        <a href={otherHref} class="desk-lang" data-lang-link={other} hreflang={other} aria-label={t.nav.switchTo}>
+          {languages[other]}
+        </a>
+      </nav>
+      <button type="button" class="desk-menu-btn" data-menu-toggle data-close-label={t.nav.close} aria-expanded="false" aria-controls="desk-menu">
+        <span data-menu-label>{t.nav.menu}</span>
+      </button>
+    </header>
+
+    <div id="desk-menu" class="desk-menu" data-mobile-menu inert>
+      <a href={lang === 'es' ? '/' : '/en/'} data-shot-link="home" aria-current="true">{t.desk.home}</a>
+      {
+        shots.map((s) => (
+          <a href={`#${s.hash}`} data-shot-link={s.key} aria-current="false">
+            {s.label}
+          </a>
+        ))
+      }
+      <a href={otherHref} class="desk-menu-lang" data-lang-link={other} hreflang={other}>{t.nav.switchTo}</a>
     </div>
+
+    <div class="desk-hero">
+      <h1>{t.desk.name}</h1>
+      <p>{t.hero.role}</p>
+    </div>
+
+    <button type="button" class="desk-scroll" data-desk-next aria-label={t.desk.scroll}>
+      <span aria-hidden="true"><i></i></span>
+    </button>
+
+    <div class="desk-ctl">
+      <button type="button" data-zoom="in" aria-label={t.desk.zoomIn}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <button type="button" data-zoom="out" aria-label={t.desk.zoomOut}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+      </button>
+      <button type="button" data-zoom="reset" aria-label={t.desk.reset}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5"></path></svg>
+      </button>
+    </div>
+
+    <div class="desk-loader" data-desk-loader>
+      <div class="desk-loader-inner">
+        <svg viewBox="8 4 64 56" fill="none" aria-hidden="true" set:html={loadMark} />
+        <span class="desk-loader-word">DARMIXISTA</span>
+        <span class="desk-loader-bar" aria-hidden="true"><i data-desk-progress></i></span>
+        <span class="desk-loader-text" data-desk-status role="status"><span>{t.desk.loading}</span></span>
+      </div>
+    </div>
+
+    <script type="application/json" data-desk-config set:html={json} />
+    <template data-desk-nowebgl>{t.desk.noWebgl}</template>
   </div>
-
-  <div data-rings-layer class="pointer-events-none fixed inset-0 z-0">
-    <RingsScene client:only="react" />
-  </div>
-
-  <Navbar lang={lang} />
-
-  <main data-stage class="stage z-10">
-    <Hero lang={lang} />
-    <Projects lang={lang} />
-    <About lang={lang} />
-    <Stack lang={lang} />
-    <Trajectory lang={lang} />
-    <Services lang={lang} />
-    <Contact lang={lang} />
-    <ContactFormStep lang={lang} />
-  </main>
-
-  <noscript>
-    <style>
-      .stage-section:first-of-type, .hero-backdrop { opacity: 1; visibility: visible; }
-      [data-preloader] { display: none !important; }
-    </style>
-  </noscript>
 </Layout>
 
 <script>
-  import { initStage } from '../scripts/stage';
-  import { initNavigation } from '../scripts/navigation';
-  import { runPreloader } from '../scripts/preloader';
-  import { initProjects } from '../scripts/projects';
-  import { initContact } from '../scripts/contact';
-  import { initButtons } from '../scripts/buttons';
-  import { initCursor } from '../scripts/cursor';
-  import { initHero } from '../scripts/hero';
-
-  initNavigation();
-  initProjects();
-  initContact();
-  initButtons();
-  initCursor();
-  initHero();
-  initStage({ ready: runPreloader() });
+  import { initDesk } from '../scripts/desk';
+  initDesk();
 </script>

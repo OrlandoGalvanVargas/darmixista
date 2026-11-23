@@ -7,6 +7,7 @@ const project: Project = {
   shots: ["/projects/shots/rh-plus/01.webp", "/projects/shots/rh-plus/02.webp", "/projects/shots/rh-plus/03.webp", "/projects/shots/rh-plus/04.webp"],
   title: "RH Plus",
   year: "2025",
+  accent: "#7088ff",
   category: { es: "Recursos Humanos", en: "Human Resources" },
   summary: {
     es: 'Recursos Humanos sin carpetas: expedientes, asistencias, evaluaciones y vacantes en un solo lugar, con un rol para cada quien.',

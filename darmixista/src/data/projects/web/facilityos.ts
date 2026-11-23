@@ -7,6 +7,7 @@ const project: Project = {
   shots: ["/projects/shots/facilityos/01.webp", "/projects/shots/facilityos/02.webp", "/projects/shots/facilityos/03.webp", "/projects/shots/facilityos/04.webp"],
   title: "FacilityOS",
   year: "2026",
+  accent: "#2bb0e6",
   category: { es: "Plataforma SaaS", en: "SaaS platform" },
   summary: {
     es: 'Qué pasa cuando un distrito escolar administra decenas de escuelas: cada una ve solo lo suyo, y funciona sin internet.',

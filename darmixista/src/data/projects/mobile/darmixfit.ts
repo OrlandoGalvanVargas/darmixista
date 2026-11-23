@@ -8,6 +8,7 @@ const project: Project = {
   audience: 'personal',
   title: 'DarmixFit',
   year: '2026',
+  accent: '#c8f03c',
   category: { es: 'Salud y fitness', en: 'Health & fitness' },
   summary: {
     es: 'Entrenamiento de fuerza serie por serie, con descansos automáticos y un reactor que refleja tu progreso durante la rutina.',

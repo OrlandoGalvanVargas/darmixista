@@ -8,6 +8,7 @@ const project: Project = {
   audience: 'personal',
   title: 'DarmixNight',
   year: '2026',
+  accent: '#f59a5a',
   category: { es: 'Sueño y bienestar digital', en: 'Sleep and digital wellbeing' },
   summary: {
     es: 'A tu hora de dormir, las apps quedan bloqueadas hasta la mañana para que el teléfono no interrumpa tu descanso.',
