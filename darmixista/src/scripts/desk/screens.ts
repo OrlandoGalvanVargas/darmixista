@@ -172,7 +172,9 @@ function circuit(ctx: CanvasRenderingContext2D, x0: number, flip: boolean) {
 export function miniScreen(text: ScreenText, max: number) {
   const W = 1280;
   const H = 768;
-  const [c, ctx] = canvas(W, H);
+  const S = 1.5;
+  const [c, ctx] = canvas(W * S, H * S);
+  ctx.scale(S, S);
   const tex = texture(c, max);
   const time = new Intl.DateTimeFormat(text.locale, { timeZone: ZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const day = new Intl.DateTimeFormat(text.locale, { timeZone: ZONE, weekday: 'long' });
@@ -205,9 +207,10 @@ export function miniScreen(text: ScreenText, max: number) {
         ctx.lineTo(9, yy);
       }
     } else if (kind === 2) {
-      ctx.moveTo(-8, 0);
-      ctx.lineTo(-3, 6);
-      ctx.lineTo(9, -7);
+      ctx.moveTo(4.5, -4.5);
+      ctx.arc(0, -4.5, 4.5, 0, Math.PI * 2);
+      ctx.moveTo(-9, 10);
+      ctx.bezierCurveTo(-9, 1, 9, 1, 9, 10);
     } else if (kind === 3) {
       ctx.moveTo(-9, -4);
       ctx.lineTo(7, -4);
@@ -292,11 +295,22 @@ export function miniScreen(text: ScreenText, max: number) {
     ctx.fillStyle = 'rgba(140,200,240,.6)';
     ctx.fillRect(24, 610, W - 48, 2);
     ctx.textAlign = 'left';
-    ctx.font = `600 25px ${SANS}`;
+    ctx.font = `600 27px ${SANS}`;
     ctx.fillStyle = '#5ef07f';
-    ctx.fillText(`◉ ${text.status}`, 44, 645);
-    const sw = ctx.measureText(`◉ ${text.status}`).width;
-    ctx.fillText(`✓ ${text.synced}`, 44 + sw + 30, 645);
+    ctx.strokeStyle = '#5ef07f';
+    ctx.lineWidth = 2.6;
+    ctx.lineCap = 'round';
+    for (const r of [5, 11, 17]) {
+      ctx.beginPath();
+      ctx.arc(56, 646, r, -Math.PI * 0.75, -Math.PI * 0.25);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(56, 645, 2.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillText(text.status, 80, 646);
+    const sw = ctx.measureText(text.status).width;
+    ctx.fillText(`✓ ${text.synced}`, 80 + sw + 30, 646);
     ctx.fillStyle = 'rgba(40,110,160,.62)';
     ctx.fillRect(24, 662, W - 48, 76);
     const cw = (W - 48) / text.tabs.length;
@@ -308,8 +322,8 @@ export function miniScreen(text: ScreenText, max: number) {
         ctx.fillStyle = '#7cc9f2';
         ctx.fillRect(cx + 14, 662, cw - 28, 4);
       }
-      ctx.font = `600 26px ${SANS}`;
-      ctx.fillStyle = i === 0 ? '#ffffff' : '#a8dcf5';
+      ctx.font = `600 28px ${SANS}`;
+      ctx.fillStyle = i === 0 ? '#ffffff' : '#bfe6f8';
       const lw = ctx.measureText(label).width;
       const x = cx + cw / 2 - (lw + 32) / 2;
       icon(i, x + 10, 699);

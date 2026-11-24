@@ -59,7 +59,7 @@ const es = {
     screen: {
       status: 'Conectado',
       synced: 'Hora sincronizada',
-      tabs: ['Inicio', 'Tareas', 'Objetivos', 'GitHub', 'Laptop'],
+      tabs: ['Inicio', 'Tareas', 'Sobre mí', 'GitHub', 'Laptop'],
       locale: 'es-MX',
     },
     hash: { projects: 'proyectos', about: 'sobre-mi', contact: 'contacto' },
@@ -211,7 +211,7 @@ const en: Dictionary = {
     screen: {
       status: 'Connected',
       synced: 'Time synced',
-      tabs: ['Home', 'Tasks', 'Goals', 'GitHub', 'Laptop'],
+      tabs: ['Home', 'Tasks', 'About me', 'GitHub', 'Laptop'],
       locale: 'en-US',
     },
     hash: { projects: 'projects', about: 'about', contact: 'contact' },

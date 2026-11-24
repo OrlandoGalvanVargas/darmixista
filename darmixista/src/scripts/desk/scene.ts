@@ -61,6 +61,42 @@ function roomLimit(from: THREE.Vector3, dir: THREE.Vector3) {
   return Math.max(0.05, t);
 }
 
+interface HeroFinish {
+  rough: number;
+  metal?: number;
+  env?: number;
+  color?: string;
+}
+const HERO_DEFAULT: HeroFinish = { rough: 0.6, env: 0.6 };
+const HERO: Record<string, HeroFinish> = {
+  hpcup: { rough: 0.2, env: 1.25 },
+  hpchrome: { rough: 0.1, metal: 1, color: '#e4e7ea' },
+  hpband: { rough: 0.42, env: 0.8 },
+  hppad: { rough: 0.6, env: 0.45 },
+  hpmesh: { rough: 0.95, env: 0.25 },
+  hpfabric: { rough: 0.95, env: 0.2 },
+  hpstitch: { rough: 0.9, env: 0.2 },
+  btlbody: { rough: 0.48, env: 0.9 },
+  btlring: { rough: 0.7, env: 0.5 },
+  btlrib: { rough: 0.5, env: 0.7 },
+  btllid: { rough: 0.38, env: 0.9 },
+  btltop: { rough: 0.08, env: 1.2 },
+  btlstrap: { rough: 0.9, env: 0.3 },
+  btlclip: { rough: 0.22, metal: 1, color: '#c9cdd1' },
+  snkleaf: { rough: 0.42, env: 0.55 },
+  snkpot: { rough: 0.16, env: 1.1 },
+  snksoil: { rough: 0.95, env: 0.1 },
+  msebody: { rough: 0.42, env: 0.8 },
+  msegloss: { rough: 0.1, env: 1.2 },
+  mseside: { rough: 0.25, env: 1 },
+  msewheel: { rough: 0.8, env: 0.3 },
+  mseled: { rough: 0.4, env: 0.15 },
+  mniglass: { rough: 0.05, env: 1.3 },
+  mnibody: { rough: 0.55, env: 0.4 },
+  mnipcb: { rough: 0.6, env: 0.3 },
+  mnistand: { rough: 0.62, env: 0.35 },
+};
+
 const HOME_POINTS = [
   [-0.62, 0.29, 1.12],
   [-0.62, -0.31, 1.12],
@@ -93,7 +129,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   const report = () => {
     let sum = 0;
     parts.forEach((v) => (sum += v));
-    o.onProgress(sum / 6);
+    o.onProgress(sum / 10);
   };
   const track = (key: string) => (e: ProgressEvent) => {
     if (e.lengthComputable) parts.set(key, e.loaded / e.total);
@@ -118,15 +154,20 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     });
   const gltfLoader = new GLTFLoader(manager);
   gltfLoader.setMeshoptDecoder(MeshoptDecoder);
-  const [data, gltf, room, furn, props, zoclo] = await Promise.all([
+  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex] = await Promise.all([
     fetch(`${o.base}scene.json`).then((r) => r.json() as Promise<SceneData>),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}desk.glb`, (g) => resolve(g), track('glb'), reject)),
+    new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}hero.glb`, (g) => resolve(g), track('hero'), reject)),
     loadTex('room.webp'),
     loadTex('furn.webp'),
     loadTex(Math.min(screen.width, screen.height) < 700 || maxTex < 4096 ? 'props-m.webp' : 'props.webp'),
     loadTex('base.webp'),
+    loadTex('hero.webp'),
+    loadTex('kbd.webp'),
+    loadTex('lpt.webp'),
   ]);
   parts.set('glb', 1);
+  parts.set('hero', 1);
   report();
 
   const mats: Record<string, THREE.Material> = {
@@ -134,6 +175,8 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     furn: new THREE.MeshBasicMaterial({ map: furn }),
     props: new THREE.MeshBasicMaterial({ map: props }),
     base: new THREE.MeshBasicMaterial({ map: zoclo }),
+    kbd: new THREE.MeshBasicMaterial({ map: kbdTex }),
+    lpt: new THREE.MeshBasicMaterial({ map: lptTex }),
   };
   const lap = laptopScreen(maxAniso);
   const mini = miniScreen(o.screen, maxAniso);
@@ -148,6 +191,44 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     m.updateMatrix();
   });
   scene.add(gltf.scene);
+  scene.updateMatrixWorld(true);
+
+  const cubeTarget = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
+  const cubeCam = new THREE.CubeCamera(0.02, 20, cubeTarget);
+  cubeCam.position.copy(b2t([-0.15, -0.75, 1.05]));
+  scene.add(cubeCam);
+  cubeCam.update(renderer, scene);
+  scene.remove(cubeCam);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envTarget = pmrem.fromCubemap(cubeTarget.texture);
+  pmrem.dispose();
+  cubeTarget.dispose();
+  const heroMats = new Map<string, THREE.MeshStandardMaterial>();
+  const heroMat = (name: string) => {
+    const key = name.replace(/^hero_/, '');
+    let m = heroMats.get(key);
+    if (m) return m;
+    const f = HERO[key] ?? HERO_DEFAULT;
+    m = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(f.color ?? '#000000'),
+      metalness: f.metal ?? 0,
+      roughness: f.rough,
+      emissive: new THREE.Color(1, 1, 1),
+      emissiveMap: heroTex,
+      envMap: envTarget.texture,
+      envMapIntensity: f.env ?? 1,
+    });
+    heroMats.set(key, m);
+    return m;
+  };
+  heroGltf.scene.traverse((n) => {
+    const m = n as THREE.Mesh;
+    if (!m.isMesh) return;
+    m.material = heroMat(m.name);
+    m.matrixAutoUpdate = false;
+    m.updateMatrix();
+  });
+  scene.add(heroGltf.scene);
   scene.updateMatrixWorld(true);
 
   const controls = new OrbitControls(camera, renderer.domElement);
