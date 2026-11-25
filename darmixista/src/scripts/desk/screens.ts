@@ -334,3 +334,109 @@ export function miniScreen(text: ScreenText, max: number) {
   draw();
   return { texture: tex, draw };
 }
+
+export function ledScreen(max: number) {
+  const W = 300;
+  const H = 1100;
+  const [c, ctx] = canvas(W, H);
+  const tex = texture(c, max);
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, hour: '2-digit', minute: '2-digit', month: '2-digit', day: '2-digit', hour12: false });
+  const SEG: Record<string, string> = { '0': 'abcdef', '1': 'bc', '2': 'abged', '3': 'abgcd', '4': 'fgbc', '5': 'afgcd', '6': 'afgedc', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg' };
+  const seg = (x: number, y: number, w: number, h: number, t: number, horiz: boolean) => {
+    ctx.beginPath();
+    if (horiz) {
+      ctx.moveTo(x, y + t / 2);
+      ctx.lineTo(x + t / 2, y);
+      ctx.lineTo(x + w - t / 2, y);
+      ctx.lineTo(x + w, y + t / 2);
+      ctx.lineTo(x + w - t / 2, y + t);
+      ctx.lineTo(x + t / 2, y + t);
+    } else {
+      ctx.moveTo(x + t / 2, y);
+      ctx.lineTo(x + t, y + t / 2);
+      ctx.lineTo(x + t, y + h - t / 2);
+      ctx.lineTo(x + t / 2, y + h);
+      ctx.lineTo(x, y + h - t / 2);
+      ctx.lineTo(x, y + t / 2);
+    }
+    ctx.closePath();
+    ctx.fill();
+  };
+  const digit = (d: string, x: number, y: number, w: number, h: number, t: number) => {
+    const on = SEG[d] ?? '';
+    const g = t * 0.18;
+    const hh = h / 2;
+    const map: Record<string, [number, number, number, number, boolean]> = {
+      a: [x + g, y, w - 2 * g, 0, true],
+      g: [x + g, y + hh - t / 2, w - 2 * g, 0, true],
+      d: [x + g, y + h - t, w - 2 * g, 0, true],
+      f: [x, y + g, 0, hh - g, false],
+      e: [x, y + hh + g - t / 2, 0, hh - g, false],
+      b: [x + w - t, y + g, 0, hh - g, false],
+      c: [x + w - t, y + hh + g - t / 2, 0, hh - g, false],
+    };
+    for (const k of 'abcdefg') {
+      const [sx, sy, sw, sh, hz] = map[k];
+      ctx.fillStyle = on.includes(k) ? '#f4f6f8' : 'rgba(255,255,255,.06)';
+      ctx.shadowBlur = on.includes(k) ? 10 : 0;
+      seg(sx, sy, sw, sh, t, hz);
+    }
+    ctx.shadowBlur = 0;
+  };
+  const draw = () => {
+    const p = Object.fromEntries(parts.formatToParts(new Date()).map((x) => [x.type, x.value]));
+    ctx.fillStyle = '#050607';
+    ctx.fillRect(0, 0, W, H);
+    ctx.shadowColor = 'rgba(255,255,255,.55)';
+    ctx.strokeStyle = '#e8ecef';
+    ctx.fillStyle = '#e8ecef';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(40, 128, 12, 0, Math.PI * 2);
+    ctx.moveTo(34, 118);
+    ctx.lineTo(34, 66);
+    ctx.arc(40, 66, 6, Math.PI, 0);
+    ctx.lineTo(46, 118);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(40, 128, 6, 0, Math.PI * 2);
+    ctx.fill();
+    digit('2', 78, 50, 70, 104, 13);
+    digit('2', 162, 50, 70, 104, 13);
+    ctx.fillStyle = '#e8ecef';
+    ctx.font = `600 34px ${SANS}`;
+    ctx.textBaseline = 'top';
+    ctx.fillText('°C', 238, 50);
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(40, 212, 15, 0, Math.PI * 2);
+    ctx.moveTo(40, 202);
+    ctx.lineTo(40, 212);
+    ctx.lineTo(48, 217);
+    ctx.stroke();
+    digit(p.hour[0], 34, 252, 106, 196, 22);
+    digit(p.hour[1], 160, 252, 106, 196, 22);
+    digit(p.minute[0], 34, 500, 106, 196, 22);
+    digit(p.minute[1], 160, 500, 106, 196, 22);
+    digit(p.month[0], 22, 770, 52, 90, 11);
+    digit(p.month[1], 84, 770, 52, 90, 11);
+    digit(p.day[0], 164, 770, 52, 90, 11);
+    digit(p.day[1], 226, 770, 52, 90, 11);
+    ctx.fillStyle = 'rgba(232,236,239,.75)';
+    ctx.font = `600 22px ${SANS}`;
+    ctx.textAlign = 'center';
+    ctx.fillText('MONTH', 79, 884);
+    ctx.fillText('DATE', 221, 884);
+    ctx.textAlign = 'left';
+    ctx.strokeStyle = 'rgba(232,236,239,.5)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(150, 1010, 26, -Math.PI * 0.32, Math.PI * 1.32);
+    ctx.moveTo(150, 978);
+    ctx.lineTo(150, 1004);
+    ctx.stroke();
+    tex.needsUpdate = true;
+  };
+  draw();
+  return { texture: tex, draw };
+}

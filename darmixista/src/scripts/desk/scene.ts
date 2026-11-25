@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { laptopScreen, miniScreen, type ScreenText } from './screens';
+import { laptopScreen, ledScreen, miniScreen, type ScreenText } from './screens';
 
 export type ShotKey = 'home' | 'projects' | 'about' | 'contact';
 export const SHOTS: ShotKey[] = ['home', 'projects', 'about', 'contact'];
@@ -129,7 +129,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   const report = () => {
     let sum = 0;
     parts.forEach((v) => (sum += v));
-    o.onProgress(sum / 10);
+    o.onProgress(sum / 11);
   };
   const track = (key: string) => (e: ProgressEvent) => {
     if (e.lengthComputable) parts.set(key, e.loaded / e.total);
@@ -154,7 +154,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     });
   const gltfLoader = new GLTFLoader(manager);
   gltfLoader.setMeshoptDecoder(MeshoptDecoder);
-  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex] = await Promise.all([
+  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex, lmpTex] = await Promise.all([
     fetch(`${o.base}scene.json`).then((r) => r.json() as Promise<SceneData>),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}desk.glb`, (g) => resolve(g), track('glb'), reject)),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}hero.glb`, (g) => resolve(g), track('hero'), reject)),
@@ -165,6 +165,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     loadTex('hero.webp'),
     loadTex('kbd.webp'),
     loadTex('lpt.webp'),
+    loadTex('lmp.webp'),
   ]);
   parts.set('glb', 1);
   parts.set('hero', 1);
@@ -177,11 +178,14 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     base: new THREE.MeshBasicMaterial({ map: zoclo }),
     kbd: new THREE.MeshBasicMaterial({ map: kbdTex }),
     lpt: new THREE.MeshBasicMaterial({ map: lptTex }),
+    lmp: new THREE.MeshBasicMaterial({ map: lmpTex }),
   };
   const lap = laptopScreen(maxAniso);
   const mini = miniScreen(o.screen, maxAniso);
+  const led = ledScreen(maxAniso);
   mats.lapscreen = new THREE.MeshBasicMaterial({ map: lap, color: new THREE.Color(0.93, 0.93, 0.93) });
   mats.miniscreen = new THREE.MeshBasicMaterial({ map: mini.texture, color: new THREE.Color(0.95, 0.95, 0.95) });
+  mats.lampled = new THREE.MeshBasicMaterial({ map: led.texture });
   gltf.scene.traverse((n) => {
     const m = n as THREE.Mesh;
     if (!m.isMesh) return;
@@ -495,6 +499,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     if (s !== lastSecond) {
       lastSecond = s;
       mini.draw();
+      if (s % 30 === 0) led.draw();
       dirty = true;
     }
     if (dirty || changed || moving) {
