@@ -154,7 +154,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     });
   const gltfLoader = new GLTFLoader(manager);
   gltfLoader.setMeshoptDecoder(MeshoptDecoder);
-  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex, lmpTex] = await Promise.all([
+  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex, lmpTex, nbpTex] = await Promise.all([
     fetch(`${o.base}scene.json`).then((r) => r.json() as Promise<SceneData>),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}desk.glb`, (g) => resolve(g), track('glb'), reject)),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}hero.glb`, (g) => resolve(g), track('hero'), reject)),
@@ -163,9 +163,10 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     loadTex(Math.min(screen.width, screen.height) < 700 || maxTex < 4096 ? 'props-m.webp' : 'props.webp'),
     loadTex('base.webp'),
     loadTex('hero.webp'),
-    loadTex('kbd.webp'),
+    loadTex(Math.min(screen.width, screen.height) < 700 || maxTex < 4096 ? 'kbd-m.webp' : 'kbd.webp'),
     loadTex('lpt.webp'),
-    loadTex('lmp.webp'),
+    loadTex(Math.min(screen.width, screen.height) < 700 || maxTex < 4096 ? 'lmp-m.webp' : 'lmp.webp'),
+    loadTex(`nbp${document.documentElement.lang.startsWith('en') ? '-en' : ''}${Math.min(screen.width, screen.height) < 700 ? '-m' : ''}.webp`),
   ]);
   parts.set('glb', 1);
   parts.set('hero', 1);
@@ -179,6 +180,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     kbd: new THREE.MeshBasicMaterial({ map: kbdTex }),
     lpt: new THREE.MeshBasicMaterial({ map: lptTex }),
     lmp: new THREE.MeshBasicMaterial({ map: lmpTex }),
+    nbp: new THREE.MeshBasicMaterial({ map: nbpTex }),
   };
   const lap = laptopScreen(maxAniso);
   const mini = miniScreen(o.screen, maxAniso);
@@ -186,11 +188,13 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   mats.lapscreen = new THREE.MeshBasicMaterial({ map: lap, color: new THREE.Color(0.93, 0.93, 0.93) });
   mats.miniscreen = new THREE.MeshBasicMaterial({ map: mini.texture, color: new THREE.Color(0.95, 0.95, 0.95) });
   mats.lampled = new THREE.MeshBasicMaterial({ map: led.texture });
+  let pageMesh: THREE.Mesh | null = null;
   gltf.scene.traverse((n) => {
     const m = n as THREE.Mesh;
     if (!m.isMesh) return;
     const key = Object.keys(mats).find((k) => m.name.startsWith(k));
     m.material = key ? mats[key] : mats.props;
+    if (m.name.startsWith('nbp')) pageMesh = m;
     m.matrixAutoUpdate = false;
     m.updateMatrix();
   });
@@ -468,6 +472,128 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   controls.addEventListener('change', () => {
     dirty = true;
     zoomState();
+  });
+
+  const PAGE = { x: 0.418, y: -0.052, rot: (-2.5 * Math.PI) / 180, w: 0.1468, d: 0.2038 };
+  const LINKS = [
+    { url: 'mailto:orlando.gal.var.05@gmail.com', icon: 'mail', r: [0.1714, 0.3866, 0.3429, 0.5103] },
+    { url: 'https://www.linkedin.com/in/orlandogalvan-dev', icon: 'linkedin', r: [0.3786, 0.3866, 0.5500, 0.5103] },
+    { url: 'https://github.com/OrlandoGalvanVargas', icon: 'github', r: [0.5857, 0.3866, 0.7571, 0.5103] },
+  ];
+  const ICON = { x0: 240, x1: 1060, y0: 750, y1: 990, w: 1400, h: 1940, z: 0.76895, size: 210, cx: [360, 650, 940], cy: 870, ink: '#1d4fa8' };
+  const iconCanvas = document.createElement('canvas');
+  iconCanvas.width = 2048;
+  iconCanvas.height = Math.round((2048 * (ICON.y1 - ICON.y0)) / (ICON.x1 - ICON.x0));
+  const iconCtx = iconCanvas.getContext('2d')!;
+  const iconTex = new THREE.CanvasTexture(iconCanvas);
+  iconTex.colorSpace = THREE.SRGBColorSpace;
+  iconTex.anisotropy = maxAniso;
+  const k = iconCanvas.width / (ICON.x1 - ICON.x0);
+  const slot = (i: number) => ({ x: (ICON.cx[i] - ICON.size / 2 - ICON.x0) * k, y: (ICON.cy - ICON.size / 2 - ICON.y0) * k, s: ICON.size * k });
+  const frame = (i: number) => {
+    const { x, y, s } = slot(i);
+    iconCtx.save();
+    iconCtx.strokeStyle = ICON.ink;
+    iconCtx.lineWidth = s * 0.06;
+    iconCtx.beginPath();
+    iconCtx.roundRect(x + s * 0.05, y + s * 0.05, s * 0.9, s * 0.9, s * 0.18);
+    iconCtx.stroke();
+    iconCtx.restore();
+  };
+  const tint = (img: CanvasImageSource, s: number) => {
+    const c = document.createElement('canvas');
+    c.width = c.height = Math.ceil(s);
+    const x = c.getContext('2d')!;
+    x.drawImage(img, 0, 0, s, s);
+    x.globalCompositeOperation = 'source-in';
+    x.fillStyle = ICON.ink;
+    x.fillRect(0, 0, s, s);
+    return c;
+  };
+  const fallback = (i: number) => {
+    const { x, y, s } = slot(i);
+    iconCtx.save();
+    iconCtx.fillStyle = ICON.ink;
+    iconCtx.font = `700 ${Math.round(s * (i === 1 ? 0.46 : 0.32))}px system-ui, sans-serif`;
+    iconCtx.textAlign = 'center';
+    iconCtx.textBaseline = 'middle';
+    iconCtx.fillText(i === 1 ? 'in' : '</>', x + s / 2, y + s * 0.53);
+    iconCtx.restore();
+    iconTex.needsUpdate = true;
+  };
+  const loadIcon = async (i: number) => {
+    frame(i);
+    try {
+      const r = await fetch(`${o.base}icons/${LINKS[i].icon}.svg`);
+      if (!r.ok) throw new Error();
+      let svg = await r.text();
+      if (!/<svg[^>]*\swidth=/.test(svg)) svg = svg.replace('<svg', '<svg width="512" height="512"');
+      const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      const img = new Image();
+      img.src = url;
+      await img.decode();
+      const { x, y, s } = slot(i);
+      const g = s * 0.56;
+      iconCtx.drawImage(tint(img, g), x + (s - g) / 2, y + (s - g) / 2, g, g);
+      URL.revokeObjectURL(url);
+      iconTex.needsUpdate = true;
+    } catch {
+      fallback(i);
+    }
+    dirty = true;
+  };
+  LINKS.forEach((_, i) => void loadIcon(i));
+  {
+    const cu = (ICON.x0 + ICON.x1) / 2 / ICON.w;
+    const cv = (ICON.y0 + ICON.y1) / 2 / ICON.h;
+    const lx = (cu - 0.5) * PAGE.w;
+    const ly = (0.5 - cv) * PAGE.d;
+    const bx = PAGE.x + lx * Math.cos(PAGE.rot) - ly * Math.sin(PAGE.rot);
+    const by = PAGE.y + lx * Math.sin(PAGE.rot) + ly * Math.cos(PAGE.rot);
+    const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(((ICON.x1 - ICON.x0) / ICON.w) * PAGE.w, ((ICON.y1 - ICON.y0) / ICON.h) * PAGE.d),
+      new THREE.MeshBasicMaterial({ map: iconTex, transparent: true, depthWrite: false }),
+    );
+    plane.rotation.set(-Math.PI / 2, PAGE.rot, 0, 'YXZ');
+    plane.position.copy(b2t([bx, by, ICON.z]));
+    plane.renderOrder = 1;
+    scene.add(plane);
+  }
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const linkAt = (cx: number, cy: number) => {
+    if (!pageMesh) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    ndc.set(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(pageMesh, false)[0];
+    if (!hit) return null;
+    const dx = hit.point.x - PAGE.x;
+    const dy = -hit.point.z - PAGE.y;
+    const c = Math.cos(-PAGE.rot);
+    const sn = Math.sin(-PAGE.rot);
+    const u = (dx * c - dy * sn) / PAGE.w + 0.5;
+    const v = 0.5 - (dx * sn + dy * c) / PAGE.d;
+    return LINKS.find((l) => u >= l.r[0] && u <= l.r[2] && v >= l.r[1] && v <= l.r[3]) ?? null;
+  };
+  let downX = 0;
+  let downY = 0;
+  let downT = 0;
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    downX = e.clientX;
+    downY = e.clientY;
+    downT = performance.now();
+  });
+  renderer.domElement.addEventListener('pointerup', (e) => {
+    if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6 || performance.now() - downT > 500) return;
+    const l = linkAt(e.clientX, e.clientY);
+    if (!l) return;
+    if (l.url.startsWith('mailto:')) window.location.href = l.url;
+    else window.open(l.url, '_blank', 'noopener');
+  });
+  renderer.domElement.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse' || e.buttons) return;
+    renderer.domElement.style.cursor = linkAt(e.clientX, e.clientY) ? 'pointer' : '';
   });
 
   let lastSecond = -1;
