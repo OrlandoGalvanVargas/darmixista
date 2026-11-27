@@ -1,5 +1,6 @@
 ---
 import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource/jetbrains-mono/latin-400.css';
 import Layout from '../layouts/Layout.astro';
 import { logoMark } from '../lib/logo-mark';
 import { languages, useTranslations, type Lang } from '../i18n/ui';
@@ -30,7 +31,8 @@ const inks = [
   { key: 'green', c: '#1d9a57', label: t.desk.board.colors.green },
 ] as const;
 const json = JSON.stringify(config).replace(/</g, '\\u003c');
-const navMark = logoMark({ id: 'nav', bg: '#0b0b0c' });
+const navMark = logoMark({ id: 'nav', bg: '#0b0b0c', anim: true });
+const brand = [...'DARMIXISTA'];
 const loadMark = logoMark({ id: 'load', bg: '#0b0b0c', glow: true });
 ---
 
@@ -42,7 +44,15 @@ const loadMark = logoMark({ id: 'load', bg: '#0b0b0c', glow: true });
     <header class="desk-nav">
       <a href={lang === 'es' ? '/' : '/en/'} class="desk-brand" data-shot-link="home" aria-label={`Darmixista — ${t.desk.home}`}>
         <svg viewBox="8 4 64 56" fill="none" aria-hidden="true" set:html={navMark} />
-        <span>DARMIXISTA</span>
+        <span class="desk-brand-word" aria-hidden="true">
+          {
+            brand.map((c, i) => (
+              <span class="desk-brand-ch" data-c={c} style={`--d:${i * 28}ms`}>
+                {c}
+              </span>
+            ))
+          }
+        </span>
       </a>
       <nav class="desk-links" aria-label={t.nav.label}>
         {
@@ -62,20 +72,46 @@ const loadMark = logoMark({ id: 'load', bg: '#0b0b0c', glow: true });
     </header>
 
     <div id="desk-menu" class="desk-menu" data-mobile-menu inert>
-      <a href={lang === 'es' ? '/' : '/en/'} data-shot-link="home" aria-current="true">{t.desk.home}</a>
-      {
-        shots.map((s) => (
-          <a href={`#${s.hash}`} data-shot-link={s.key} aria-current="false">
-            {s.label}
-          </a>
-        ))
-      }
-      <a href={`#${t.desk.hash.board}`} class="desk-menu-board" data-shot-link="board" aria-current="false">{t.desk.board.name}</a>
-      <a href={otherHref} class="desk-menu-lang" data-lang-link={other} hreflang={other}>{t.nav.switchTo}</a>
+      <a href={`#${t.desk.hash.board}`} class="desk-menu-item" data-shot-link="board" aria-current="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.5-1L19.5 8a2.1 2.1 0 0 0-3-3L5.5 16z"></path><path d="M14.5 7l2.5 2.5"></path></svg>
+        <span>{t.desk.board.name}</span>
+      </a>
+      <a href={otherHref} class="desk-menu-item" data-lang-link={other} hreflang={other}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"></path></svg>
+        <span>{t.nav.switchTo}</span>
+      </a>
     </div>
 
+    <nav class="desk-dock" data-dock aria-label={t.nav.label} inert>
+      <span class="desk-dock-glow" aria-hidden="true"></span>
+      <a href={lang === 'es' ? '/' : '/en/'} data-shot-link="home" aria-current="true">
+        <span class="desk-dock-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"></path><path d="M10 20v-6h4v6"></path></svg></span>
+        <span>{t.desk.home}</span>
+      </a>
+      <a href={`#${t.desk.hash.projects}`} data-shot-link="projects" aria-current="false">
+        <span class="desk-dock-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"></rect><path d="M2 19h20"></path></svg></span>
+        <span>{t.nav.projects}</span>
+      </a>
+      <a href={`#${t.desk.hash.about}`} data-shot-link="about" aria-current="false">
+        <span class="desk-dock-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg></span>
+        <span>{t.nav.about}</span>
+      </a>
+      <a href={`#${t.desk.hash.contact}`} data-shot-link="contact" aria-current="false">
+        <span class="desk-dock-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></span>
+        <span>{t.nav.contact}</span>
+      </a>
+    </nav>
+
     <div class="desk-hero">
-      <h1>{t.desk.name}</h1>
+      <h1 aria-label={t.desk.name} data-hero-name>
+        {
+          [...t.desk.name].map((ch) => (
+            <span aria-hidden="true" class={ch === ' ' ? 'sp' : undefined}>
+              {ch === ' ' ? '\u00a0' : ch}
+            </span>
+          ))
+        }
+      </h1>
       <p>{t.hero.role}</p>
     </div>
 

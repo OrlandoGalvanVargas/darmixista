@@ -1,3 +1,4 @@
+import { heroName } from './hero';
 import { LANG_STORAGE_KEY } from '../../lib/lang-redirect';
 import type { ScreenText } from './screens';
 import type { DeskHandle, ShotKey } from './scene';
@@ -10,7 +11,7 @@ interface DeskConfig {
 
 const ORDER: ShotKey[] = ['home', 'projects', 'about', 'contact'];
 const WHEEL_STEP = 40;
-const WHEEL_LOCK = 1700;
+const WHEEL_GAP = 220;
 
 function webgl() {
   try {
@@ -27,7 +28,8 @@ export function initDesk(): void {
   root.dataset.init = 'true';
   const cfg = JSON.parse(root.querySelector('[data-desk-config]')!.textContent!) as DeskConfig;
   const host = root.querySelector<HTMLElement>('[data-desk-canvas]')!;
-  const hero = root.querySelector<HTMLElement>('.desk-hero')!;
+  const heroEl = root.querySelector<HTMLElement>('.desk-hero')!;
+  const hero = heroName(root);
   const bar = root.querySelector<HTMLElement>('[data-desk-progress]')!;
   const status = root.querySelector<HTMLElement>('[data-desk-status]')!;
   const menu = root.querySelector<HTMLElement>('[data-mobile-menu]')!;
@@ -43,8 +45,11 @@ export function initDesk(): void {
     return ([...ORDER, 'board'] as ShotKey[]).find((k) => k !== 'home' && cfg.hashes[k] === h) ?? 'home';
   };
 
+  const dock = root.querySelector<HTMLElement>('[data-dock]');
   const mark = (key: ShotKey) => {
     root.dataset.shot = key;
+    const di = ORDER.indexOf(key);
+    if (dock && di >= 0) dock.style.setProperty('--i', String(di));
     root.querySelectorAll<HTMLElement>('[data-shot-link]').forEach((el) => {
       if (el.classList.contains('desk-brand')) return;
       el.setAttribute('aria-current', el.dataset.shotLink === key ? 'true' : 'false');
@@ -54,13 +59,32 @@ export function initDesk(): void {
     if (decodeURIComponent(location.hash.slice(1)) !== hash) history.replaceState(null, '', url);
   };
 
+  const brandEl = root.querySelector<HTMLElement>('.desk-brand');
+  let pulseTimer = 0;
+  brandEl?.addEventListener('click', () => {
+    window.clearTimeout(pulseTimer);
+    brandEl.classList.remove('is-pulse');
+    void brandEl.offsetWidth;
+    brandEl.classList.add('is-pulse');
+    pulseTimer = window.setTimeout(() => brandEl.classList.remove('is-pulse'), 1100);
+  });
+
   const setMenu = (open: boolean) => {
     root.dataset.menu = open ? 'open' : 'closed';
     menu.inert = !open;
+    if (dock) dock.inert = !open;
     menuBtn.setAttribute('aria-expanded', String(open));
     menuLabel.textContent = open ? labels.close : labels.open;
   };
   menuBtn.addEventListener('click', () => setMenu(root.dataset.menu !== 'open'));
+  const outside = (e: Event) => {
+    if (root.dataset.menu !== 'open') return;
+    const t = e.target as Node;
+    if (menu.contains(t) || menuBtn.contains(t) || dock?.contains(t)) return;
+    setMenu(false);
+  };
+  document.addEventListener('pointerdown', outside, true);
+  document.addEventListener('wheel', outside, { capture: true, passive: true });
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && root.dataset.menu === 'open') setMenu(false);
   });
@@ -85,17 +109,27 @@ export function initDesk(): void {
     }),
   );
 
+  const target = (dir: 1 | -1): ShotKey | null => {
+    if (!desk) return null;
+    const cur = desk.current();
+    if (cur === 'board') return 'home';
+    const i = ORDER.indexOf(cur);
+    const n = Math.max(0, Math.min(ORDER.length - 1, i + dir));
+    return n !== i ? ORDER[n] : null;
+  };
   const step = (dir: 1 | -1) => {
     root.classList.add('has-scrolled');
-    if (!desk || desk.busy()) return;
-    const i = ORDER.indexOf(desk.current());
-    const n = Math.max(0, Math.min(ORDER.length - 1, i + dir));
-    if (n !== i) desk.go(ORDER[n]);
+    if (!desk || desk.busy()) return false;
+    const t = target(dir);
+    if (!t) return false;
+    desk.go(t);
+    return true;
   };
   root.querySelector('[data-desk-next]')?.addEventListener('click', () => step(1));
 
   let acc = 0;
-  let lockUntil = 0;
+  let last = 0;
+  let used = false;
   root.addEventListener(
     'wheel',
     (e) => {
@@ -103,13 +137,23 @@ export function initDesk(): void {
       e.preventDefault();
       e.stopPropagation();
       const now = performance.now();
-      if (now < lockUntil) return;
-      acc += e.deltaY;
+      if (now - last > WHEEL_GAP) {
+        acc = 0;
+        used = false;
+      }
+      last = now;
+      if (used || root.dataset.menu === 'open') return;
+      if (!desk || desk.busy()) {
+        used = true;
+        return;
+      }
+      const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+      if (acc !== 0 && Math.sign(dy) !== Math.sign(acc)) acc = 0;
+      acc += dy;
       if (Math.abs(acc) < WHEEL_STEP) return;
       const dir = acc > 0 ? 1 : -1;
       acc = 0;
-      lockUntil = now + WHEEL_LOCK;
-      step(dir);
+      if (step(dir)) used = true;
     },
     { passive: false, capture: true },
   );
@@ -160,7 +204,7 @@ export function initDesk(): void {
   };
 
   const topLimit = () => {
-    const r = hero.getBoundingClientRect();
+    const r = heroEl.getBoundingClientRect();
     const h = host.clientHeight || window.innerHeight;
     const bottom = r.bottom + Math.min(36, h * 0.04);
     return 1 - (2 * bottom) / h;
@@ -202,6 +246,7 @@ export function initDesk(): void {
       progress(1);
       requestAnimationFrame(() => {
         root.classList.add('is-ready');
+        window.setTimeout(() => hero.wave(), 500);
         d.intro();
       });
       window.addEventListener('hashchange', () => {

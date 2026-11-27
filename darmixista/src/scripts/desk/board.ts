@@ -255,6 +255,14 @@ export function createBoard(renderer: THREE.WebGLRenderer, size: { w: number; h:
       stamps.count = 0;
       return true;
     },
+    restore() {
+      cleared = false;
+      stamps.count = 0;
+      const t = new THREE.CanvasTexture(store);
+      t.colorSpace = THREE.SRGBColorSpace;
+      loaded = t;
+      pending = true;
+    },
     cursor() {
       const d = tool === 'eraser' ? 34 : 20;
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${d}" height="${d}" viewBox="0 0 ${d} ${d}"><circle cx="${d / 2}" cy="${d / 2}" r="${d / 2 - 2}" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="3"/><circle cx="${d / 2}" cy="${d / 2}" r="${d / 2 - 2}" fill="none" stroke="#fff" stroke-width="1.5"/>${tool === 'eraser' ? '' : `<circle cx="${d / 2}" cy="${d / 2}" r="3.5" fill="${color}"/>`}</svg>`;

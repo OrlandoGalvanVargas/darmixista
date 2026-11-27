@@ -6,7 +6,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createFan } from './fan';
 import { createWhoosh } from './whoosh';
 import { createBoard, type BoardTool } from './board';
-import { laptopScreen, ledScreen, miniScreen, type ScreenText } from './screens';
+import { createLaptopPhoto } from './laptop';
+import { ledScreen, miniScreen, type ScreenText } from './screens';
 
 export type ShotKey = 'home' | 'projects' | 'about' | 'contact' | 'board';
 export const SHOTS: ShotKey[] = ['home', 'projects', 'about', 'contact'];
@@ -160,7 +161,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     });
   const gltfLoader = new GLTFLoader(manager);
   gltfLoader.setMeshoptDecoder(MeshoptDecoder);
-  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex, lmpTex, nbpTex, wbdTex, crtTex] = await Promise.all([
+  const [data, gltf, heroGltf, room, furn, props, zoclo, heroTex, kbdTex, lptTex, lmpTex, nbpTex, wbdTex, crtTex, stkTex] = await Promise.all([
     fetch(`${o.base}scene.json`).then((r) => r.json() as Promise<SceneData>),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}desk.glb`, (g) => resolve(g), track('glb'), reject)),
     new Promise<{ scene: THREE.Group }>((resolve, reject) => gltfLoader.load(`${o.base}hero.glb`, (g) => resolve(g), track('hero'), reject)),
@@ -175,6 +176,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     loadTex(`nbp${document.documentElement.lang.startsWith('en') ? '-en' : ''}${Math.min(screen.width, screen.height) < 700 ? '-m' : ''}.webp`),
     loadTex(Math.min(screen.width, screen.height) < 700 ? 'wbd-m.webp' : 'wbd.webp'),
     loadTex(Math.min(screen.width, screen.height) < 700 || maxTex < 4096 ? 'crt-m.webp' : 'crt.webp'),
+    loadTex(Math.min(screen.width, screen.height) < 700 ? 'stk-m.webp' : 'stk.webp'),
   ]);
   parts.set('glb', 1);
   parts.set('hero', 1);
@@ -191,11 +193,12 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     nbp: new THREE.MeshBasicMaterial({ map: nbpTex }),
     wbd: new THREE.MeshBasicMaterial({ map: wbdTex }),
     crt: new THREE.MeshBasicMaterial({ map: crtTex }),
+    stk: new THREE.MeshBasicMaterial({ map: stkTex }),
   };
-  const lap = laptopScreen(maxAniso);
+  const lapPhoto = createLaptopPhoto(o.base, maxAniso, Math.min(screen.width, screen.height) < 700 || maxTex < 4096, reduce, (t) => renderer.initTexture(t));
   const mini = miniScreen(o.screen, maxAniso);
   const led = ledScreen(maxAniso);
-  mats.lapscreen = new THREE.MeshBasicMaterial({ map: lap, color: new THREE.Color(0.93, 0.93, 0.93) });
+  mats.lapscreen = lapPhoto.material;
   mats.miniscreen = new THREE.MeshBasicMaterial({ map: mini.texture, color: new THREE.Color(0.95, 0.95, 0.95) });
   mats.lampled = new THREE.MeshBasicMaterial({ map: led.texture });
   let pageMesh: THREE.Mesh | null = null;
@@ -216,20 +219,27 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   });
   scene.add(gltf.scene);
   scene.updateMatrixWorld(true);
+  gltf.scene.traverse((n) => {
+    if ((n as THREE.Mesh).isMesh && n.name.startsWith('lapscreen')) lapPhoto.attach(n as THREE.Mesh);
+  });
   const fan = lmpMesh ? createFan(lmpMesh, b2t([0.505, 0.2542, 1.0177]), b2t([0.505, 0.2398, 0.846])) : null;
   if (fan) scene.add(fan.object);
   const whoosh = createWhoosh(() => fan?.audio() ?? null);
 
-  const cubeTarget = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
-  const cubeCam = new THREE.CubeCamera(0.02, 20, cubeTarget);
-  cubeCam.position.copy(b2t([-0.15, -0.75, 1.05]));
-  scene.add(cubeCam);
-  cubeCam.update(renderer, scene);
-  scene.remove(cubeCam);
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const envTarget = pmrem.fromCubemap(cubeTarget.texture);
-  pmrem.dispose();
-  cubeTarget.dispose();
+  const buildEnv = () => {
+    const cubeTarget = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
+    const cubeCam = new THREE.CubeCamera(0.02, 20, cubeTarget);
+    cubeCam.position.copy(b2t([-0.15, -0.75, 1.05]));
+    scene.add(cubeCam);
+    cubeCam.update(renderer, scene);
+    scene.remove(cubeCam);
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const env = pmrem.fromCubemap(cubeTarget.texture);
+    pmrem.dispose();
+    cubeTarget.dispose();
+    return env;
+  };
+  const envTarget = buildEnv();
   const heroMats = new Map<string, THREE.MeshStandardMaterial>();
   const heroMat = (name: string) => {
     const key = name.replace(/^hero_/, '');
@@ -439,9 +449,11 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     o.onZoom(canIn, canOut);
   };
 
-  let tween: gsap.core.Timeline | null = null;
+  let tween: gsap.core.Tween | gsap.core.Timeline | null = null;
   let syncRadius = () => {};
+  const flySp = new THREE.Spherical(1, 0, 0);
   const fly = (to: Shot, dur: number, onDone?: () => void) => {
+    const midway = moving && !!tween?.isActive();
     tween?.kill();
     moving = true;
     controls.enabled = false;
@@ -479,14 +491,14 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     tween.to(st, {
       k: 1,
       duration: reduce ? 0.01 : dur,
-      ease: 'power2.inOut',
+      ease: midway ? 'power2.out' : 'power2.inOut',
       onUpdate: () => {
         const k = st.k;
         tgt.lerpVectors(fromTgt, to.target, k);
         sp.radius = THREE.MathUtils.lerp(a.radius, b.radius, k) * (1 + Math.sin(k * Math.PI) * arc);
         sp.phi = THREE.MathUtils.lerp(a.phi, b.phi, k);
         sp.theta = a.theta + dTheta * k;
-        sp.radius = Math.min(sp.radius, roomLimit(tgt, flyDir.setFromSpherical(new THREE.Spherical(1, sp.phi, sp.theta))));
+        sp.radius = Math.min(sp.radius, roomLimit(tgt, flyDir.setFromSpherical(flySp.set(1, sp.phi, sp.theta))));
         controls.target.copy(tgt);
         camera.position.setFromSpherical(sp).add(tgt);
         camera.lookAt(tgt);
@@ -886,11 +898,13 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     const now = performance.now();
     const dt = Math.min(0.05, (now - lastT) / 1000);
     lastT = now;
-    let changed = controls.update();
+    const orbiting = controls.update();
+    let changed = orbiting;
     if (fan && fan.update(dt, camera)) changed = true;
+    if (lapPhoto.update(camera)) changed = true;
     if (!moving && keepInside()) changed = true;
     const s = Math.floor(Date.now() / 1000);
-    if (s !== lastSecond) {
+    if (s !== lastSecond && !moving && !orbiting) {
       lastSecond = s;
       mini.draw();
       if (s % 30 === 0) led.draw();
@@ -903,8 +917,57 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
       dirty = false;
     }
   });
+  [room, furn, props, zoclo, heroTex, kbdTex, lptTex, lmpTex, nbpTex, wbdTex, crtTex, stkTex].forEach((t) => renderer.initTexture(t));
   renderer.compile(scene, camera);
   renderer.render(scene, camera);
+
+  const gl = renderer.getContext();
+  const LITE: Record<string, string> = { props: 'props-m.webp', kbd: 'kbd-m.webp', lpt: 'lpt-m.webp', lmp: 'lmp-m.webp', crt: 'crt-m.webp' };
+  let lite = Math.min(screen.width, screen.height) < 700 || maxTex < 4096;
+  const outOfMemory = () => {
+    let oom = false;
+    for (let i = 0; i < 8; i++) {
+      const e = gl.getError();
+      if (e === gl.NO_ERROR) break;
+      if (e === gl.OUT_OF_MEMORY) oom = true;
+    }
+    return oom;
+  };
+  const goLite = () => {
+    if (lite) return;
+    lite = true;
+    Object.entries(LITE).forEach(([key, file]) => {
+      const mat = mats[key] as THREE.MeshBasicMaterial;
+      const old = mat.map;
+      loadTex(file).then((t) => {
+        scene.traverse((n) => {
+          const mm = (n as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined;
+          if (mm && mm.map === old) {
+            mm.map = t;
+            mm.needsUpdate = true;
+          }
+        });
+        old?.dispose();
+        dirty = true;
+      });
+    });
+  };
+  if (outOfMemory()) goLite();
+  renderer.domElement.addEventListener('webglcontextrestored', () => {
+    requestAnimationFrame(() => {
+      heroGltf.scene.visible = false;
+      const env = buildEnv();
+      heroGltf.scene.visible = true;
+      heroMats.forEach((m) => {
+        m.envMap = env.texture;
+        m.needsUpdate = true;
+      });
+      board.restore();
+      dirty = true;
+      renderer.render(scene, camera);
+      if (outOfMemory()) goLite();
+    });
+  });
 
   const go = (key: ShotKey, instant = false) => {
     if (key === current && !instant) {
@@ -974,9 +1037,10 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
       }
     }
     const st = { k: 0 };
+    tween?.kill();
     moving = true;
     controls.enabled = false;
-    gsap.to(st, {
+    tween = gsap.to(st, {
       k: 1,
       duration: reduce ? 0.01 : 0.8,
       ease: 'power2.inOut',
@@ -1006,7 +1070,8 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     if (dir > 0 && next < s.distance[0] * 1.12) next = s.distance[0];
     if (dir < 0 && next > s.distance[1] * 0.9) next = s.distance[1];
     const state = { r: sp.radius };
-    gsap.to(state, {
+    tween?.kill();
+    tween = gsap.to(state, {
       r: next,
       duration: reduce ? 0.01 : 0.7,
       ease: 'power2.out',
