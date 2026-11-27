@@ -40,7 +40,7 @@ export function initDesk(): void {
   let desk: DeskHandle | null = null;
   const fromHash = (): ShotKey => {
     const h = decodeURIComponent(location.hash.slice(1));
-    return (ORDER.find((k) => k !== 'home' && cfg.hashes[k] === h) as ShotKey) ?? 'home';
+    return ([...ORDER, 'board'] as ShotKey[]).find((k) => k !== 'home' && cfg.hashes[k] === h) ?? 'home';
   };
 
   const mark = (key: ShotKey) => {
@@ -118,6 +118,7 @@ export function initDesk(): void {
     if (['ArrowDown', 'PageDown', ' '].includes(e.key)) step(1);
     else if (['ArrowUp', 'PageUp'].includes(e.key)) step(-1);
     else if (e.key === 'Home') desk?.go('home');
+    else if (e.key === 'Escape' && desk?.current() === 'board') desk.go('home');
     else return;
     e.preventDefault();
   });
@@ -125,6 +126,38 @@ export function initDesk(): void {
   zoomIn.addEventListener('click', () => desk?.zoom(1));
   zoomOut.addEventListener('click', () => desk?.zoom(-1));
   root.querySelector('[data-zoom="reset"]')?.addEventListener('click', () => desk?.reset());
+
+  const wb = root.querySelector<HTMLElement>('[data-wb]')!;
+  const wbTrack = wb.querySelector<HTMLElement>('[data-wb-track]')!;
+  const marker = wb.querySelector<HTMLElement>('[data-wb-tool="marker"]')!;
+  const press = (sel: string, on: Element) => wb.querySelectorAll(sel).forEach((b) => b.setAttribute('aria-pressed', String(b === on)));
+  const setMode = (m: 'draw' | 'move') => {
+    press('[data-wb-mode]', wb.querySelector(`[data-wb-mode="${m}"]`)!);
+    desk?.board.mode(m);
+  };
+  wb.querySelectorAll<HTMLButtonElement>('[data-wb-tool]').forEach((b) =>
+    b.addEventListener('click', () => {
+      press('[data-wb-tool]', b);
+      desk?.board.tool(b.dataset.wbTool as 'marker' | 'eraser');
+      setMode('draw');
+    }),
+  );
+  wb.querySelectorAll<HTMLButtonElement>('[data-wb-color]').forEach((b) =>
+    b.addEventListener('click', () => {
+      press('[data-wb-color]', b);
+      press('[data-wb-tool]', marker);
+      marker.style.setProperty('--ink', b.dataset.wbColor!);
+      desk?.board.color(b.dataset.wbColor!);
+      setMode('draw');
+    }),
+  );
+  wb.querySelectorAll<HTMLButtonElement>('[data-wb-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.wbMode as 'draw' | 'move')));
+  const onBoard = (s: { pan: boolean; left: number; width: number }) => {
+    wb.dataset.pan = s.pan ? '1' : '0';
+    if (!s.pan && wb.querySelector('[data-wb-mode="move"]')!.getAttribute('aria-pressed') === 'true') setMode('draw');
+    wbTrack.style.width = `${s.width * 100}%`;
+    wbTrack.style.left = `${s.left * 100}%`;
+  };
 
   const topLimit = () => {
     const r = hero.getBoundingClientRect();
@@ -156,6 +189,7 @@ export function initDesk(): void {
         topLimit,
         onProgress: progress,
         onShot: mark,
+        onBoard,
         onZoom: (canIn, canOut) => {
           zoomIn.disabled = !canIn;
           zoomOut.disabled = !canOut;
