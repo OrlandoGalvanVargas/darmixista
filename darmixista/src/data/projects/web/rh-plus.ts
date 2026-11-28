@@ -3,8 +3,6 @@ import type { Project } from "../types";
 const project: Project = {
   order: 3,
   slug: "rh-plus",
-  cover: "/projects/shots/rh-plus/cover.webp",
-  shots: ["/projects/shots/rh-plus/01.webp", "/projects/shots/rh-plus/02.webp", "/projects/shots/rh-plus/03.webp", "/projects/shots/rh-plus/04.webp"],
   title: "RH Plus",
   year: "2025",
   accent: "#7088ff",
@@ -34,6 +32,16 @@ const project: Project = {
       "Reviews with weighted indicators",
       "Demo mode with HR and employee profiles",
     ],
+  },
+  sheet: {
+    what: {
+      es: 'Junta en un solo sistema los expedientes, asistencias, evaluaciones, vacantes y contratos de una empresa. Cada persona ve lo que le toca según su rol.',
+      en: 'Brings a company’s employee records, attendance, reviews, job openings and contracts into one system. Each person sees what their role allows.',
+    },
+    how: {
+      es: 'Frontend en React y Vite conectado a una API REST con JWT; rutas y módulos se habilitan según el rol. Tiene un modo demo con perfil de RH y de empleado.',
+      en: 'React and Vite frontend connected to a REST API with JWT; routes and modules unlock by role. It has a demo mode with HR and employee profiles.',
+    },
   },
   tags: [
     "React 19",

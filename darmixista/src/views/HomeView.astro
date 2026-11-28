@@ -4,6 +4,7 @@ import '@fontsource/jetbrains-mono/latin-400.css';
 import Layout from '../layouts/Layout.astro';
 import { logoMark } from '../lib/logo-mark';
 import { languages, useTranslations, type Lang } from '../i18n/ui';
+import { DESK_PROJECTS } from '../scripts/desk/work';
 
 interface Props {
   lang: Lang;
@@ -30,6 +31,7 @@ const inks = [
   { key: 'blue', c: '#2358c9', label: t.desk.board.colors.blue },
   { key: 'green', c: '#1d9a57', label: t.desk.board.colors.green },
 ] as const;
+const work = DESK_PROJECTS.map((p) => ({ title: p.title, tags: p.data.tags.slice(0, 4) }));
 const json = JSON.stringify(config).replace(/</g, '\\u003c');
 const navMark = logoMark({ id: 'nav', bg: '#0b0b0c', anim: true });
 const brand = [...'DARMIXISTA'];
@@ -118,6 +120,33 @@ const loadMark = logoMark({ id: 'load', bg: '#0b0b0c', glow: true });
     <button type="button" class="desk-scroll" data-desk-next aria-label={t.desk.scroll}>
       <span aria-hidden="true"><i></i></span>
     </button>
+
+    <div class="desk-proj" data-proj role="group" aria-label={t.desk.work.label}>
+      <ul class="desk-proj-tags" data-proj-tags aria-live="polite">
+        {work[0]?.tags.map((tag) => <li>{tag}</li>)}
+      </ul>
+      <div class="desk-proj-rail">
+        <button type="button" class="desk-proj-arrow" data-proj-step="-1" aria-label={t.desk.work.prev}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+        </button>
+        <div class="desk-proj-track" data-proj-track>
+          <div class="desk-proj-row" data-proj-row>
+            {
+              work.map((w, i) => (
+                <button type="button" class="desk-proj-it" data-proj-i={i} aria-current={i === 0 ? 'true' : 'false'} style={`--i:${i}`}>
+                  <span class="desk-proj-name">{w.title}</span>
+                  <span class="desk-proj-bar" aria-hidden="true"><i></i></span>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+        <button type="button" class="desk-proj-arrow" data-proj-step="1" aria-label={t.desk.work.next}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+      </div>
+      <script type="application/json" data-proj-meta set:html={JSON.stringify(work.map((w) => w.tags)).replace(/</g, '\\u003c')} />
+    </div>
 
     <div class="desk-ctl">
       <button type="button" data-zoom="in" aria-label={t.desk.zoomIn}>

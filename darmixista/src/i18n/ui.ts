@@ -63,6 +63,7 @@ const es = {
       locale: 'es-MX',
     },
     hash: { projects: 'proyectos', about: 'sobre-mi', contact: 'contacto', board: 'pizarron' },
+    work: { label: 'Proyectos', prev: 'Proyecto anterior', next: 'Proyecto siguiente' },
     board: {
       name: 'Pizarrón',
       tools: 'Herramientas del pizarrón',
@@ -224,6 +225,7 @@ const en: Dictionary = {
       locale: 'en-US',
     },
     hash: { projects: 'projects', about: 'about', contact: 'contact', board: 'whiteboard' },
+    work: { label: 'Projects', prev: 'Previous project', next: 'Next project' },
     board: {
       name: 'Whiteboard',
       tools: 'Whiteboard tools',

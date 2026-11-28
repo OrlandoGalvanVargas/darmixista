@@ -45,9 +45,96 @@ export function initDesk(): void {
     return ([...ORDER, 'board'] as ShotKey[]).find((k) => k !== 'home' && cfg.hashes[k] === h) ?? 'home';
   };
 
+  const projEl = root.querySelector<HTMLElement>('[data-proj]')!;
+  const projTrack = projEl.querySelector<HTMLElement>('[data-proj-track]')!;
+  const projRow = projEl.querySelector<HTMLElement>('[data-proj-row]')!;
+  const projItems = [...projEl.querySelectorAll<HTMLButtonElement>('[data-proj-i]')];
+  const projTags = projEl.querySelector<HTMLElement>('[data-proj-tags]')!;
+  const projMeta = JSON.parse(projEl.querySelector('[data-proj-meta]')?.textContent ?? '[]') as string[][];
+  let projIdx = 0;
+  let projBar = projItems[0]?.querySelector<HTMLElement>('.desk-proj-bar i') ?? null;
+  let tagTimer = 0;
+  const centerProj = (instant = false) => {
+    const it = projItems[projIdx];
+    if (!it) return;
+    const x = projTrack.clientWidth / 2 - (it.offsetLeft + it.offsetWidth / 2);
+    if (instant) projRow.style.transition = 'none';
+    projRow.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
+    if (instant) {
+      void projRow.offsetWidth;
+      projRow.style.transition = '';
+    }
+  };
+  const showProject = (i: number) => {
+    if (!projItems[i]) return;
+    if (i !== projIdx) {
+      projItems[projIdx].setAttribute('aria-current', 'false');
+      if (projBar) projBar.style.transform = 'scaleX(0)';
+      projIdx = i;
+      projItems[i].setAttribute('aria-current', 'true');
+      projBar = projItems[i].querySelector<HTMLElement>('.desk-proj-bar i');
+      if (projBar) projBar.style.transform = 'scaleX(0)';
+      window.clearTimeout(tagTimer);
+      projTags.classList.add('is-swap');
+      tagTimer = window.setTimeout(() => {
+        projTags.replaceChildren(
+          ...(projMeta[i] ?? []).map((tag) => {
+            const li = document.createElement('li');
+            li.textContent = tag;
+            return li;
+          }),
+        );
+        projTags.classList.remove('is-swap');
+      }, 180);
+    }
+    centerProj();
+  };
+  let ticking = false;
+  const tick = () => {
+    if (!desk || root.dataset.shot !== 'projects') {
+      ticking = false;
+      return;
+    }
+    if (projBar) projBar.style.transform = `scaleX(${desk.projects.progress().toFixed(4)})`;
+    requestAnimationFrame(tick);
+  };
+  const startTick = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(tick);
+  };
+  projItems.forEach((b, i) =>
+    b.addEventListener('click', () => {
+      if (swiped) return;
+      desk?.projects.select(i);
+    }),
+  );
+  projEl.querySelectorAll<HTMLButtonElement>('[data-proj-step]').forEach((b) => b.addEventListener('click', () => desk?.projects.step(Number(b.dataset.projStep))));
+  let swipeX = 0;
+  let swipeId = -1;
+  let swiped = false;
+  projTrack.addEventListener('pointerdown', (e) => {
+    swipeId = e.pointerId;
+    swipeX = e.clientX;
+    swiped = false;
+  });
+  projTrack.addEventListener('pointerup', (e) => {
+    if (e.pointerId !== swipeId) return;
+    swipeId = -1;
+    const dx = e.clientX - swipeX;
+    if (Math.abs(dx) < 32) return;
+    swiped = true;
+    window.setTimeout(() => (swiped = false), 60);
+    desk?.projects.step(dx < 0 ? 1 : -1);
+  });
+  projTrack.addEventListener('pointercancel', () => (swipeId = -1));
+  window.addEventListener('resize', () => centerProj(true));
+  centerProj(true);
+
   const dock = root.querySelector<HTMLElement>('[data-dock]');
   const mark = (key: ShotKey) => {
     root.dataset.shot = key;
+    if (key === 'projects') startTick();
     const di = ORDER.indexOf(key);
     if (dock && di >= 0) dock.style.setProperty('--i', String(di));
     root.querySelectorAll<HTMLElement>('[data-shot-link]').forEach((el) => {
@@ -159,6 +246,10 @@ export function initDesk(): void {
   );
   window.addEventListener('keydown', (e) => {
     if (root.dataset.menu === 'open' || (e.target as HTMLElement)?.closest('input,textarea')) return;
+    if (desk?.current() === 'projects' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      desk.projects.step(e.key === 'ArrowRight' ? 1 : -1);
+      return;
+    }
     if (['ArrowDown', 'PageDown', ' '].includes(e.key)) step(1);
     else if (['ArrowUp', 'PageUp'].includes(e.key)) step(-1);
     else if (e.key === 'Home') desk?.go('home');
@@ -234,6 +325,14 @@ export function initDesk(): void {
         onProgress: progress,
         onShot: mark,
         onBoard,
+        onProject: showProject,
+        reserve: () => {
+          const hb = host.getBoundingClientRect();
+          const nav = root.querySelector<HTMLElement>('.desk-nav');
+          const top = nav ? nav.getBoundingClientRect().bottom - hb.top : 0;
+          const bottom = hb.height - projEl.offsetTop + 10;
+          return { top, bottom };
+        },
         onZoom: (canIn, canOut) => {
           zoomIn.disabled = !canIn;
           zoomOut.disabled = !canOut;

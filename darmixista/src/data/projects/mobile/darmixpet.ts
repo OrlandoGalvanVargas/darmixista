@@ -3,8 +3,6 @@ import type { Project } from "../types";
 const project: Project = {
   order: 1,
   slug: "darmixpet",
-  cover: "/projects/shots/darmixpet/cover.webp",
-  shots: ["/projects/shots/darmixpet/01.webp", "/projects/shots/darmixpet/02.webp", "/projects/shots/darmixpet/03.webp", "/projects/shots/darmixpet/04.webp"],
   audience: 'personal',
   title: "DarmixPet",
   year: "2026",
@@ -35,6 +33,16 @@ const project: Project = {
       "Instant detection with AccessibilityService",
       "Update alerts from GitHub Releases",
     ],
+  },
+  sheet: {
+    what: {
+      es: 'Pones límites de tiempo a las apps que te distraen y una mascota flotante te avisa cuando se acaba. Al llegar al límite, la app se bloquea.',
+      en: 'You set time limits on the apps that distract you and a floating pet lets you know when time is up. When you hit the limit, the app locks.',
+    },
+    how: {
+      es: 'Kotlin y Jetpack Compose. Detecta la app abierta con AccessibilityService y la mascota vive en una ventana superpuesta. Todo corre en el teléfono, sin cuentas ni servidor.',
+      en: 'Kotlin and Jetpack Compose. It detects the open app with AccessibilityService and the pet lives in an overlay window. Everything runs on the phone, with no account or server.',
+    },
   },
   tags: [
     "Kotlin",

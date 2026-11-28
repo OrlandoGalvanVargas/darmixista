@@ -13,6 +13,10 @@ export interface Project {
   summaryShort?: I18n;
   description: I18n;
   highlights?: I18n<string[]>;
+  sheet?: {
+    what: I18n;
+    how: I18n;
+  };
   tags: string[];
   links: {
     demo?: string;
@@ -20,8 +24,6 @@ export interface Project {
     page?: string;
   };
   image?: string;
-  cover?: string;
-  shots?: string[];
   domain?: string;
   inProgress?: boolean;
   audience?: 'personal' | 'business';

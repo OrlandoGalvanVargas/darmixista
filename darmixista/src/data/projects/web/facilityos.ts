@@ -3,8 +3,6 @@ import type { Project } from "../types";
 const project: Project = {
   order: 2,
   slug: "facilityos",
-  cover: "/projects/shots/facilityos/cover.webp",
-  shots: ["/projects/shots/facilityos/01.webp", "/projects/shots/facilityos/02.webp", "/projects/shots/facilityos/03.webp", "/projects/shots/facilityos/04.webp"],
   title: "FacilityOS",
   year: "2026",
   accent: "#2bb0e6",
@@ -34,6 +32,16 @@ const project: Project = {
       "JWT with refresh token in httpOnly cookie",
       "Mock-mode demo with offline cache",
     ],
+  },
+  sheet: {
+    what: {
+      es: 'Un distrito escolar administra todas sus escuelas desde un solo lugar. Cada escuela ve solo su información y la app sigue funcionando sin internet.',
+      en: 'A school district manages all of its schools from one place. Each school only sees its own data, and the app keeps working without internet.',
+    },
+    how: {
+      es: 'Backend en .NET con Vertical Slice y CQRS (MediatR), y sesión con JWT en cookies httpOnly. El frontend en React 19 guarda caché en IndexedDB para trabajar sin conexión.',
+      en: '.NET backend with Vertical Slice and CQRS (MediatR), and JWT sessions in httpOnly cookies. The React 19 frontend caches data in IndexedDB to work offline.',
+    },
   },
   tags: [
     ".NET 10",

@@ -5,8 +5,10 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createFan } from './fan';
 import { createWhoosh } from './whoosh';
+import { createPowerSound } from './power';
 import { createBoard, type BoardTool } from './board';
 import { createLaptopPhoto } from './laptop';
+import { createProjects } from './projects';
 import { ledScreen, miniScreen, type ScreenText } from './screens';
 
 export type ShotKey = 'home' | 'projects' | 'about' | 'contact' | 'board';
@@ -37,6 +39,8 @@ export interface DeskOptions {
   onShot: (key: ShotKey) => void;
   onZoom: (canIn: boolean, canOut: boolean) => void;
   onBoard?: (s: { pan: boolean; left: number; width: number }) => void;
+  onProject?: (i: number) => void;
+  reserve?: () => { top: number; bottom: number };
 }
 
 export interface DeskHandle {
@@ -47,6 +51,7 @@ export interface DeskHandle {
   current: () => ShotKey;
   busy: () => boolean;
   board: { tool: (t: BoardTool) => void; color: (c: string) => void; mode: (m: 'draw' | 'move') => void };
+  projects: { count: number; index: () => number; select: (i: number) => void; step: (d: number) => void; progress: () => number };
 }
 
 const FOV = 40;
@@ -199,11 +204,20 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   const mini = miniScreen(o.screen, maxAniso);
   const led = ledScreen(maxAniso);
   mats.lapscreen = lapPhoto.material;
+  const proj = createProjects({
+    screen: lapPhoto.screen,
+    black: lapPhoto.black,
+    lang: document.documentElement.lang.startsWith('en') ? 'en' : 'es',
+    small: Math.min(screen.width, screen.height) < 700 || maxTex < 4096,
+    maxAniso,
+    onChange: (i) => o.onProject?.(i),
+  });
   mats.miniscreen = new THREE.MeshBasicMaterial({ map: mini.texture, color: new THREE.Color(0.95, 0.95, 0.95) });
   mats.lampled = new THREE.MeshBasicMaterial({ map: led.texture });
   let pageMesh: THREE.Mesh | null = null;
   let boardMesh: THREE.Mesh | null = null;
   let lmpMesh: THREE.Mesh | null = null;
+  let lapMesh: THREE.Mesh | null = null;
   const pickables: THREE.Object3D[] = [];
   gltf.scene.traverse((n) => {
     const m = n as THREE.Mesh;
@@ -220,11 +234,15 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
   scene.add(gltf.scene);
   scene.updateMatrixWorld(true);
   gltf.scene.traverse((n) => {
-    if ((n as THREE.Mesh).isMesh && n.name.startsWith('lapscreen')) lapPhoto.attach(n as THREE.Mesh);
+    if ((n as THREE.Mesh).isMesh && n.name.startsWith('lapscreen')) {
+      lapMesh = n as THREE.Mesh;
+      lapPhoto.attach(lapMesh);
+    }
   });
   const fan = lmpMesh ? createFan(lmpMesh, b2t([0.505, 0.2542, 1.0177]), b2t([0.505, 0.2398, 0.846])) : null;
   if (fan) scene.add(fan.object);
   const whoosh = createWhoosh(() => fan?.audio() ?? null);
+  const powerSound = createPowerSound(() => fan?.audio() ?? null);
 
   const buildEnv = () => {
     const cubeTarget = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType });
@@ -315,6 +333,17 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     return { x0, x1, y0, y1 };
   };
 
+  const lapCorners = (() => {
+    const s = data.screens.lapscreen;
+    const m = s.matrix;
+    const c = [m[0][3], m[1][3], m[2][3]];
+    const ax = [m[0][0], m[1][0], m[2][0]];
+    const ay = [m[0][1], m[1][1], m[2][1]];
+    const pts: THREE.Vector3[] = [];
+    for (const sx of [-0.5, 0.5]) for (const sy of [-0.5, 0.5]) pts.push(b2t(c.map((v, i) => v + ax[i] * sx * s.dims[0] + ay[i] * sy * s.dims[1])));
+    return pts;
+  })();
+
   const spherical = (pos: THREE.Vector3, target: THREE.Vector3) => new THREE.Spherical().setFromVector3(pos.clone().sub(target));
 
   const build = () => {
@@ -375,6 +404,22 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     const lapS = screenFrame('lapscreen');
     const miniS = screenFrame('miniscreen');
     shots.projects = section(lapS.center, lapS.normal, lapS.width * 1.08, portrait ? 0.92 : 0.62, 0.08);
+    {
+      const sh = shots.projects;
+      const r = o.reserve?.() ?? { top: 0, bottom: 0 };
+      const top = 1 - (2 * r.top) / H;
+      const bottom = -1 + (2 * r.bottom) / H;
+      const avail = (top - bottom) * 0.94;
+      let pr = project(sh.position, sh.target, lapCorners);
+      const k = (pr.y1 - pr.y0) / Math.max(0.2, avail);
+      if (k > 1) {
+        sh.position.sub(sh.target).multiplyScalar(k).add(sh.target);
+        sh.distance = [sh.distance[0] * k, sh.distance[1] * k];
+        pr = project(sh.position, sh.target, lapCorners);
+      }
+      sh.offsetY = (((top + bottom) / 2 - (pr.y0 + pr.y1) / 2) * H) / 2;
+      proj.setSize(((pr.x1 - pr.x0) / 2) * W);
+    }
     const wideNav = window.matchMedia('(min-width: 900px)').matches;
     const closer = (sh: Shot, k: number) => {
       sh.position.sub(sh.target).multiplyScalar(k).add(sh.target);
@@ -485,6 +530,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
         syncRadius();
         dirty = true;
         zoomState();
+        if (current === 'projects') proj.arrive();
         onDone?.();
       },
     });
@@ -773,6 +819,27 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     ray.far = Infinity;
     return !blocked;
   };
+  const screenUV = (cx: number, cy: number) => {
+    if (!lapMesh || current !== 'projects' || moving) return null;
+    const rect = renderer.domElement.getBoundingClientRect();
+    ndc.set(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    return ray.intersectObject(lapMesh, false)[0]?.uv ?? null;
+  };
+  const powerPt = b2t([0.03, 0.2094, 0.7982]);
+  const powerEdge = b2t([0.0342, 0.2094, 0.7982]);
+  const pv = new THREE.Vector3();
+  const pe = new THREE.Vector3();
+  const powerAt = (cx: number, cy: number) => {
+    if (current !== 'projects' || moving) return false;
+    const rect = renderer.domElement.getBoundingClientRect();
+    pv.copy(powerPt).project(camera);
+    pe.copy(powerEdge).project(camera);
+    const x = rect.left + ((pv.x + 1) / 2) * rect.width;
+    const y = rect.top + ((1 - pv.y) / 2) * rect.height;
+    const r = Math.hypot(((pe.x - pv.x) / 2) * rect.width, ((pe.y - pv.y) / 2) * rect.height);
+    return Math.hypot(cx - x, cy - y) < Math.max(15, r * 2.4);
+  };
   const fanButtonAt = (cx: number, cy: number) => {
     if (!fan || !lmpMesh) return false;
     const rect = renderer.domElement.getBoundingClientRect();
@@ -786,6 +853,15 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     release(e);
     if (current === 'board') return;
     if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6 || performance.now() - downT > 500) return;
+    if (powerAt(e.clientX, e.clientY)) {
+      const st = proj.power();
+      if (st) {
+        powerSound(st === 'on');
+        return;
+      }
+    }
+    const su = screenUV(e.clientX, e.clientY);
+    if (su && proj.click(su.x, su.y)) return;
     if (!moving && fanButtonAt(e.clientX, e.clientY)) {
       fan!.toggle();
       return;
@@ -819,7 +895,9 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
       renderer.domElement.style.cursor = moving ? '' : mode === 'move' ? 'grab' : boardUV(e.clientX, e.clientY) ? board.cursor() : '';
       return;
     }
-    renderer.domElement.style.cursor = linkAt(e.clientX, e.clientY) || (!moving && (fanButtonAt(e.clientX, e.clientY) || boardAt(e.clientX, e.clientY))) ? 'pointer' : '';
+    const su = screenUV(e.clientX, e.clientY);
+    const onScreen = proj.point(su ? su.x : null, su ? su.y : 0) || powerAt(e.clientX, e.clientY);
+    renderer.domElement.style.cursor = onScreen || linkAt(e.clientX, e.clientY) || (!moving && (fanButtonAt(e.clientX, e.clientY) || boardAt(e.clientX, e.clientY))) ? 'pointer' : '';
   });
 
   let lastSecond = -1;
@@ -902,6 +980,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     let changed = orbiting;
     if (fan && fan.update(dt, camera)) changed = true;
     if (lapPhoto.update(camera)) changed = true;
+    if (proj.update()) changed = true;
     if (!moving && keepInside()) changed = true;
     const s = Math.floor(Date.now() / 1000);
     if (s !== lastSecond && !moving && !orbiting) {
@@ -963,6 +1042,7 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
         m.needsUpdate = true;
       });
       board.restore();
+      proj.restore();
       dirty = true;
       renderer.render(scene, camera);
       if (outOfMemory()) goLite();
@@ -976,6 +1056,8 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
     }
     stopInk();
     if (!instant) whoosh(key === 'home' ? 'out' : 'in', TRAVEL);
+    if (key === 'projects') proj.enter();
+    else if (current === 'projects') proj.leave();
     current = key;
     o.onShot(key);
     if (instant) {
@@ -1097,5 +1179,17 @@ export async function createDesk(o: DeskOptions): Promise<DeskHandle> {
       mode = m;
     },
   };
-  return { go, intro, zoom, reset, current: () => current, busy: () => moving, board: boardApi };
+  const idle = (fn: () => void) => {
+    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(fn, { timeout: 4000 });
+    else window.setTimeout(fn, 1500);
+  };
+  window.setTimeout(() => idle(() => proj.preload()), 2600);
+  const projectsApi = {
+    count: proj.count,
+    index: proj.index,
+    select: proj.select,
+    step: proj.step,
+    progress: proj.progress,
+  };
+  return { go, intro, zoom, reset, current: () => current, busy: () => moving, board: boardApi, projects: projectsApi };
 }

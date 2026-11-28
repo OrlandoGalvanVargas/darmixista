@@ -3,8 +3,6 @@ import type { Project } from "../types";
 const project: Project = {
   order: 1,
   slug: "darmix-tasking",
-  cover: "/projects/shots/darmix-tasking/cover.webp",
-  shots: ["/projects/shots/darmix-tasking/01.webp", "/projects/shots/darmix-tasking/02.webp", "/projects/shots/darmix-tasking/03.webp", "/projects/shots/darmix-tasking/04.webp"],
   title: "Darmix Tasking",
   year: "2026",
   accent: "#5fae7c",
@@ -34,6 +32,16 @@ const project: Project = {
       "Local demo mode when the backend is down",
       "Docker Compose and tests with Pest and Vitest",
     ],
+  },
+  sheet: {
+    what: {
+      es: 'Organiza el trabajo en proyectos y tareas con estado y prioridad. Cada usuario ve solo lo suyo y, si el servidor no responde, la app sigue funcionando en modo demo.',
+      en: 'Organizes work into projects and tasks with status and priority. Each user only sees their own, and if the server is down the app keeps working in demo mode.',
+    },
+    how: {
+      es: 'API en Laravel 12 con JWT y políticas de acceso; interfaz en React 19 y TypeScript con TanStack Query. Se levanta con Docker Compose y tiene pruebas con Pest y Vitest.',
+      en: 'Laravel 12 API with JWT and access policies; React 19 and TypeScript interface with TanStack Query. It runs with Docker Compose and is tested with Pest and Vitest.',
+    },
   },
   tags: [
     "Laravel 12",

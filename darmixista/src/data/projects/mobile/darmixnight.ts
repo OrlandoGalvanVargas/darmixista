@@ -3,8 +3,6 @@ import type { Project } from '../types';
 const project: Project = {
   order: 3,
   slug: 'darmixnight',
-  cover: '/projects/shots/darmixnight/cover.webp',
-  shots: ['/projects/shots/darmixnight/01.webp', '/projects/shots/darmixnight/02.webp', '/projects/shots/darmixnight/03.webp', '/projects/shots/darmixnight/04.webp'],
   audience: 'personal',
   title: 'DarmixNight',
   year: '2026',
@@ -35,6 +33,16 @@ const project: Project = {
       'Emergencies with friction, daytime only',
       'Updates with PackageInstaller from GitHub',
     ],
+  },
+  sheet: {
+    what: {
+      es: 'A la hora que elijas, cubre tus apps con una pantalla de descanso hasta la mañana. Llamadas, mensajes y cámara siguen funcionando.',
+      en: 'At the time you choose, it covers your apps with a rest screen until morning. Calls, messages and the camera keep working.',
+    },
+    how: {
+      es: 'Kotlin y Compose. Un AccessibilityService detecta la app abierta y un servicio con alarmas exactas mantiene el horario al minuto, incluso después de reiniciar. Código abierto (MIT).',
+      en: 'Kotlin and Compose. An AccessibilityService detects the open app and a service with exact alarms keeps the schedule to the minute, even after a restart. Open source (MIT).',
+    },
   },
   tags: ['Kotlin', 'Jetpack Compose', 'Material 3', 'AccessibilityService', 'Foreground Service', 'AlarmManager', 'DataStore', 'PackageInstaller'],
   links: {

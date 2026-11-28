@@ -3,8 +3,6 @@ import type { Project } from '../types';
 const project: Project = {
   order: 2,
   slug: 'darmixfit',
-  cover: '/projects/shots/darmixfit/cover.webp',
-  shots: ['/projects/shots/darmixfit/01.webp', '/projects/shots/darmixfit/02.webp', '/projects/shots/darmixfit/03.webp', '/projects/shots/darmixfit/04.webp'],
   audience: 'personal',
   title: 'DarmixFit',
   year: '2026',
@@ -35,6 +33,16 @@ const project: Project = {
       'Bell synthesized with AudioTrack',
       'In-app updates from GitHub Releases',
     ],
+  },
+  sheet: {
+    what: {
+      es: 'Te guía serie por serie en tu rutina de fuerza y cuenta los descansos por ti, aunque bloquees el teléfono. Trae 7 programas y 41 ejercicios animados.',
+      en: 'Guides you set by set through your strength routine and counts your rest for you, even with the phone locked. It comes with 7 programs and 41 animated exercises.',
+    },
+    how: {
+      es: 'Kotlin, Compose y Room con MVVM. El descanso corre en un servicio en primer plano con alarma exacta de respaldo, y la serie se marca desde la pantalla de bloqueo.',
+      en: 'Kotlin, Compose and Room with MVVM. Rest runs in a foreground service with an exact backup alarm, and sets are marked from the lock screen.',
+    },
   },
   tags: ['Kotlin', 'Jetpack Compose', 'Material 3', 'Room', 'MVVM + StateFlow', 'Foreground Service', 'AlarmManager', 'Coil'],
   links: {
